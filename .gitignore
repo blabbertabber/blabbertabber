@@ -1,7 +1,10 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+# Ryan Spore "I would feel entirely comfortable
+# ignoring .idea & *.iml"; you may need to manually
+# sync environment things
+/.idea
+*.iml
 .DS_Store
 /build
 /captures
