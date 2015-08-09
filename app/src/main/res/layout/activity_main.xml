@@ -24,13 +24,13 @@
 
         <TextView
             android:id="@+id/large_volume"
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:ellipsize="middle"
             android:background="@drawable/circle"
             android:gravity="center"
             android:text="▶︎"
             android:textColor="#FFFFFF"
-            android:textSize="36dp" />
+            android:textSize="36dp"
+            android:layout_width="wrap_content" />
     </LinearLayout>
 </LinearLayout>
