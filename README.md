@@ -1,6 +1,7 @@
 # Blabber Tabber
 
-[![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=develop)](https://travis-ci.org/blabbertabber/blabbertabber)
+* develop: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=develop)](https://travis-ci.org/blabbertabber/blabbertabber)
+* master: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=master)](https://travis-ci.org/blabbertabber/blabbertabber)
 
 BlabberTabber is an Android Application the performs
 [speaker diarization](https://en.wikipedia.org/wiki/Speaker_diarisation).
