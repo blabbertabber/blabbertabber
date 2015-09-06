@@ -1,15 +1,33 @@
 package com.blabbertabber.blabbertabber;
 
-import android.test.ActivityInstrumentationTestCase2;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 /**
  * Created by cunnie on 8/30/15.
  * Espresso default
  */
-public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
 
-    public MainActivityTest() {
-        super(MainActivity.class);
+ @RunWith(AndroidJUnit4.class)
+ @SmallTest
+public class MainActivityTest {
+    @Rule
+    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule(MainActivity.class);
+
+    @Test
+    public void startRecording() {
+        onView(withId(R.id.button_record)).check(matches(isDisplayed()));
     }
 }
