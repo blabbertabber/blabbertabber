@@ -44,6 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void startRecording(View view) {
         Intent intent = new Intent(this, RecordingActivity.class);
-        startActivity(intent);
+//        startActivity(intent);
     }
 }
