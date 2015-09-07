@@ -39,6 +39,8 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
     // Set this dependency to build and run UI Automator tests
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
-    // I'm doing this because I'm clutching at straws
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
+    // https://code.google.com/p/android-test-kit/wiki/EspressoIntentsSetupInstructions
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
+    //// [NOT NEEDED] I'm doing this because I'm clutching at straws
+    //// androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
 }
