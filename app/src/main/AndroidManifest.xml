@@ -16,6 +16,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".RecordingActivity" />
+
+        <service
+            android:name=".RecordingService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

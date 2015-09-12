@@ -1,6 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -8,4 +9,10 @@ import android.app.Activity;
  *
  */
 public class RecordingActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recording);
+    }
+
 }
