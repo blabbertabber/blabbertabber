@@ -16,6 +16,7 @@
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:background="#000"
+            android:onClick="displaySpeakerId"
             android:src="@drawable/circle" />
 
     </RelativeLayout>
