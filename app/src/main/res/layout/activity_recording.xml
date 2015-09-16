@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recording_root_view"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#000000"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="50dp"
+            android:src="@drawable/med_green_circle" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="50dp"
+            android:src="@drawable/med_blue_circle" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="50dp"
+            android:src="@drawable/med_yellow_circle" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="50dp"
+            android:src="@drawable/med_cyan_circle" />
 
         <ImageButton
             android:id="@+id/button_record"
@@ -16,8 +47,9 @@
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:background="#000"
+            android:contentDescription="testing button"
             android:onClick="displaySpeakerId"
-            android:src="@drawable/circle" />
+            android:src="@drawable/small_red_circle" />
 
     </RelativeLayout>
 

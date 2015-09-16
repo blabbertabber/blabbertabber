@@ -27,7 +27,7 @@
             android:layout_centerInParent="true"
             android:background="#226"
             android:onClick="startRecording"
-            android:src="@drawable/circle" />
+            android:src="@drawable/small_red_circle" />
 
         <View
             android:layout_width="50dp"

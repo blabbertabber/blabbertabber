@@ -64,7 +64,7 @@ public class RecordingActivity extends Activity {
         if (mBound) {
             id = mService.getSpeakerId();
         }
-        Toast.makeText(getApplicationContext(), "" + id + "  mBound: " + mBound, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "" + id + "  mBound: " + mBound, Toast.LENGTH_SHORT).show();
     }
 
     @Override
