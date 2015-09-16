@@ -52,19 +52,21 @@ public class RecordingActivity extends Activity {
         super.onResume();
         setContentView(R.layout.activity_recording);
 
-        int id = 15;
+        int speakerId = 0;
+        int speakerVolume = 0;
         if (mBound) {
-            id = mService.getSpeakerId();
+            speakerId = mService.getSpeakerId();
         }
-        Toast.makeText(getApplicationContext(), "" + id + "  mBound: " + mBound, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
     }
 
     public void displaySpeakerId(View v) {
-        int id = 17;
+        int speakerId = 0;
+        int speakerVolume = 0;
         if (mBound) {
-            id = mService.getSpeakerId();
+            speakerId = mService.getSpeakerId();
         }
-        Toast.makeText(getApplicationContext(), "" + id + "  mBound: " + mBound, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
     }
 
     @Override

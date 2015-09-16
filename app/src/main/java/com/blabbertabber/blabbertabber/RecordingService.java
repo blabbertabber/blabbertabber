@@ -9,11 +9,13 @@ import android.os.Messenger;
 import android.util.Log;
 import java.util.Random;
 
+
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     final Messenger myMessenger = new Messenger(new Handler());
     private final IBinder mBinder = new RecordingBinder();
     private Random randomGenerator = new Random();
+    private SpeakerAndVolume mSpeakerAndVolume = new SpeakerAndVolume();
 
     public class RecordingBinder extends Binder {
         RecordingService getService() {
@@ -37,10 +39,10 @@ public class RecordingService extends Service {
     };
 
     public int getSpeakerId() {
-        return randomGenerator.nextInt(4);
+        return mSpeakerAndVolume.getSpeakerId();
     }
 
     public int getSpeakerVolume() {
-        return 3;
+        return mSpeakerAndVolume.getSpeakerVolume();
     }
 }
