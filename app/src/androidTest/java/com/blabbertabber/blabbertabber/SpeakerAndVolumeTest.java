@@ -6,7 +6,7 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by cunnie on 9/16/15.
- *
+ * <p/>
  * Test SpeakerAndVolume class
  */
 public class SpeakerAndVolumeTest {
@@ -17,8 +17,8 @@ public class SpeakerAndVolumeTest {
 
         int i;
 
-        for (i=0; i<100; i++) {
-            assertTrue("speakerId is non-negative", tester.getSpeakerId() >=  0);
+        for (i = 0; i < 100; i++) {
+            assertTrue("speakerId is non-negative", tester.getSpeakerId() >= 0);
         }
     }
 
@@ -28,7 +28,7 @@ public class SpeakerAndVolumeTest {
 
         int i;
 
-        for (i=0; i<100; i++) {
+        for (i = 0; i < 100; i++) {
             assertTrue("speakerVolume is non-negative", tester.getSpeakerVolume() >= 0);
         }
     }
