@@ -2,15 +2,13 @@ package com.blabbertabber.blabbertabber;
 
 /**
  * Created by cunnie on 9/16/15.
- * <p>
+ *
  * Class that returns speaker and volume
  * This is a throw-away class that will be replaced by actual speaker diarization software
  * which will be some type of service
  */
 
 import android.util.Log;
-import android.widget.Toast;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpeakerAndVolume {

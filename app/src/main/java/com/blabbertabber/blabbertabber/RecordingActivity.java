@@ -65,14 +65,14 @@ public class RecordingActivity extends Activity {
         int speakerVolume = 0;
         if (mBound) {
             speakerId = mService.getSpeakerId();
+            speakerVolume = mService.getSpeakerVolume();
         }
         Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onPause() {
-        super.onPause();;
-
+        super.onPause();
         if (mServerConn != null) {
             unbindService(mServerConn);
         }
