@@ -13,6 +13,7 @@ import android.widget.Toast;
  * Created by cunnie on 8/16/15.
  * Activity to record and identify voices.
  */
+
 public class RecordingActivity extends Activity {
     RecordingService mService;
     boolean mBound = false;
@@ -34,6 +35,7 @@ public class RecordingActivity extends Activity {
         }
     };
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -52,10 +54,20 @@ public class RecordingActivity extends Activity {
 
         int speakerId = 0;
         int speakerVolume = 0;
-        if (mBound) {
+        if (mBound)
+
+        {
             speakerId = mService.getSpeakerId();
         }
-        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(
+
+                getApplicationContext(),
+
+                "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).
+
+                show();
+
     }
 
     public void displaySpeakerId(View v) {

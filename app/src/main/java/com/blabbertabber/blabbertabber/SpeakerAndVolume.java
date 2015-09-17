@@ -50,14 +50,12 @@ public class SpeakerAndVolume {
         return newSpeaker;
     }
 
+
     // Are we adding a completely new speaker who hasn't spoken yet?
     private boolean newSpeaker() {
-        boolean newSpeaker = false;
-        if (MAX_SPEAKERS > numSpeakers) {
-            newSpeaker = ThreadLocalRandom.current().nextBoolean();
-        }
-        Log.wtf(TAG, "newSpeaker(): " + newSpeaker);
-        return newSpeaker;
+        double p = ((MAX_SPEAKERS - numSpeakers) / (MAX_SPEAKERS - 1.0));
+        Log.wtf(TAG, "newSpeaker(): " + p);
+        return p > ThreadLocalRandom.current().nextDouble();
     }
 
     public int getSpeakerVolume() {
