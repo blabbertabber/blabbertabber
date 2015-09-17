@@ -12,6 +12,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/id_0"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
@@ -19,6 +20,7 @@
             android:src="@drawable/med_green_circle" />
 
         <ImageView
+            android:id="@+id/id_1"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentRight="true"
@@ -26,6 +28,7 @@
             android:src="@drawable/med_blue_circle" />
 
         <ImageView
+            android:id="@+id/id_2"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"
@@ -34,6 +37,7 @@
             android:src="@drawable/med_yellow_circle" />
 
         <ImageView
+            android:id="@+id/id_3"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"

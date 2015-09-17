@@ -18,18 +18,12 @@ public class RecordingService extends Service {
     private Random randomGenerator = new Random();
     private SpeakerAndVolume mSpeakerAndVolume = new SpeakerAndVolume();
 
-    public class RecordingBinder extends Binder {
-        RecordingService getService() {
-            return RecordingService.this;
-        }
+    public RecordingService() {
     }
 
     @Override
     public void onCreate() {
         Log.wtf(TAG, "onCreate()");
-    }
-
-    public RecordingService() {
     }
 
     @Override
@@ -43,5 +37,11 @@ public class RecordingService extends Service {
 
     public int getSpeakerVolume() {
         return mSpeakerAndVolume.getSpeakerVolume();
+    }
+
+    public class RecordingBinder extends Binder {
+        RecordingService getService() {
+            return RecordingService.this;
+        }
     }
 }

@@ -13,11 +13,11 @@ import android.util.Log;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpeakerAndVolume {
+    private static final int MAX_SPEAKERS = 4;
+    private static final String TAG = "SpeakerAndVolume";
     private int speaker;
     private int numSpeakers;
     private long nextSpeakerChange;
-    private static final int MAX_SPEAKERS = 4;
-    private static final String TAG = "SpeakerAndVolume";
 
     // Constructor
     public SpeakerAndVolume() {
@@ -37,6 +37,11 @@ public class SpeakerAndVolume {
         return speaker;
     }
 
+    public int getSpeakerVolume() {
+        return ThreadLocalRandom.current().nextInt(0, 100);
+    }
+
+
     // usually returns a speaker different than the current speaker, possibly a new speaker
     private int nextSpeaker() {
         if (newSpeaker()) {
@@ -50,15 +55,10 @@ public class SpeakerAndVolume {
         return newSpeaker;
     }
 
-
     // Are we adding a completely new speaker who hasn't spoken yet?
     private boolean newSpeaker() {
         double p = ((MAX_SPEAKERS - numSpeakers) / (MAX_SPEAKERS - 1.0));
         Log.wtf(TAG, "newSpeaker(): " + p);
         return p > ThreadLocalRandom.current().nextDouble();
-    }
-
-    public int getSpeakerVolume() {
-        return ThreadLocalRandom.current().nextInt(0, 100);
     }
 }
