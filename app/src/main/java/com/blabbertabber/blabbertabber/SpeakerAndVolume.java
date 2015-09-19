@@ -22,7 +22,7 @@ public class SpeakerAndVolume {
     // Constructor
     public SpeakerAndVolume() {
         // speakers change on average every 15 seconds
-        nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 30_000);
+        nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         numSpeakers = 1; // initially only one speaker
         Log.wtf(TAG, "SpeakerAndVolume(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
     }
@@ -31,7 +31,7 @@ public class SpeakerAndVolume {
     public int getSpeakerId() {
         if (System.currentTimeMillis() > nextSpeakerChange) {
             speaker = nextSpeaker();
-            nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 30_000);
+            nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         }
         Log.wtf(TAG, "getSpeaker(): " + speaker + " nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
         return speaker;

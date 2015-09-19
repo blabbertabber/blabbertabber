@@ -1,6 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 /**
@@ -77,28 +80,55 @@ public class RecordingActivity extends Activity {
             speakerId = mService.getSpeakerId();
             speakerVolume = mService.getSpeakerVolume();
         }
-        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
         View view;
+
+//      RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.recording_layout).getLayoutParams();
+        ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) volume_ring.getLayoutParams();
+        // convert from pixels to dp http://stackoverflow.com/questions/4914039/margins-of-a-linearlayout-programmatically-with-dp
+        float dp = getApplicationContext().getResources().getDisplayMetrics().density;
+
         switch (speakerId) {
             case 0:
-                view = findViewById(R.id.id_0);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 1:
-                view = findViewById(R.id.id_1);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 2:
-                view = findViewById(R.id.id_2);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             case 3:
-                view = findViewById(R.id.id_3);
+                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             default:
                 view = findViewById(R.id.id_3);
                 Log.wtf(TAG, "we shouldn't get here");
         }
-        ObjectAnimator anim = ObjectAnimator.ofInt(view, "imageAlpha", 0, 0x3f);
-        anim.setDuration(5000);
-        anim.start();
+        //// ObjectAnimator anim = ObjectAnimator.ofInt(view, "imageAlpha", 0, 0xff);
+        //// anim.setDuration(500);
+        //// anim.start();
+
+        // http://stackoverflow.com/questions/4472429/change-the-right-margin-of-a-view-programmatically
+        volume_ring.requestLayout();
+
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, speakerVolume / 10);
+        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, speakerVolume / 10);
+        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(findViewById(R.id.ring_0), phvx, phvy);
+        scaleAnimation.start();
     }
 
     @Override
