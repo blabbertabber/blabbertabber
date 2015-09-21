@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 /**
- * Created by cunnie on 9/16/15.
+ * Created by Cunnie on 9/16/15.
  * <p/>
  * Class that returns speaker and volume
  * This is a throw-away class that will be replaced by actual speaker diarization software
@@ -13,10 +13,10 @@ import android.util.Log;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpeakerAndVolume {
+    public int numSpeakers;
     private static final int MAX_SPEAKERS = 4;
     private static final String TAG = "SpeakerAndVolume";
     private int speaker;
-    private int numSpeakers;
     private long nextSpeakerChange;
 
     // Constructor
@@ -40,7 +40,6 @@ public class SpeakerAndVolume {
     public int getSpeakerVolume() {
         return ThreadLocalRandom.current().nextInt(0, 100);
     }
-
 
     // usually returns a speaker different than the current speaker, possibly a new speaker
     private int nextSpeaker() {
