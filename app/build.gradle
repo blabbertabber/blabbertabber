@@ -45,4 +45,9 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:1.+"
     //// [NOT NEEDED] I'm doing this because I'm clutching at straws
     //// androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
+    // need mockito
+    androidTestCompile "org.mockito:mockito-core:1.+"
+    // http://stackoverflow.com/questions/29290795/attempt-to-mockito-mock-any-class-generates-exceptionininitializererror
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 }

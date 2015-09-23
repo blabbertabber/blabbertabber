@@ -13,9 +13,9 @@ import android.util.Log;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SpeakerAndVolume {
-    public int numSpeakers;
     private static final int MAX_SPEAKERS = 4;
     private static final String TAG = "SpeakerAndVolume";
+    public int numSpeakers;
     private int speaker;
     private long nextSpeakerChange;
 
