@@ -34,7 +34,6 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         // speakers change on average every 5 seconds
         nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         numSpeakers = 1; // initially only one speaker
-//        mRecordingActivity = activity;
         Log.wtf(TAG, "SpeakerAndVolumeRunnable(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
     }
 

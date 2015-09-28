@@ -46,16 +46,6 @@
             android:layout_margin="50dp"
             android:src="@drawable/med_02_circle" />
 
-        <ImageButton
-            android:id="@+id/button_record"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:background="#000"
-            android:contentDescription="testing button"
-            android:onClick="displaySpeakerId"
-            android:src="@drawable/small_red_circle" />
-
         <ImageView
             android:id="@+id/ring_0"
             android:layout_width="20dp"

@@ -9,7 +9,6 @@ import android.util.Log;
 
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
-    ////    final Messenger myMessenger = new Messenger(new Handler());
     private final IBinder mBinder = new RecordingBinder();
     private SpeakerAndVolumeRunnable mSpeakerAndVolumeRunnable = new SpeakerAndVolumeRunnable(this);
 

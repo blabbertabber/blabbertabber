@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
-    ////private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
     private RecordingService mService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -49,6 +48,7 @@ public class RecordingActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate()");
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -81,22 +81,12 @@ public class RecordingActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
-
-        int speakerId = 0;
-        int speakerVolume = 0;
-        if (mBound) {
-            speakerId = mService.getSpeakerId();
-        }
-        Toast.makeText(
-                getApplicationContext(),
-                "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).
-                show();
     }
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause()");
         super.onPause();
+        Log.i(TAG, "onPause()");
         if (mServerConn != null) {
             unbindService(mServerConn);
         }
@@ -104,27 +94,9 @@ public class RecordingActivity extends Activity {
 
     @Override
     protected void onStop() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         super.onStop();
-    }
-
-
-    public void onVoiceHeard(int speakerId, int speakerVolume) {
-        updateSpeakerVolumeView(speakerId, speakerVolume);
-    }
-
-    public void onSpeakerUpdate(int speakerId, int speakerVolume) {
-        updateSpeakerVolumeView(speakerId, speakerVolume);
-    }
-
-    public void displaySpeakerId(View v) {
-        int speakerId;
-        int speakerVolume;
-        if (mBound) {
-            speakerId = mService.getSpeakerId();
-            speakerVolume = mService.getSpeakerVolume();
-            updateSpeakerVolumeView(speakerId, speakerVolume);
-        }
+        Log.i(TAG, "onStop()");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
