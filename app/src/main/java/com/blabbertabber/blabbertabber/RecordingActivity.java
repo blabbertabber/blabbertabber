@@ -3,10 +3,15 @@ package com.blabbertabber.blabbertabber;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,17 +23,19 @@ import android.widget.Toast;
  * Activity to record and identify voices.
  */
 
+
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
-    RecordingService mService;
-    boolean mBound = false;
+    ////private final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+    private RecordingService mService;
+    private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             RecordingService.RecordingBinder recordingBinder = (RecordingService.RecordingBinder) binder;
             mService = recordingBinder.getService();
             mBound = true;
-            Log.wtf(TAG, "onServiceConnected.  mBound: " + mBound);
+            Log.wtf(TAG, "onServiceConnected.");
         }
 
         @Override
@@ -37,53 +44,90 @@ public class RecordingActivity extends Activity {
             Log.wtf(TAG, "onServiceDisconnected");
         }
     };
+    private BroadcastReceiver mReceiver;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int[] voices = intent.getIntArrayExtra(SpeakerAndVolumeRunnable.RECORD_MESSAGE);
+                // do something here.
+                Log.i(TAG, "soundevent: " + voices[0] + ", " + voices[1]);
+                updateSpeakerVolumeView(voices[0], voices[1]);
+            }
+        };
+
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart()");
         Intent serviceIntent = new Intent(this, RecordingService.class);
         if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
-            Log.wtf(TAG, "bindService() succeeded, mBound: " + mBound);
+            Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
         } else {
             Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
         }
+        LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
+                new IntentFilter(SpeakerAndVolumeRunnable.RECORD_RESULT)
+        );
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
 
         int speakerId = 0;
         int speakerVolume = 0;
-        if (mBound)
-
-        {
+        if (mBound) {
             speakerId = mService.getSpeakerId();
         }
-
         Toast.makeText(
-
                 getApplicationContext(),
-
                 "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).
-
                 show();
+    }
 
+    @Override
+    protected void onPause() {
+        Log.i(TAG, "onPause()");
+        super.onPause();
+        if (mServerConn != null) {
+            unbindService(mServerConn);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        super.onStop();
+    }
+
+
+    public void onVoiceHeard(int speakerId, int speakerVolume) {
+        updateSpeakerVolumeView(speakerId, speakerVolume);
+    }
+
+    public void onSpeakerUpdate(int speakerId, int speakerVolume) {
+        updateSpeakerVolumeView(speakerId, speakerVolume);
     }
 
     public void displaySpeakerId(View v) {
-        int speakerId = 0;
-        int speakerVolume = 0;
+        int speakerId;
+        int speakerVolume;
         if (mBound) {
             speakerId = mService.getSpeakerId();
             speakerVolume = mService.getSpeakerVolume();
+            updateSpeakerVolumeView(speakerId, speakerVolume);
         }
-//        Toast.makeText(getApplicationContext(), "speaker: " + speakerId + "  vol: " + speakerVolume, Toast.LENGTH_SHORT).show();
-        View view;
+    }
 
-//      RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) findViewById(R.id.recording_layout).getLayoutParams();
+    private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
         ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) volume_ring.getLayoutParams();
         // convert from pixels to dp http://stackoverflow.com/questions/4914039/margins-of-a-linearlayout-programmatically-with-dp
@@ -115,13 +159,8 @@ public class RecordingActivity extends Activity {
                 params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             default:
-                view = findViewById(R.id.id_3);
                 Log.wtf(TAG, "we shouldn't get here");
         }
-        //// ObjectAnimator anim = ObjectAnimator.ofInt(view, "imageAlpha", 0, 0xff);
-        //// anim.setDuration(500);
-        //// anim.start();
-
         // http://stackoverflow.com/questions/4472429/change-the-right-margin-of-a-view-programmatically
         volume_ring.requestLayout();
 
@@ -130,13 +169,4 @@ public class RecordingActivity extends Activity {
         ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(findViewById(R.id.ring_0), phvx, phvy);
         scaleAnimation.start();
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mServerConn != null) {
-            unbindService(mServerConn);
-        }
-    }
-
 }
