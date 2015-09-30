@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -34,13 +33,13 @@ public class RecordingActivity extends Activity {
             RecordingService.RecordingBinder recordingBinder = (RecordingService.RecordingBinder) binder;
             mService = recordingBinder.getService();
             mBound = true;
-            Log.wtf(TAG, "onServiceConnected.");
+            Log.v(TAG, "mServerConn.onServiceConnected()");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mBound = false;
-            Log.wtf(TAG, "onServiceDisconnected");
+            Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
     private BroadcastReceiver mReceiver;
@@ -54,7 +53,7 @@ public class RecordingActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 int[] voices = intent.getIntArrayExtra(SpeakerAndVolumeRunnable.RECORD_MESSAGE);
                 // do something here.
-                Log.i(TAG, "soundevent: " + voices[0] + ", " + voices[1]);
+                Log.v(TAG, "mReceiver.onReceive()" + voices[0] + ", " + voices[1]);
                 updateSpeakerVolumeView(voices[0], voices[1]);
             }
         };

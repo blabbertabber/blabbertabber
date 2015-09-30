@@ -15,7 +15,7 @@ import android.util.Log;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static java.lang.Thread.*;
+import static java.lang.Thread.sleep;
 
 public class SpeakerAndVolumeRunnable implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
@@ -34,16 +34,17 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         // speakers change on average every 5 seconds
         nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         numSpeakers = 1; // initially only one speaker
-        Log.wtf(TAG, "SpeakerAndVolumeRunnable(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
+        Log.i(TAG, "SpeakerAndVolumeRunnable(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
     }
 
     public void run() {
-        Log.i(TAG, "just started run'ing.");
+        Log.i(TAG, "run()");
         // https://developer.android.com/training/multiple-threads/define-runnable.html
         // Moves the current Thread into the background
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         // store the TID
-        // save.thread = Thread.currentThread()
+        ((RecordingService) mContext).mThreadSAVR = Thread.currentThread(); // doesn't work
+        Log.i(TAG, "run() thread ==" + Thread.currentThread().getName());
         mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
 
         // TODO:  Writer code to set up AudioRedord stuff
@@ -63,9 +64,11 @@ public class SpeakerAndVolumeRunnable implements Runnable {
             try {
                 sleep(200);
             } catch (InterruptedException e) {
+                Log.i(TAG, "InterruptedException, return");
                 e.printStackTrace();
+                return; // <- avoids spawning many threads when changing orientation
             }
-            Log.i(TAG, "tick");
+            Log.v(TAG, "run() tick");
             sendResult(getSpeakerId(), getSpeakerVolume());
         }
     }
@@ -82,7 +85,7 @@ public class SpeakerAndVolumeRunnable implements Runnable {
             speaker = nextSpeaker();
             nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         }
-        Log.wtf(TAG, "getSpeaker(): " + speaker + " nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
+        Log.v(TAG, "getSpeaker(): " + speaker + " nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
         return speaker;
     }
 
@@ -99,14 +102,14 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         }
         // I am quite proud of the following line's elegance
         int newSpeaker = (speaker + ThreadLocalRandom.current().nextInt(0, numSpeakers)) % numSpeakers;
-        Log.wtf(TAG, "nextSpeaker(): " + newSpeaker);
+        Log.i(TAG, "nextSpeaker(): " + newSpeaker);
         return newSpeaker;
     }
 
     // Are we adding a completely new speaker who hasn't spoken yet?
     private boolean newSpeaker() {
         double p = ((MAX_SPEAKERS - numSpeakers) / (MAX_SPEAKERS - 1.0));
-        Log.wtf(TAG, "newSpeaker(): " + p);
+        Log.i(TAG, "newSpeaker(): " + p);
         return p > ThreadLocalRandom.current().nextDouble();
     }
 }
