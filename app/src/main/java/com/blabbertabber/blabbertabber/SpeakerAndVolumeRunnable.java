@@ -10,9 +10,12 @@ package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaRecorder;
+import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
@@ -27,6 +30,8 @@ public class SpeakerAndVolumeRunnable implements Runnable {
     private Context mContext;
     private int speaker;
     private long nextSpeakerChange;
+    private MediaRecorder mRecorder;
+    private String mFileName;
 
     // Constructor
     public SpeakerAndVolumeRunnable(Context context) {
@@ -56,13 +61,14 @@ public class SpeakerAndVolumeRunnable implements Runnable {
             }
          */
 
-
+        startRecording();
         for (int x = 0; x < 1500; x++) {
             try {
                 sleep(200);
             } catch (InterruptedException e) {
                 Log.i(TAG, "InterruptedException, return");
                 e.printStackTrace();
+                stopRecording();
                 return; // <- avoids spawning many threads when changing orientation
             }
             Log.v(TAG, "run() tick");
@@ -76,6 +82,34 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         mBroadcastManager.sendBroadcast(intent);
     }
 
+    public void AudioRecordName() {
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+        mFileName += "/audiorecordtest.3gp";
+        Log.i(TAG, "mFileName: " + mFileName);
+    }
+
+    private void startRecording() {
+        AudioRecordName();
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        mRecorder.stop();
+        mRecorder.release();
+        mRecorder = null;
+    }
+
     // Who is currently speaking?
     public int getSpeakerId() {
         if (System.currentTimeMillis() > nextSpeakerChange) {
@@ -86,8 +120,16 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         return speaker;
     }
 
+
+//    public int getSpeakerVolume() {
+//        return ThreadLocalRandom.current().nextInt(0, 100);
+//    }
+
     public int getSpeakerVolume() {
-        return ThreadLocalRandom.current().nextInt(0, 100);
+        int volume = mRecorder.getMaxAmplitude();
+        volume = volume * 100 / 32768;
+        Log.i(TAG, "volume is " + volume);
+        return volume;
     }
 
     // usually returns a speaker different than the current speaker, possibly a new speaker

@@ -32,6 +32,7 @@ public class RecordingService extends Service {
         if (mThreadSAVR != null) {
             Log.i(TAG, "onDestroy() mThreadSAVR == " + mThreadSAVR.getName());
             mThreadSAVR.interrupt();
+            mThreadSAVR = null; // allow GC to reap thread
         } else {
             Log.i(TAG, "onDestroy() mThreadSAVR == null");
         }
