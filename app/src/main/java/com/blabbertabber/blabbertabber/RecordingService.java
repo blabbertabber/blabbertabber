@@ -10,7 +10,7 @@ import android.util.Log;
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     private final IBinder mBinder = new RecordingBinder();
-    public Thread mThreadSAVR;  // needs to be public because it's set by the Runnable
+    private Thread mThreadSAVR;
     private SpeakerAndVolumeRunnable mSpeakerAndVolumeRunnable = new SpeakerAndVolumeRunnable(this);
 
     public RecordingService() {
@@ -22,7 +22,8 @@ public class RecordingService extends Service {
         // make sure we're not spawning another thread if we already have one. We're being
         // overly cautious; in spite of frequent testing, this if-block always succeeds.
         if (mThreadSAVR == null || !mThreadSAVR.isAlive()) {
-            new Thread(mSpeakerAndVolumeRunnable).start();
+            mThreadSAVR = new Thread(mSpeakerAndVolumeRunnable);
+            mThreadSAVR.start();
         }
     }
 

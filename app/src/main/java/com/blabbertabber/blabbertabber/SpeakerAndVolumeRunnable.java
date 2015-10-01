@@ -42,9 +42,6 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         // https://developer.android.com/training/multiple-threads/define-runnable.html
         // Moves the current Thread into the background
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-        // store the TID
-        ((RecordingService) mContext).mThreadSAVR = Thread.currentThread(); // doesn't work
-        Log.i(TAG, "run() thread ==" + Thread.currentThread().getName());
         mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
 
         // TODO:  Writer code to set up AudioRedord stuff
