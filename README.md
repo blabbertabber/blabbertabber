@@ -6,3 +6,5 @@
 BlabberTabber is an Android Application the performs
 [speaker diarization](https://en.wikipedia.org/wiki/Speaker_diarisation).
 (i.e. "who spoke when?"). It does not perform speech recognition.
+
+[Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. Thanks Charlotte.

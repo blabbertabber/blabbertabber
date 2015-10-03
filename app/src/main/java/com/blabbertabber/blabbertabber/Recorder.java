@@ -2,7 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 /**
  * Created by Cunnie on 9/16/15.
- * <p/>
+ * <p>
  * Class that returns speaker and volume
  * This is a throw-away class that will be replaced by actual speaker diarization software
  * which will be some type of service
@@ -10,7 +10,6 @@ package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
