@@ -64,7 +64,7 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         startRecording();
         for (int x = 0; x < 1500; x++) {
             try {
-                sleep(200);
+                sleep(25);
             } catch (InterruptedException e) {
                 Log.i(TAG, "InterruptedException, return");
                 e.printStackTrace();

@@ -138,6 +138,6 @@ public class RecordingActivity extends Activity {
         PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, speakerVolume / 10);
         PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, speakerVolume / 10);
         ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(findViewById(R.id.ring_0), phvx, phvy);
-        scaleAnimation.start();
+        scaleAnimation.setDuration(25).start();
     }
 }
