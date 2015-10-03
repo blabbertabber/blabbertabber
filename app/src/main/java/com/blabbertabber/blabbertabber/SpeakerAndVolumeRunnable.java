@@ -11,7 +11,6 @@ package com.blabbertabber.blabbertabber;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -31,7 +30,7 @@ public class SpeakerAndVolumeRunnable implements Runnable {
     private int speaker;
     private long nextSpeakerChange;
     private MediaRecorder mRecorder;
-    private String mFileName;
+    private String mFileName = "/dev/null"; // search for audioRecordName() when ready to write to a file
 
     // Constructor
     public SpeakerAndVolumeRunnable(Context context) {
@@ -82,16 +81,19 @@ public class SpeakerAndVolumeRunnable implements Runnable {
         mBroadcastManager.sendBroadcast(intent);
     }
 
-    public void AudioRecordName() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
-        Log.i(TAG, "mFileName: " + mFileName);
-    }
-
     private void startRecording() {
-        AudioRecordName();
         mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        //                    NEXUS 6 MediaRecorder.AudioSource.
+        // kinda works:       CAMCORDER
+        //                    VOICE_RECOGNITION
+        // terrible:          DEFAULT
+        //                    MIC
+        //                    VOICE_COMMUNICATION
+        // RuntimeException:  VOICE_UPLINK
+        //                    REMOTE_SUBMIX
+        //                    VOICE_CALL
+        //                    VOICE_DOWNLINK
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
