@@ -51,7 +51,7 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int[] voices = intent.getIntArrayExtra(SpeakerAndVolumeRunnable.RECORD_MESSAGE);
+                int[] voices = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
                 // do something here.
                 Log.v(TAG, "mReceiver.onReceive()" + voices[0] + ", " + voices[1]);
                 updateSpeakerVolumeView(voices[0], voices[1]);
@@ -71,7 +71,7 @@ public class RecordingActivity extends Activity {
             Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
         }
         LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
-                new IntentFilter(SpeakerAndVolumeRunnable.RECORD_RESULT)
+                new IntentFilter(Recorder.RECORD_RESULT)
         );
     }
 

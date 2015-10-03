@@ -11,6 +11,7 @@ package com.blabbertabber.blabbertabber;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -19,10 +20,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
 
-public class SpeakerAndVolumeRunnable implements Runnable {
+public class Recorder implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MSG";
-    private static final String TAG = "SpeakerAndVolumeRunnabl";
+    private static final String TAG = "Recorder";
     private static final int MAX_SPEAKERS = 4;
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
@@ -31,14 +32,15 @@ public class SpeakerAndVolumeRunnable implements Runnable {
     private long nextSpeakerChange;
     private MediaRecorder mRecorder;
     private String mFileName = "/dev/null"; // search for audioRecordName() when ready to write to a file
+    private boolean mIsEmulator = false;
 
     // Constructor
-    public SpeakerAndVolumeRunnable(Context context) {
+    public Recorder(Context context) {
         mContext = context;
         // speakers change on average every 5 seconds
         nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         numSpeakers = 1; // initially only one speaker
-        Log.i(TAG, "SpeakerAndVolumeRunnable(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
+        Log.i(TAG, "Recorder(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
     }
 
     public void run() {
@@ -82,34 +84,42 @@ public class SpeakerAndVolumeRunnable implements Runnable {
     }
 
     private void startRecording() {
-        mRecorder = new MediaRecorder();
-        //                    NEXUS 6 MediaRecorder.AudioSource.
-        // kinda works:       CAMCORDER
-        //                    VOICE_RECOGNITION
-        // terrible:          DEFAULT
-        //                    MIC
-        //                    VOICE_COMMUNICATION
-        // RuntimeException:  VOICE_UPLINK
-        //                    REMOTE_SUBMIX
-        //                    VOICE_CALL
-        //                    VOICE_DOWNLINK
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mIsEmulator = "goldfish".equals(Build.HARDWARE);
+        Log.v(TAG, Build.HARDWARE);
+        if (mIsEmulator) {
+        } else {
+            mRecorder = new MediaRecorder();
+            //                    NEXUS 6 MediaRecorder.AudioSource.
+            // kinda works:       CAMCORDER
+            //                    VOICE_RECOGNITION
+            // terrible:          DEFAULT
+            //                    MIC
+            //                    VOICE_COMMUNICATION
+            // RuntimeException:  VOICE_UPLINK
+            //                    REMOTE_SUBMIX
+            //                    VOICE_CALL
+            //                    VOICE_DOWNLINK
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setOutputFile(mFileName);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
+            try {
+                mRecorder.prepare();
+            } catch (IOException e) {
+                Log.e(TAG, "prepare() failed");
+            }
+            mRecorder.start();
         }
-        mRecorder.start();
     }
 
     private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        if (mIsEmulator) {
+        } else {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
     }
 
     // Who is currently speaking?
@@ -128,10 +138,14 @@ public class SpeakerAndVolumeRunnable implements Runnable {
 //    }
 
     public int getSpeakerVolume() {
-        int volume = mRecorder.getMaxAmplitude();
-        volume = volume * 100 / 32768;
-        Log.i(TAG, "volume is " + volume);
-        return volume;
+        if (mIsEmulator) {
+            return ThreadLocalRandom.current().nextInt(0, 100);
+        } else {
+            int volume = mRecorder.getMaxAmplitude();
+            volume = volume * 100 / 32768;
+            Log.i(TAG, "volume is " + volume);
+            return volume;
+        }
     }
 
     // usually returns a speaker different than the current speaker, possibly a new speaker

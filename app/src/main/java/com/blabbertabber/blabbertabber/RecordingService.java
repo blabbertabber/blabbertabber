@@ -10,8 +10,8 @@ import android.util.Log;
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     private final IBinder mBinder = new RecordingBinder();
-    private Thread mThreadSAVR;
-    private SpeakerAndVolumeRunnable mSpeakerAndVolumeRunnable = new SpeakerAndVolumeRunnable(this);
+    private Thread mThreadRecorder;
+    private Recorder mRecorder = new Recorder(this);
 
     public RecordingService() {
     }
@@ -21,20 +21,20 @@ public class RecordingService extends Service {
         Log.i(TAG, "onCreate()");
         // make sure we're not spawning another thread if we already have one. We're being
         // overly cautious; in spite of frequent testing, this if-block always succeeds.
-        if (mThreadSAVR == null || !mThreadSAVR.isAlive()) {
-            mThreadSAVR = new Thread(mSpeakerAndVolumeRunnable);
-            mThreadSAVR.start();
+        if (mThreadRecorder == null || !mThreadRecorder.isAlive()) {
+            mThreadRecorder = new Thread(mRecorder);
+            mThreadRecorder.start();
         }
     }
 
     @Override
     public void onDestroy() {
-        if (mThreadSAVR != null) {
-            Log.i(TAG, "onDestroy() mThreadSAVR == " + mThreadSAVR.getName());
-            mThreadSAVR.interrupt();
-            mThreadSAVR = null; // allow GC to reap thread
+        if (mThreadRecorder != null) {
+            Log.i(TAG, "onDestroy() mThreadRecorder == " + mThreadRecorder.getName());
+            mThreadRecorder.interrupt();
+            mThreadRecorder = null; // allow GC to reap thread
         } else {
-            Log.i(TAG, "onDestroy() mThreadSAVR == null");
+            Log.i(TAG, "onDestroy() mThreadRecorder == null");
         }
     }
 

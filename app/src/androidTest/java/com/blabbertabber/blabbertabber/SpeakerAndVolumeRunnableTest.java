@@ -9,13 +9,13 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Created by cunnie on 9/16/15.
  * <p/>
- * Test SpeakerAndVolumeRunnable class
+ * Test Recorder class
  */
 public class SpeakerAndVolumeRunnableTest {
 
 //    @Test
 //    public void speakerReturnsNonNegativeIntTest() {
-//        SpeakerAndVolumeRunnable tester = new SpeakerAndVolumeRunnable();
+//        Recorder tester = new Recorder();
 //
 //        int i;
 //
@@ -26,7 +26,7 @@ public class SpeakerAndVolumeRunnableTest {
 //
 //    @Test
 //    public void volumeReturnsNonNegativeIntTest() {
-//        SpeakerAndVolumeRunnable tester = new SpeakerAndVolumeRunnable();
+//        Recorder tester = new Recorder();
 //
 //        int i;
 //
