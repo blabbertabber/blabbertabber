@@ -10,29 +10,24 @@ package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaRecorder;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
 
-public class Recorder implements Runnable {
+public abstract class Recorder implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MSG";
-    private static final String TAG = "Recorder";
+    protected static final String TAG = "Recorder";
     private static final int MAX_SPEAKERS = 4;
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
     private Context mContext;
     private int speaker;
     private long nextSpeakerChange;
-    private MediaRecorder mRecorder;
-    private String mFileName = "/dev/null"; // search for audioRecordName() when ready to write to a file
-    private boolean mIsEmulator = false;
 
     // Constructor
     public Recorder(Context context) {
@@ -50,7 +45,7 @@ public class Recorder implements Runnable {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
 
-        // TODO:  Writer code to set up AudioRedord stuff
+        // TODO:  Writer code to set up AudioRecord stuff
         // Loop, getting pack sliced of audio record data
         // while ...
         //   get volume from AudioRecord data
@@ -83,44 +78,9 @@ public class Recorder implements Runnable {
         mBroadcastManager.sendBroadcast(intent);
     }
 
-    private void startRecording() {
-        mIsEmulator = "goldfish".equals(Build.HARDWARE);
-        Log.v(TAG, Build.HARDWARE);
-        if (mIsEmulator) {
-        } else {
-            mRecorder = new MediaRecorder();
-            //                    NEXUS 6 MediaRecorder.AudioSource.
-            // kinda works:       CAMCORDER
-            //                    VOICE_RECOGNITION
-            // terrible:          DEFAULT
-            //                    MIC
-            //                    VOICE_COMMUNICATION
-            // RuntimeException:  VOICE_UPLINK
-            //                    REMOTE_SUBMIX
-            //                    VOICE_CALL
-            //                    VOICE_DOWNLINK
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
-            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mRecorder.setOutputFile(mFileName);
-            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+    protected abstract void startRecording();
 
-            try {
-                mRecorder.prepare();
-            } catch (IOException e) {
-                Log.e(TAG, "prepare() failed");
-            }
-            mRecorder.start();
-        }
-    }
-
-    private void stopRecording() {
-        if (mIsEmulator) {
-        } else {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-        }
-    }
+    protected abstract void stopRecording();
 
     // Who is currently speaking?
     public int getSpeakerId() {
@@ -132,21 +92,7 @@ public class Recorder implements Runnable {
         return speaker;
     }
 
-
-//    public int getSpeakerVolume() {
-//        return ThreadLocalRandom.current().nextInt(0, 100);
-//    }
-
-    public int getSpeakerVolume() {
-        if (mIsEmulator) {
-            return ThreadLocalRandom.current().nextInt(0, 100);
-        } else {
-            int volume = mRecorder.getMaxAmplitude();
-            volume = volume * 100 / 32768;
-            Log.i(TAG, "volume is " + volume);
-            return volume;
-        }
-    }
+    public abstract int getSpeakerVolume();
 
     // usually returns a speaker different than the current speaker, possibly a new speaker
     private int nextSpeaker() {

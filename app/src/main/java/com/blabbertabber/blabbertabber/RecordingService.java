@@ -3,6 +3,7 @@ package com.blabbertabber.blabbertabber;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -11,7 +12,8 @@ public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     private final IBinder mBinder = new RecordingBinder();
     private Thread mThreadRecorder;
-    private Recorder mRecorder = new Recorder(this);
+    // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
+    private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
 
     public RecordingService() {
     }
