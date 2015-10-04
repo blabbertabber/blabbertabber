@@ -2,7 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 /**
  * Created by Cunnie on 9/16/15.
- * <p>
+ * <p/>
  * Class that returns speaker and volume
  * This is a throw-away class that will be replaced by actual speaker diarization software
  * which will be some type of service
@@ -48,7 +48,7 @@ public abstract class Recorder implements Runnable {
         // Loop, getting pack sliced of audio record data
         // while ...
         //   get volume from AudioRecord data
-        //   Do mathematcal logic to determine speaker id
+        //   Do mathematical logic to determine speaker id
         //   Notify listener(s) of speakerId and speakerVolume
         /*
             for (ResponseReceivedListener listener:listeners){
@@ -69,6 +69,7 @@ public abstract class Recorder implements Runnable {
             Log.v(TAG, "run() tick");
             sendResult(getSpeakerId(), getSpeakerVolume());
         }
+        stopRecording();
     }
 
     public void sendResult(int id, int volume) {
