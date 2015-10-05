@@ -18,6 +18,7 @@ public class DeviceRecorder extends Recorder {
 
     @Override
     protected void startRecording() {
+        Log.i(TAG, "startRecording()");
         mRecorder = new MediaRecorder();
         //                    NEXUS 6 MediaRecorder.AudioSource.
         // kinda works:       CAMCORDER
@@ -44,6 +45,7 @@ public class DeviceRecorder extends Recorder {
 
     @Override
     protected void stopRecording() {
+        Log.i(TAG, "stopRecording()");
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;

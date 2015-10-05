@@ -1,6 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,10 +16,12 @@ public class EmulatorRecorder extends Recorder {
 
     @Override
     protected void startRecording() {
+        Log.i(TAG, "startRecording()");
     }
 
     @Override
     protected void stopRecording() {
+        Log.i(TAG, "stopRecording()");
     }
 
     @Override

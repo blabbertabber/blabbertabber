@@ -86,9 +86,6 @@ public class RecordingActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
-        if (mServerConn != null) {
-            unbindService(mServerConn);
-        }
     }
 
     @Override
@@ -96,6 +93,9 @@ public class RecordingActivity extends Activity {
         super.onStop();
         Log.i(TAG, "onStop()");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        if (mServerConn != null) {
+            unbindService(mServerConn);
+        }
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
