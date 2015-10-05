@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by cunnie on 10/3/15.
+ * Class that works with an emulator (no microphone)
  */
 public class EmulatorRecorder extends Recorder {
 
