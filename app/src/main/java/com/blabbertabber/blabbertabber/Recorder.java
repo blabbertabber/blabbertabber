@@ -34,11 +34,11 @@ public abstract class Recorder implements Runnable {
         // speakers change on average every 5 seconds
         nextSpeakerChange = System.currentTimeMillis() + ThreadLocalRandom.current().nextInt(0, 10_000);
         numSpeakers = 1; // initially only one speaker
-        Log.i(TAG, "Recorder(): nextSpeakerChange: " + (nextSpeakerChange - System.currentTimeMillis()));
+        Log.i(TAG, "Recorder()");
     }
 
     public void run() {
-        Log.i(TAG, "run()");
+        Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
         // https://developer.android.com/training/multiple-threads/define-runnable.html
         // Moves the current Thread into the background
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
@@ -64,9 +64,10 @@ public abstract class Recorder implements Runnable {
                 Log.i(TAG, "InterruptedException, return");
                 e.printStackTrace();
                 stopRecording();
+                Log.i(TAG, "run() STOPPING Thread ID " + Thread.currentThread().getId());
                 return; // <- avoids spawning many threads when changing orientation
             }
-            Log.v(TAG, "run() tick");
+            Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
             sendResult(getSpeakerId(), getSpeakerVolume());
         }
         stopRecording();

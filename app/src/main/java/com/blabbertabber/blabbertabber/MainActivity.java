@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.button_record);
-        Log.wtf(TAG, "onCreate()");
+        Log.i(TAG, "onCreate()");
     }
 
     @Override

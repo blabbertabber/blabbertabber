@@ -39,7 +39,15 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void stopRecording() {
         Log.i(TAG, "stopRecording()");
-        mRecorder.stop();
+
+        try {
+            mRecorder.stop();
+        } catch (RuntimeException e) {
+            Log.wtf(TAG, "MediaRecorder.stop() Runtime Exception");
+            // TODO: (when we record to a file instead of /dev/null
+            // "clean up the output file (delete the output file, for instance), since the output
+            // file is not properly constructed when this happens."
+        }
         mRecorder.release();
         mRecorder = null;
     }
@@ -48,7 +56,7 @@ public class DeviceRecorder extends Recorder {
     public int getSpeakerVolume() {
         int volume = mRecorder.getMaxAmplitude();
         volume = volume * 100 / 32768;
-        Log.i(TAG, "volume is " + volume);
+        Log.i(TAG, "getSpeakerVolume() volume is " + volume);
         return volume;
     }
 }
