@@ -98,6 +98,12 @@ public class RecordingActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy(); // yes, call super first, even with onDestroy()
+        Log.i(TAG, "onDestroy()");
+    }
+
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
         ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) volume_ring.getLayoutParams();
