@@ -21,7 +21,7 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void startRecording() {
         Log.i(TAG, "startRecording()");
-        mRecorder = new MediaRecorder();
+        mRecorder = MediaRecorderSingleton.INSTANCE;
         mRecorder.setAudioSource(new BestMicrophone().getBestMicrophone());
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile("/dev/null");
@@ -40,14 +40,7 @@ public class DeviceRecorder extends Recorder {
     protected void stopRecording() {
         Log.i(TAG, "stopRecording()");
 
-        try {
-            mRecorder.stop();
-        } catch (RuntimeException e) {
-            Log.wtf(TAG, "MediaRecorder.stop() Runtime Exception");
-            // TODO: (when we record to a file instead of /dev/null
-            // "clean up the output file (delete the output file, for instance), since the output
-            // file is not properly constructed when this happens."
-        }
+        mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
     }
