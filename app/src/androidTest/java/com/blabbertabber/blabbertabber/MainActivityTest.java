@@ -35,15 +35,15 @@ public class MainActivityTest {
     @Test
     public void recordingButtonTest() {
         // fail: android:visibility="gone" in activity_main.xml
-        onView(withId(R.id.button_record)).check(matches(isDisplayed()));
+        onView(withId(R.id.launch_recording_activity)).check(matches(isDisplayed()));
         // fail: android:clickable="false" in activity_main.xml
-        onView(withId(R.id.button_record)).check(matches(isClickable()));
+        onView(withId(R.id.launch_recording_activity)).check(matches(isClickable()));
     }
 
     @Test
     public void recordingButtonClickedTest() {
         //
-        onView(withId(R.id.button_record)).perform(click());
+        onView(withId(R.id.launch_recording_activity)).perform(click());
         intended(hasComponent(RecordingActivity.class.getName()));
     }
 

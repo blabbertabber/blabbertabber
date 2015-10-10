@@ -16,7 +16,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.button_record);
+        findViewById(R.id.launch_recording_activity);
         Log.i(TAG, "onCreate()");
     }
 
@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void startRecording(View view) {
+    public void launchRecordingActivity(View view) {
         Intent intent = new Intent(this, RecordingActivity.class);
         startActivity(intent);
     }

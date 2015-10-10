@@ -17,7 +17,7 @@
             android:id="@+id/id_0"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_margin="50dp"
             android:src="@drawable/med_03_circle" />
 
@@ -25,7 +25,7 @@
             android:id="@+id/id_1"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="50dp"
             android:src="@drawable/med_01_circle" />
 
@@ -34,7 +34,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_margin="50dp"
             android:src="@drawable/med_04_circle" />
 
@@ -43,7 +43,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_margin="50dp"
             android:src="@drawable/med_02_circle" />
 
@@ -51,7 +51,7 @@
             android:id="@+id/ring_0"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_margin="90dp"
             android:src="@drawable/small_white_ring" />
 

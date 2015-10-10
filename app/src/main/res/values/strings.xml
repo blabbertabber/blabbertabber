@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">BlabberTabber</string>
 
+    <string name="welcome_text">BlabberTabber allows you to record how much time each
+        speaker has spoken in a meeting.\n\nTo begin, press "record". To pause, press
+        "stop".\n\nWhen the meeting is over, press finish to see the final tally. You will have the option
+        to email or SMS the results.</string>
+    <string name="launch_recording_activity">Okay, got it!</string>
     <string name="toggle_recording_off">record</string>
     <string name="toggle_recording_on">recording</string>
     <string name="button_stop">stop</string>
