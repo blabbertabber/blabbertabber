@@ -126,27 +126,27 @@ public class RecordingActivity extends Activity {
 
         switch (speakerId) {
             case 0:
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_START);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_END);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 1:
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 2:
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             case 3:
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             default:
