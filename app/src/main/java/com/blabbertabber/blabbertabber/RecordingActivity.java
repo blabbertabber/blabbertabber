@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -102,6 +103,18 @@ public class RecordingActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy(); // yes, call super first, even with onDestroy()
         Log.i(TAG, "onDestroy()");
+    }
+
+    public void dummyToggleRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have toggled the Recording", Toast.LENGTH_SHORT).show();
+    }
+
+    public void dummyStopRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have stopped the Recording", Toast.LENGTH_SHORT).show();
+    }
+
+    public void dummyFinishRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have finished the Recording", Toast.LENGTH_SHORT).show();
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
