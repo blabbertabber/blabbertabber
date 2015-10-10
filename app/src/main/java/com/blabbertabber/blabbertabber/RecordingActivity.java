@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -51,10 +52,11 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int[] voices = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                int speaker = speakerinfo[0], volume = speakerinfo[1];
                 // do something here.
-                Log.v(TAG, "mReceiver.onReceive()" + voices[0] + ", " + voices[1]);
-                updateSpeakerVolumeView(voices[0], voices[1]);
+                Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
+                updateSpeakerVolumeView(speaker, volume);
             }
         };
 
@@ -104,6 +106,18 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "onDestroy()");
     }
 
+    public void dummyToggleRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have toggled the Recording", Toast.LENGTH_SHORT).show();
+    }
+
+    public void dummyStopRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have stopped the Recording", Toast.LENGTH_SHORT).show();
+    }
+
+    public void dummyFinishRecording(View v) {
+        Toast.makeText(getApplicationContext(), "You have finished the Recording", Toast.LENGTH_SHORT).show();
+    }
+
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
         ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) volume_ring.getLayoutParams();
@@ -112,27 +126,27 @@ public class RecordingActivity extends Activity {
 
         switch (speakerId) {
             case 0:
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_START);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_END);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 1:
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 break;
             case 2:
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             case 3:
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                params.addRule(RelativeLayout.ALIGN_PARENT_END);
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
                 params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
                 break;
             default:
