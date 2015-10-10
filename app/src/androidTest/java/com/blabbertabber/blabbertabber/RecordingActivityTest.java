@@ -36,11 +36,13 @@ public class RecordingActivityTest {
         onView(withId(R.id.dummy_recording_button)).check(matches(isDisplayed()));
         onView(withId(R.id.dummy_recording_button)).check(matches(isClickable()));
     }
+
     @Test
     public void dummyStopTest() {
         onView(withId(R.id.dummy_stop_button)).check(matches(isDisplayed()));
         onView(withId(R.id.dummy_stop_button)).check(matches(isClickable()));
     }
+
     @Test
     public void dummyFinishTest() {
         onView(withId(R.id.dummy_finish_button)).check(matches(isDisplayed()));

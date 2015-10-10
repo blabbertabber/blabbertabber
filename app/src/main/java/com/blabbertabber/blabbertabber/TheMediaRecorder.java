@@ -41,7 +41,7 @@ public class TheMediaRecorder extends MediaRecorder {
                 Log.wtf(TAG, "MediaRecorder.setAudioSource() IllegalStateException, retrying in 50ms");
                 // placate Android Studio who always wants to wrap sleep() in try/catch
                 try {
-                    Thread.currentThread().sleep(50);
+                    Thread.sleep(50);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
