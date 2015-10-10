@@ -52,10 +52,11 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int[] voices = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                int speaker = speakerinfo[0], volume = speakerinfo[1];
                 // do something here.
-                Log.v(TAG, "mReceiver.onReceive()" + voices[0] + ", " + voices[1]);
-                updateSpeakerVolumeView(voices[0], voices[1]);
+                Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
+                updateSpeakerVolumeView(speaker, volume);
             }
         };
 

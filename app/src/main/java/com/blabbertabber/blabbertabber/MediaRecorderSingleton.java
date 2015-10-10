@@ -12,8 +12,8 @@ import android.util.Log;
 //    release() calls MediaRecorder.reset() instead of MediaRecorder.release();
 
 public class MediaRecorderSingleton extends MediaRecorder {
-    public static MediaRecorderSingleton singleton;
     private static final String TAG = "MediaRecorderSingleton";
+    public static MediaRecorderSingleton singleton;
 
     protected MediaRecorderSingleton() {
         // Exists only to defeat instantiation.
