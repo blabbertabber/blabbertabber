@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">BlabberTabber</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="toggle_recording_off">record</string>
+    <string name="toggle_recording_on">recording</string>
+    <string name="button_stop">stop</string>
+    <string name="button_finish">finish</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main_activity_test">MainActivityTest</string>
 </resources>

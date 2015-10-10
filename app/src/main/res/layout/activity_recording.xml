@@ -68,8 +68,8 @@
             android:layout_weight="1"
             android:checked="true"
             android:onClick="dummyToggleRecording"
-            android:textOff="record"
-            android:textOn="recording" />
+            android:textOff="@string/toggle_recording_off"
+            android:textOn="@string/toggle_recording_on" />
 
         <Button
             android:id="@+id/dummy_stop_button"
@@ -77,7 +77,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="dummyStopRecording"
-            android:text="stop" />
+            android:text="@string/button_stop" />
 
         <Button
             android:id="@+id/dummy_finish_button"
@@ -85,7 +85,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="dummyFinishRecording"
-            android:text="finish" />
+            android:text="@string/button_finish" />
 
     </LinearLayout>
 
