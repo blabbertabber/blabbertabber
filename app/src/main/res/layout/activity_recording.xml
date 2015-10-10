@@ -9,7 +9,8 @@
     <RelativeLayout
         android:id="@+id/recording_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
         android:orientation="horizontal">
 
         <ImageView
@@ -55,5 +56,37 @@
             android:src="@drawable/small_white_ring" />
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ToggleButton
+            android:id="@+id/dummy_recording_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="true"
+            android:onClick="dummyToggleRecording"
+            android:textOff="record"
+            android:textOn="recording" />
+
+        <Button
+            android:id="@+id/dummy_stop_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="dummyStopRecording"
+            android:text="stop" />
+
+        <Button
+            android:id="@+id/dummy_finish_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="dummyFinishRecording"
+            android:text="finish" />
+
+    </LinearLayout>
 
 </LinearLayout>
