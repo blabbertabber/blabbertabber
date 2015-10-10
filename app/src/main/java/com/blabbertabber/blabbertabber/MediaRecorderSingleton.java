@@ -12,12 +12,19 @@ import android.util.Log;
 //    release() calls MediaRecorder.reset() instead of MediaRecorder.release();
 
 public class MediaRecorderSingleton extends MediaRecorder {
-    public final static MediaRecorderSingleton INSTANCE = new MediaRecorderSingleton();
+    public static MediaRecorderSingleton singleton;
     private static final String TAG = "MediaRecorderSingleton";
 
-    private MediaRecorderSingleton() {
-        super();
+    protected MediaRecorderSingleton() {
         // Exists only to defeat instantiation.
+        super();
+    }
+
+    public synchronized static MediaRecorderSingleton getRecorder() {
+        if (singleton == null) {
+            singleton = new MediaRecorderSingleton();
+        }
+        return singleton;
     }
 
     @Override

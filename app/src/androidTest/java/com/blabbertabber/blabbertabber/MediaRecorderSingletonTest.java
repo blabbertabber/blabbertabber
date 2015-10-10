@@ -14,8 +14,8 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class MediaRecorderSingletonTest {
     private static final String TAG = "MediaRecorderSingletonTest";
-    public MediaRecorderSingleton test1 = MediaRecorderSingleton.INSTANCE;
-    public MediaRecorderSingleton test2 = MediaRecorderSingleton.INSTANCE;
+    public MediaRecorderSingleton test1 = MediaRecorderSingleton.getRecorder();
+    public MediaRecorderSingleton test2 = MediaRecorderSingleton.getRecorder();
 
     @Test
     public void testIsSingleton() {

@@ -21,7 +21,7 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void startRecording() {
         Log.i(TAG, "startRecording()");
-        mRecorder = MediaRecorderSingleton.INSTANCE;
+        mRecorder = MediaRecorderSingleton.getRecorder();
         mRecorder.setAudioSource(new BestMicrophone().getBestMicrophone());
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile("/dev/null");
