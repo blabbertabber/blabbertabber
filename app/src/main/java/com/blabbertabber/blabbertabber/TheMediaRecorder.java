@@ -4,7 +4,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 /**
- * Created by cunnie on 10/8/15.
+ * Created by Cunnie on 10/8/15.
  * http://www.javaworld.com/article/2073352/core-java/simply-singleton.html
  */
 
@@ -14,7 +14,6 @@ import android.util.Log;
 public class TheMediaRecorder extends MediaRecorder {
     private static final String TAG = "TheMediaRecorder";
     public static TheMediaRecorder singleton;
-
     protected TheMediaRecorder() {
         // Exists only to defeat instantiation.
         super();
