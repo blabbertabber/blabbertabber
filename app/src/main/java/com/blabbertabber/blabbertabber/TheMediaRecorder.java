@@ -4,25 +4,26 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 /**
- * Created by cunnie on 10/8/15.
+ * Created by Cunnie on 10/8/15.
  * http://www.javaworld.com/article/2073352/core-java/simply-singleton.html
  */
 
 // BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
 //    release() calls MediaRecorder.reset() instead of MediaRecorder.release();
 
-public class MediaRecorderSingleton extends MediaRecorder {
-    private static final String TAG = "MediaRecorderSingleton";
-    public static MediaRecorderSingleton singleton;
 
-    protected MediaRecorderSingleton() {
+public class TheMediaRecorder extends MediaRecorder {
+    private static final String TAG = "TheMediaRecorder";
+    public static TheMediaRecorder singleton;
+
+    protected TheMediaRecorder() {
         // Exists only to defeat instantiation.
         super();
     }
 
-    public synchronized static MediaRecorderSingleton getRecorder() {
+    public synchronized static TheMediaRecorder getInstance() {
         if (singleton == null) {
-            singleton = new MediaRecorderSingleton();
+            singleton = new TheMediaRecorder();
         }
         return singleton;
     }
@@ -41,7 +42,7 @@ public class MediaRecorderSingleton extends MediaRecorder {
                 Log.wtf(TAG, "MediaRecorder.setAudioSource() IllegalStateException, retrying in 50ms");
                 // placate Android Studio who always wants to wrap sleep() in try/catch
                 try {
-                    Thread.currentThread().sleep(50);
+                    Thread.sleep(50);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
