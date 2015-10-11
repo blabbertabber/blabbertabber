@@ -14,6 +14,7 @@ import android.util.Log;
 public class TheMediaRecorder extends MediaRecorder {
     private static final String TAG = "TheMediaRecorder";
     public static TheMediaRecorder singleton;
+
     protected TheMediaRecorder() {
         // Exists only to defeat instantiation.
         super();
