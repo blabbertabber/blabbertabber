@@ -11,18 +11,18 @@ import android.util.Log;
 // BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
 //    release() calls MediaRecorder.reset() instead of MediaRecorder.release();
 
-public class MediaRecorderSingleton extends MediaRecorder {
-    public static MediaRecorderSingleton singleton;
-    private static final String TAG = "MediaRecorderSingleton";
+public class TheMediaRecorder extends MediaRecorder {
+    private static final String TAG = "TheMediaRecorder";
+    public static TheMediaRecorder singleton;
 
-    protected MediaRecorderSingleton() {
+    protected TheMediaRecorder() {
         // Exists only to defeat instantiation.
         super();
     }
 
-    public synchronized static MediaRecorderSingleton getRecorder() {
+    public synchronized static TheMediaRecorder getInstance() {
         if (singleton == null) {
-            singleton = new MediaRecorderSingleton();
+            singleton = new TheMediaRecorder();
         }
         return singleton;
     }

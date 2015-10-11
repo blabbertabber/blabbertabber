@@ -12,10 +12,10 @@ import static junit.framework.Assert.assertEquals;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class MediaRecorderSingletonTest {
-    private static final String TAG = "MediaRecorderSingletonTest";
-    public MediaRecorderSingleton test1 = MediaRecorderSingleton.getRecorder();
-    public MediaRecorderSingleton test2 = MediaRecorderSingleton.getRecorder();
+public class TheMediaRecorderTest {
+    private static final String TAG = "TheMediaRecorderTest";
+    public TheMediaRecorder test1 = TheMediaRecorder.getInstance();
+    public TheMediaRecorder test2 = TheMediaRecorder.getInstance();
 
     @Test
     public void testIsSingleton() {
