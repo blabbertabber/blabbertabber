@@ -6,7 +6,7 @@ resources:
     branch: develop
 
 jobs:
-- name: hello-world
+- name: android-test-suite
   plan:
   - get: blabbertabber
     trigger: true

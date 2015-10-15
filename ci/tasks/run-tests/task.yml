@@ -1,7 +1,0 @@
----
-platform: linux
-image: docker:///dockerbase/android
-inputs:
-  - name: blabbertabber
-run:
-  path: blabbertabber/ci/tasks/run-tests/task.sh
