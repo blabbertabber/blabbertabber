@@ -17,6 +17,11 @@ BlabberTabber is an Android Application the performs
 
 [Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. Thanks Charlotte.
 
+### Advisors
+
+* [Gerald Friedland, Ph.D.](http://www.gerald-friedland.org/)
+* Ekaterina Gonina, Ph.D.
+
 ### References
 
 * Vaquero, C., Vinyals, O., and Friedland, G.,
