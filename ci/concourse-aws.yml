@@ -51,7 +51,7 @@ jobs:
         username: ci
         password: *password
     # FIXME: replace 'ci.blabbertabber.com' with your Concourse Server's FQDN
-    # do a global search-replace; there are many occurences
+    # do a global search-replace; there are many occurrences
     nginx_conf: |
       worker_processes  1;
       error_log /var/vcap/sys/log/nginx/error.log   info;
