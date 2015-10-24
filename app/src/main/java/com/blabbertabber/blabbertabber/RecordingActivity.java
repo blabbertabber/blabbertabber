@@ -59,7 +59,6 @@ public class RecordingActivity extends Activity {
                 updateSpeakerVolumeView(speaker, volume);
             }
         };
-
     }
 
     @Override
