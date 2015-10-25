@@ -14,7 +14,10 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -118,45 +121,72 @@ public class RecordingActivity extends Activity {
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
-        ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) volume_ring.getLayoutParams();
+        ////ImageView volume_ring = (ImageView) findViewById(R.id.ring_0);
+        ///GridLayout.LayoutParams params = (GridLayout.LayoutParams) volume_ring.getLayoutParams();
         // convert from pixels to dp http://stackoverflow.com/questions/4914039/margins-of-a-linearlayout-programmatically-with-dp
         float dp = getApplicationContext().getResources().getDisplayMetrics().density;
 
+///        GridLayout gridLayout = (GridLayout) findViewById(R.id.speaker_grid);
+//        ((ViewGroup)volume_ring.getParent()).removeView(volume_ring);
+//        gridLayout.addView(volume_ring, new GridLayout.LayoutParams(
+//                GridLayout.spec(1, GridLayout.CENTER),
+///                GridLayout.spec(1, GridLayout.CENTER)));
+
+
+        // http://stackoverflow.com/questions/4472429/change-the-right-margin-of-a-view-programmatically
+        //volume_ring.requestLayout();
+
+        View current_speaker = findViewById(rDotId(speakerId));
+        current_speaker.requestLayout();
+
+//        float originalX = PropertyValuesHolder.ofFloat(View.X);
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.X, speakerVolume / 10);
+//        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, speakerVolume / 10);
+        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(current_speaker, phvx, 0.0);
+        scaleAnimation.setDuration(12).start();
+        phvx = PropertyValuesHolder.ofFloat(View.X, 0);
+
+
+
+    }
+
+    int rDotId(int speakerId) {
         switch (speakerId) {
             case 0:
-                params.addRule(RelativeLayout.ALIGN_PARENT_START);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_END);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                break;
+                return (R.id.speaker_0);
             case 1:
-                params.addRule(RelativeLayout.ALIGN_PARENT_END);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                break;
+                return (R.id.speaker_1);
             case 2:
-                params.addRule(RelativeLayout.ALIGN_PARENT_END);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
-                break;
+                return (R.id.speaker_2);
             case 3:
-                params.addRule(RelativeLayout.ALIGN_PARENT_END);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_START);
-                params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
-                break;
+                return (R.id.speaker_3);
+            case 4:
+                return (R.id.speaker_4);
+            case 5:
+                return (R.id.speaker_5);
+            case 6:
+                return (R.id.speaker_6);
+            case 7:
+                return (R.id.speaker_7);
+            case 8:
+                return (R.id.speaker_8);
+            case 9:
+                return (R.id.speaker_9);
+            case 10:
+                return (R.id.speaker_10);
+            case 11:
+                return (R.id.speaker_11);
+            case 12:
+                return (R.id.speaker_12);
+            case 13:
+                return (R.id.speaker_13);
+            case 14:
+                return (R.id.speaker_14);
+            case 15:
+                return (R.id.speaker_15);
             default:
-                Log.wtf(TAG, "we shouldn't get here");
+                Log.wtf(TAG, "We should never get here.  Speaker ID " + speakerId + " should be from 0 to 15 inclusive.  ");
+                return (R.id.speaker_0);
         }
-        // http://stackoverflow.com/questions/4472429/change-the-right-margin-of-a-view-programmatically
-        volume_ring.requestLayout();
-
-        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, speakerVolume / 10);
-        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, speakerVolume / 10);
-        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(findViewById(R.id.ring_0), phvx, phvy);
-        scaleAnimation.setDuration(25).start();
     }
 }
