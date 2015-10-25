@@ -21,7 +21,7 @@ public abstract class Recorder implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MSG";
     protected static final String TAG = "Recorder";
-    private static final int MAX_SPEAKERS = 4;
+    private static final int MAX_SPEAKERS = 16;
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
     private Context mContext;
