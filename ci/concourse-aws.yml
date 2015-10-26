@@ -109,7 +109,7 @@ jobs:
       ...
       myM8C98VsfoEq1P6QQluTHTKau+VysdPjXLz7t5mG1k6yBPitiszdTChGh+iHg==
       -----END RSA PRIVATE KEY-----
-    # CHANGEME: replace with your HTTPS SSL chained certificate
+    # FIXME: replace with your HTTPS SSL chained certificate
     ssl_chained_cert: |
       -----BEGIN CERTIFICATE-----
       MIIGYTCCBUmgAwIBAgIRAOFIqgO1kqC+5E0ef2cqXbMwDQYJKoZIhvcNAQELBQAw
