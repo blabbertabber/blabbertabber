@@ -184,7 +184,6 @@ cloud_provider:
     # (Power users: no passphrase-protection otherwise you'll see a
     # `asn1: structure error: tags don't match` message when deploying
     #private_key: /Users/cunnie/.ssh/aws_nono.pem
-    # FIXME: can I use '~'?
     private_key: ~/.ssh/aws_nono.pem
 
   # FIXME replace 'a-secret-password' with a secure password
