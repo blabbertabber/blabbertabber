@@ -7,10 +7,14 @@ jobs:
   resource_pool: concourse_pool
   persistent_disk_pool: database
   templates:
-  - {release: concourse, name: atc}
-  - {release: concourse, name: postgresql}
-  - {release: concourse, name: tsa}
-  - {release: nginx,     name: nginx}
+  - {release: concourse,    name: atc}
+  - {release: concourse,    name: baggageclaim}
+  - {release: concourse,    name: groundcrew}
+  - {release: concourse,    name: postgresql}
+  - {release: concourse,    name: tsa}
+  - {release: garden-linux, name: garden}
+  - {release: nginx,        name: nginx}
+
   networks:
   - name: vip
     # FIXME: replace the IP address with your Elastic IP
@@ -48,8 +52,14 @@ jobs:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqrN3RWjrdcX9PvBYtFzVMXqyOWMlQjgFRu9nKTHv6/lYCLY+1fNigyWd0//YR5IypQtGDs+LwNW+3geUs5q6w5aIOwfNlhFV4AlTnG/tCgrlOlQZaCs8BFchtCmAyX/4ugBiDWW2PO2VH7vf3iZyrO05BzjiHCZIW47ojYN3KIwz8di1maw7ZKSG8TVgPhvLYIGFRIb19po9CTTqq0D6mzsS5BPawxgtzQmNJabdcayCOTf/F9AZU/JNeZlAchEdmUnwDZrzt+86uFh0gNW1yTD5A4Sd3Qs1NptuIvZ3X5a4yulnOnxISzVLQcojjQzB/IW4/MVWCpsddNJTrSVdp cunnie@tara
       atc:
         address: 127.0.0.1:8080
-        username: ci
-        password: *password
+    garden:
+      listen_network: tcp
+      listen_address: 0.0.0.0:7777
+    groundcrew:
+      tsa:
+        host: 127.0.0.1
+      tags:
+        - micro
     # FIXME: replace 'ci.blabbertabber.com' with your Concourse Server's FQDN
     # do a global search-replace; there are many occurrences
     nginx_conf: |
@@ -206,11 +216,14 @@ cloud_provider:
 
 releases:
 - name: concourse
-  url: https://bosh.io/d/github.com/concourse/concourse?v=0.65.1
-  sha1: bc48fb624f6c9a729b4ab16410fa77bb69beb97d
+  url: https://bosh.io/d/github.com/concourse/concourse?v=0.66.1
+  sha1: 28355586ab374c4a1b70408f63fd9c55405275c8
 - name: bosh-aws-cpi
   url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-aws-cpi-release?v=33
   sha1: 4f98ca26e696d060bd6ebe0caf0ff1517e25b21d
+- name: garden-linux
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release?v=0.316.0
+  sha1: a1c6de7232ac31af2af50e945e20f4716e0f7262
 - name: nginx
   url: https://s3.amazonaws.com//nginx-release/nginx-1.tgz
   sha1: e6b3186c0fb3bf7780eccc8d47dba38799d8d108
