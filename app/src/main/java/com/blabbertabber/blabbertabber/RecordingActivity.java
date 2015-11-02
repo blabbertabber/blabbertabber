@@ -2,6 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -136,17 +137,33 @@ public class RecordingActivity extends Activity {
         // http://stackoverflow.com/questions/4472429/change-the-right-margin-of-a-view-programmatically
         //volume_ring.requestLayout();
 
-        View current_speaker = findViewById(rDotId(speakerId));
-        current_speaker.requestLayout();
+        View currentSpeaker = findViewById(rDotId(speakerId));
+        currentSpeaker.requestLayout();
 
 //        float originalX = PropertyValuesHolder.ofFloat(View.X);
-        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.X, speakerVolume / 10);
+//        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, speakerVolume / 10);
 //        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, speakerVolume / 10);
-        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(current_speaker, phvx, 0.0);
-        scaleAnimation.setDuration(12).start();
-        phvx = PropertyValuesHolder.ofFloat(View.X, 0);
+        ObjectAnimator translateAnimationUp = ObjectAnimator.ofFloat(currentSpeaker, View.TRANSLATION_Y, -speakerVolume);
+        translateAnimationUp.setRepeatCount(1);
+        translateAnimationUp.setRepeatMode(ValueAnimator.REVERSE);
+        translateAnimationUp.setDuration(45);
 
+//        ObjectAnimator translateAnimationDown = ObjectAnimator.ofFloat(currentSpeaker, View.TRANSLATION_Y, speakerVolume);
+//        translateAnimationDown.setRepeatCount(1);
+//        translateAnimationDown.setRepeatMode(ValueAnimator.REVERSE);
+//        translateAnimationDown.setDuration(12);
 
+        translateAnimationUp.start();
+//        AnimatorSet setAnimation = new AnimatorSet();
+//        setAnimation.play(translateAnimationUp);
+
+//        PropertyValuesHolder phvyUp = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, -speakerVolume);
+//        PropertyValuesHolder phvyDown = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, speakerVolume);
+//        PropertyValuesHolder phvReset = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0);
+//        ObjectAnimator translateAnimation = ObjectAnimator.ofPropertyValuesHolder(currentSpeaker, phvyUp, phvReset, phvyDown, phvReset);
+////        translateAnimation.ofFloat(current_speaker, View.TRANSLATION_Y, -speakerVolume);
+
+//        phvx = PropertyValuesHolder.ofFloat(View.X, 0);
 
     }
 

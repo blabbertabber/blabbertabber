@@ -59,7 +59,7 @@ public abstract class Recorder implements Runnable {
         startRecording();
         for (int x = 0; x < 1500; x++) {
             try {
-                sleep(25);
+                sleep(50);
             } catch (InterruptedException e) {
                 Log.i(TAG, "InterruptedException, return");
                 e.printStackTrace();
