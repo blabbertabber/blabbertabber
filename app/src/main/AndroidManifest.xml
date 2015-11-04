@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RecordingActivity"
+        <activity
+            android:name=".RecordingActivity"
             android:screenOrientation="portrait" />
 
         <service
