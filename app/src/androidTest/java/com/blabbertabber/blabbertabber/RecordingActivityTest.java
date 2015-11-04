@@ -2,8 +2,6 @@ package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.graphics.drawable.GradientDrawable;
-import android.support.test.espresso.core.deps.guava.collect.Iterables;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -15,8 +13,6 @@ import org.junit.Test;
 import java.util.Collection;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.getIdlingResources;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
@@ -29,11 +25,10 @@ import static junit.framework.Assert.assertEquals;
  * Test Recording Activity
  */
 public class RecordingActivityTest {
-    Activity currentActivity;
-
     @Rule
     public IntentsTestRule<RecordingActivity> mActivityRule =
             new IntentsTestRule<RecordingActivity>(RecordingActivity.class);
+    Activity currentActivity;
 
     // It's easier to layout the dots if we always assume portrait; we may revisit this decision.
     @Test
@@ -49,7 +44,7 @@ public class RecordingActivityTest {
     }
 
     // http://qathread.blogspot.com/2014/09/discovering-espresso-for-android-how-to.html
-    public Activity getActivityInstance(){
+    public Activity getActivityInstance() {
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
                 Collection<Activity> resumedActivities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
