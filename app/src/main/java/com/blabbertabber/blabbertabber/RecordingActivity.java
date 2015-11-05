@@ -26,7 +26,6 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private RecordingService mRecordingService;
     private boolean mBound = false;
-
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -42,12 +41,14 @@ public class RecordingActivity extends Activity {
             Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
+    private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+        mSpeakers = TheSpeakers.getInstance();
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -118,7 +119,12 @@ public class RecordingActivity extends Activity {
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
-        View currentSpeaker = findViewById(rDotId(speakerId));
+        View currentSpeaker = findViewById(mSpeakers.speakers[speakerId].getViewID());
+        mSpeakers.speakers[speakerId].setVisible(View.VISIBLE);
+        currentSpeaker.setVisibility(View.VISIBLE);
+        // http://stackoverflow.com/questions/7164630/how-to-change-shape-color-dynamically
+//        Paint paint = currentSpeaker.get
+        currentSpeaker.setBackgroundColor(0x99ff00);
         currentSpeaker.requestLayout();
 
         ObjectAnimator translateAnimationUp = ObjectAnimator.ofFloat(currentSpeaker, View.TRANSLATION_Y, -speakerVolume);
@@ -127,45 +133,5 @@ public class RecordingActivity extends Activity {
         translateAnimationUp.setDuration(45);
 
         translateAnimationUp.start();
-    }
-
-    int rDotId(int speakerId) {
-        switch (speakerId) {
-            case 0:
-                return (R.id.speaker_0);
-            case 1:
-                return (R.id.speaker_1);
-            case 2:
-                return (R.id.speaker_2);
-            case 3:
-                return (R.id.speaker_3);
-            case 4:
-                return (R.id.speaker_4);
-            case 5:
-                return (R.id.speaker_5);
-            case 6:
-                return (R.id.speaker_6);
-            case 7:
-                return (R.id.speaker_7);
-            case 8:
-                return (R.id.speaker_8);
-            case 9:
-                return (R.id.speaker_9);
-            case 10:
-                return (R.id.speaker_10);
-            case 11:
-                return (R.id.speaker_11);
-            case 12:
-                return (R.id.speaker_12);
-            case 13:
-                return (R.id.speaker_13);
-            case 14:
-                return (R.id.speaker_14);
-            case 15:
-                return (R.id.speaker_15);
-            default:
-                Log.wtf(TAG, "We should never get here.  Speaker ID " + speakerId + " should be from 0 to 15 inclusive.  ");
-                return (R.id.speaker_0);
-        }
     }
 }
