@@ -2,7 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 /**
  * Created by Cunnie on 9/16/15.
- * <p>
+ * <p/>
  * Class that returns speaker and volume
  * This is a throw-away class that will be replaced by actual speaker diarization software
  * which will be some type of service
@@ -109,7 +109,7 @@ public abstract class Recorder implements Runnable {
 
     // Are we adding a completely new speaker who hasn't spoken yet?
     private boolean newSpeaker() {
-        double p = ((Speakers.MAX_SPEAKERS - numSpeakers) / (Speakers.MAX_SPEAKERS - 1.0));
+        double p = ((TheSpeakers.MAX_SPEAKERS - numSpeakers) / (TheSpeakers.MAX_SPEAKERS - 1.0));
         Log.i(TAG, "newSpeaker(): " + p);
         return p > ThreadLocalRandom.current().nextDouble();
     }

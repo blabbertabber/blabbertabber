@@ -4,11 +4,19 @@ package com.blabbertabber.blabbertabber;
  * Created by cunnie on 11/4/15.
  */
 public class Speaker {
+    private int color;
+    private int visible;
     private int viewID;
 
-    private int color;
-
     public Speaker() {
+    }
+
+    public int isVisible() {
+        return visible;
+    }
+
+    public void setVisible(int visible) {
+        this.visible = visible;
     }
 
     public int getColor() {
