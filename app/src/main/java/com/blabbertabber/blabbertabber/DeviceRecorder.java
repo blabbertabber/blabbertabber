@@ -8,7 +8,7 @@ import java.io.IOException;
 
 /**
  * Created by cunnie on 10/3/15.
- * <p/>
+ * <p>
  * Class that works with a REAL microphone (non-emulator)
  */
 public class DeviceRecorder extends Recorder {
