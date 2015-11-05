@@ -5,7 +5,7 @@ import android.util.Log;
 
 /**
  * Created by cunnie on 10/6/15.
- * <p/>
+ * <p>
  * Determines the best Microphone (MediaRecorder.AudioSource.XXX) to use
  */
 

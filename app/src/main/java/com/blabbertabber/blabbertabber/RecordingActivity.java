@@ -26,6 +26,7 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private RecordingService mRecordingService;
     private boolean mBound = false;
+
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -57,6 +58,7 @@ public class RecordingActivity extends Activity {
                 updateSpeakerVolumeView(speaker, volume);
             }
         };
+
     }
 
     @Override

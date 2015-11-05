@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Created by cunnie on 10/6/15.
- * <p/>
+ * <p>
  * Test that devices are using the correct microphones.
  */
 
