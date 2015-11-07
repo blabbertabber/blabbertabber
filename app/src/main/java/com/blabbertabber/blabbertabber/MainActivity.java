@@ -10,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import static android.app.PendingIntent.getActivity;
-
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
@@ -32,7 +30,7 @@ public class MainActivity extends Activity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         mFirstTime = sharedPref.getBoolean(getString(R.string.first_time), mFirstTime);
 
-        if ( ! mFirstTime ) {
+        if (!mFirstTime) {
             launchRecordingActivity();
         }
     }

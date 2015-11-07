@@ -56,20 +56,19 @@ public abstract class Recorder implements Runnable {
          */
 
         startRecording();
-        for (int x = 0; x < 1500; x++) {
-            try {
+        try {
+            while (true) {
                 sleep(50);
-            } catch (InterruptedException e) {
-                Log.i(TAG, "InterruptedException, return");
-                e.printStackTrace();
-                stopRecording();
-                Log.i(TAG, "run() STOPPING Thread ID " + Thread.currentThread().getId());
-                return; // <- avoids spawning many threads when changing orientation
+                Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
+                sendResult(getSpeakerId(), getSpeakerVolume());
             }
-            Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
-            sendResult(getSpeakerId(), getSpeakerVolume());
+        } catch (InterruptedException e) {
+            Log.i(TAG, "InterruptedException, return");
+            e.printStackTrace();
+            stopRecording();
+            Log.i(TAG, "run() STOPPING Thread ID " + Thread.currentThread().getId());
+            return; // <- avoids spawning many threads when changing orientation
         }
-        stopRecording();
     }
 
     public void sendResult(int id, int volume) {
