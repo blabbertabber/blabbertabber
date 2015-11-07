@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -9,11 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 /**
@@ -119,19 +121,19 @@ public class RecordingActivity extends Activity {
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
-        View currentSpeaker = findViewById(mSpeakers.speakers[speakerId].getViewID());
-        mSpeakers.speakers[speakerId].setVisible(View.VISIBLE);
-        currentSpeaker.setVisibility(View.VISIBLE);
-        // http://stackoverflow.com/questions/7164630/how-to-change-shape-color-dynamically
-//        Paint paint = currentSpeaker.get
-        currentSpeaker.setBackgroundColor(0x99ff00);
-        currentSpeaker.requestLayout();
+        Speaker speaker = mSpeakers.speakers[speakerId];
+        ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
+        speaker.setVisible(View.VISIBLE);
+        speakerBall.setVisibility(View.VISIBLE);
+        GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
+        if (shape != null) {
+            shape.setColor(speaker.getColor());
+        }
+        speakerBall.requestLayout();
 
-        ObjectAnimator translateAnimationUp = ObjectAnimator.ofFloat(currentSpeaker, View.TRANSLATION_Y, -speakerVolume);
-        translateAnimationUp.setRepeatCount(1);
-        translateAnimationUp.setRepeatMode(ValueAnimator.REVERSE);
-        translateAnimationUp.setDuration(45);
-
-        translateAnimationUp.start();
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (0.5 + speakerVolume / 80.0));
+        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
+        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
+        scaleAnimation.setDuration(20).start();
     }
 }
