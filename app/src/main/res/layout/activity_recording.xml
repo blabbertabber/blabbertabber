@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:grid="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recording_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +19,6 @@
 
 
     <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:grid="http://schemas.android.com/apk/res-auto"
 
         android:id="@+id/speaker_grid"
         android:layout_width="fill_parent"
@@ -202,30 +200,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ToggleButton
-            android:id="@+id/dummy_recording_button"
+        <Button
+            android:id="@+id/button_record"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:checked="true"
-            android:onClick="dummyToggleRecording"
-            android:textOff="@string/toggle_recording_off"
-            android:textOn="@string/toggle_recording_on" />
+            android:onClick="record"
+            android:text="@string/button_record" />
 
         <Button
-            android:id="@+id/dummy_stop_button"
+            android:id="@+id/button_pause"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="dummyStopRecording"
-            android:text="@string/button_stop" />
+            android:onClick="pause"
+            android:text="@string/button_pause" />
 
         <Button
-            android:id="@+id/dummy_finish_button"
+            android:id="@+id/button_reset"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="dummyFinishRecording"
+            android:onClick="reset"
+            android:text="@string/button_reset" />
+
+        <Button
+            android:id="@+id/button_finish"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="finish"
             android:text="@string/button_finish" />
 
     </LinearLayout>
