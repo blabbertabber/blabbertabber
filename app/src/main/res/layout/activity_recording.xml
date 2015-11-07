@@ -3,18 +3,18 @@
     android:id="@+id/recording_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#888888"
+    android:background="#000000"
     android:orientation="vertical">
 
     <!--
-    <ImageView
-        android:id="@+id/ring_0"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_margin="0dp"
-        android:layout_weight="0"
-        android:contentDescription="@string/abc_search_hint"
-        android:src="@drawable/small_white_ring" />
+        The speaker circles are in a crazy order because we want the circles
+        to appear in the middle first then slowly expand outward
+        as the number of speakers increase.
+
+        The speaker circles are invisible initially except for the first
+        speaker.
+
+        The colors will be set programmatically
     -->
 
 
@@ -32,161 +32,176 @@
         android:useDefaultMargins="true">
 
         <ImageView
-            android:id="@+id/speaker_0"
+            android:id="@+id/speaker_12"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_1"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_2"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_3"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:src="@drawable/speaker_circle" />
-
-
-        <ImageView
-            android:id="@+id/speaker_4"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/speaker_5"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_6"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_7"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
-
-
-        <ImageView
-            android:id="@+id/speaker_8"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/speaker_9"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_13"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
 
         <ImageView
             android:id="@+id/speaker_10"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_1"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_3"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_7"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+
+        <ImageView
+            android:id="@+id/speaker_6"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_2"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_0"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
             android:src="@drawable/speaker_circle" />
 
         <ImageView
             android:id="@+id/speaker_11"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
 
-
-        <ImageView
-            android:id="@+id/speaker_12"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
-
-        <ImageView
-            android:id="@+id/speaker_13"
-            android:layout_width="0dp"
-            android:layout_height="10dp"
-            android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
 
         <ImageView
             android:id="@+id/speaker_14"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_8"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/speaker_4"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/speaker_15"
             android:layout_width="0dp"
-            android:layout_height="10dp"
+            android:layout_height="50dp"
             android:layout_columnWeight="1"
             android:layout_gravity="fill_horizontal"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/speaker_circle" />
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/speaker_circle"
+            android:visibility="invisible" />
 
     </GridLayout>
 

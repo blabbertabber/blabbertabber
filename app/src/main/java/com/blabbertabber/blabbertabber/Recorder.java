@@ -21,7 +21,6 @@ public abstract class Recorder implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MSG";
     protected static final String TAG = "Recorder";
-    private static final int MAX_SPEAKERS = 16;
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
     private Context mContext;
@@ -110,7 +109,7 @@ public abstract class Recorder implements Runnable {
 
     // Are we adding a completely new speaker who hasn't spoken yet?
     private boolean newSpeaker() {
-        double p = ((MAX_SPEAKERS - numSpeakers) / (MAX_SPEAKERS - 1.0));
+        double p = ((TheSpeakers.MAX_SPEAKERS - numSpeakers) / (TheSpeakers.MAX_SPEAKERS - 1.0));
         Log.i(TAG, "newSpeaker(): " + p);
         return p > ThreadLocalRandom.current().nextDouble();
     }
