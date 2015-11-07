@@ -108,16 +108,26 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "onDestroy()");
     }
 
-    public void dummyToggleRecording(View v) {
-        Toast.makeText(getApplicationContext(), "You have toggled the Recording", Toast.LENGTH_SHORT).show();
+    public void record(View v) {
+        Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
     }
 
-    public void dummyStopRecording(View v) {
-        Toast.makeText(getApplicationContext(), "You have stopped the Recording", Toast.LENGTH_SHORT).show();
+    public void pause(View v) {
+        Toast.makeText(getApplicationContext(), "You have paused the Recording", Toast.LENGTH_SHORT).show();
     }
 
-    public void dummyFinishRecording(View v) {
+    public void reset(View v) {
+        Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
+    }
+
+    public void finish(View v) {
         Toast.makeText(getApplicationContext(), "You have finished the Recording", Toast.LENGTH_SHORT).show();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace(); // FIXME: why bother doing this?
+        }
+        finish();
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
