@@ -75,8 +75,8 @@ public class RecordingActivityTest {
 
     @Test
     public void dummyFinishTest() {
-        onView(withId(R.id.dummy_finish_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.dummy_finish_button)).check(matches(isClickable()));
+        onView(withId(R.id.button_finish)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_finish)).check(matches(isClickable()));
     }
 
 }
