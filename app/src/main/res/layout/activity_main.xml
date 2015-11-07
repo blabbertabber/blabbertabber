@@ -18,7 +18,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
         android:text="@string/welcome_text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
     <Button
