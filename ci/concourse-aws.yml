@@ -31,7 +31,9 @@ jobs:
     atc:
       basic_auth_username: ci
       # FIXME: replace with a reasonable password
-      basic_auth_password: &password a-secret-password
+      basic_auth_password: &password heart<3Break
+      # FIXME: replace with your server's external URI
+      external_url: https://ci.blabbertabber.com
       postgresql:
         # fixes atc not finding "postgresql.service.dc1.consul"
         # enables elimination of consul-agent
@@ -153,8 +155,8 @@ resource_pools:
       type: gp2
     availability_zone: us-east-1a
   stemcell:
-    url: https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3115
-    sha1: 8cd7e4fc25d1eff2eb268994b6f15caaef380822
+    url: https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3126
+    sha1: c57c5294a33331d75747bf7593ec8fb822fdd497
 
 networks:
 - name: private
@@ -174,7 +176,7 @@ networks:
   type: vip
 
 cloud_provider:
-  template: {name: cpi, release: bosh-aws-cpi}
+  template: {name: aws_cpi, release: bosh-aws-cpi}
 
   ssh_tunnel:
     host: *elastic_ip
@@ -215,14 +217,14 @@ cloud_provider:
 
 releases:
 - name: concourse
-  url: https://bosh.io/d/github.com/concourse/concourse?v=0.66.1
-  sha1: 28355586ab374c4a1b70408f63fd9c55405275c8
+  url: https://bosh.io/d/github.com/concourse/concourse?v=0.67.1
+  sha1: 230754680b8ef05c54c9f170c22c1c8c4b8aad5e
 - name: bosh-aws-cpi
-  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-aws-cpi-release?v=33
-  sha1: 4f98ca26e696d060bd6ebe0caf0ff1517e25b21d
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/bosh-aws-cpi-release?v=36
+  sha1: db2a6c6cdd5ff9f77bf083e10118fa72e1f5e181
 - name: garden-linux
-  url: https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release?v=0.316.0
-  sha1: a1c6de7232ac31af2af50e945e20f4716e0f7262
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/garden-linux-release?v=0.326.0
+  sha1: 85b10747926024609b2ba6f6adf59b69e4b724cc
 - name: nginx
   url: https://s3.amazonaws.com//nginx-release/nginx-1.tgz
   sha1: e6b3186c0fb3bf7780eccc8d47dba38799d8d108
