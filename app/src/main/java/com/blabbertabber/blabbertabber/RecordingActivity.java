@@ -121,12 +121,6 @@ public class RecordingActivity extends Activity {
     }
 
     public void finish(View v) {
-        Toast.makeText(getApplicationContext(), "You have finished the Recording", Toast.LENGTH_SHORT).show();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace(); // FIXME: why bother doing this?
-        }
         finish();
     }
 
