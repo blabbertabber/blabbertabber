@@ -42,9 +42,11 @@ public class BestMicrophone {
         String model = mBuildModel.model();
         Log.v(TAG, "getBestMicrophone() Build.MODEL == " + model);
         switch (model) {
-            case "Nexus 4":  // Nexus 4
-            case "Nexus 5":  // Nexus 5
+            case "Nexus 4":
+            case "Nexus 5":
                 return (MediaRecorder.AudioSource.MIC);
+            case "Nexus 5X":
+                return (MediaRecorder.AudioSource.DEFAULT);
             case "Nexus 6":
                 return (MediaRecorder.AudioSource.VOICE_RECOGNITION);
             default:
