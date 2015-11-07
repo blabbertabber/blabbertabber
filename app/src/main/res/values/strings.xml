@@ -12,4 +12,5 @@
     <string name="button_pause">pause</string>
     <string name="button_record">record</string>
     <string name="button_reset">reset</string>
+    <string name="first_time">display splash screen</string>
 </resources>
