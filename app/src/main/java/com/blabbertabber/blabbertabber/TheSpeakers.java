@@ -36,22 +36,22 @@ public class TheSpeakers {
         speakers[14].setViewID(R.id.speaker_14);
         speakers[15].setViewID(R.id.speaker_15);
         // colors
-        speakers[0].setColor(0xff6600);
-        speakers[1].setColor(0xffE600);
-        speakers[2].setColor(0x99ff00);
-        speakers[3].setColor(0x1aff00);
-        speakers[4].setColor(0xff001a);
-        speakers[5].setColor(0xff8b3d);
-        speakers[6].setColor(0xffaf7a);
-        speakers[7].setColor(0x00ff66);
-        speakers[8].setColor(0xff0099);
-        speakers[9].setColor(0x7acaff);
-        speakers[10].setColor(0x3db1ff);
-        speakers[11].setColor(0x00ffe6);
-        speakers[12].setColor(0xe600ff);
-        speakers[13].setColor(0x6600ff);
-        speakers[14].setColor(0x001aff);
-        speakers[15].setColor(0x0099ff);
+        speakers[0].setColor(0xffff6600);
+        speakers[1].setColor(0xffffE600);
+        speakers[2].setColor(0xff99ff00);
+        speakers[3].setColor(0xff1aff00);
+        speakers[4].setColor(0xffff001a);
+        speakers[5].setColor(0xffff8b3d);
+        speakers[6].setColor(0xffffaf7a);
+        speakers[7].setColor(0xff00ff66);
+        speakers[8].setColor(0xffff0099);
+        speakers[9].setColor(0xff7acaff);
+        speakers[10].setColor(0xff3db1ff);
+        speakers[11].setColor(0xff00ffe6);
+        speakers[12].setColor(0xffe600ff);
+        speakers[13].setColor(0xff6600ff);
+        speakers[14].setColor(0xff001aff);
+        speakers[15].setColor(0xff0099ff);
     }
 
     public synchronized static TheSpeakers getInstance() {
