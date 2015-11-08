@@ -11,7 +11,7 @@ BlabberTabber is an Android Application that performs
 
 | Splash Screen | Recording Screen |
 |---------------|------------------|
-| ![splash screen](http://imgur.com/JhbAoDO.png) | ![recording screen](http://imgur.com/7XlL41o.png) |
+| ![splash screen](http://imgur.com/cNySdWP.png) | ![recording screen](http://imgur.com/VXf9Qzg.png) |
 
 ### Acknowledgements
 
