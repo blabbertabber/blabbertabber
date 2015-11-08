@@ -43,6 +43,7 @@ public class RecordingActivity extends Activity {
             Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
+    private int mPreviousSpeakerId = -1;
     private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
 
@@ -125,10 +126,24 @@ public class RecordingActivity extends Activity {
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
+        if (speakerId != mPreviousSpeakerId) {
+            // Aha! The speaker has changed.
+            if (mPreviousSpeakerId >= 0) {
+                // The previous speaker is valid; we are not initializing.
+                // reset the size of the previous speakerBall, and dim it, too
+                Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
+                View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
+                previousSpeakerBall.setScaleX(1);
+                previousSpeakerBall.setScaleY(1);
+                previousSpeakerBall.setAlpha((float) 0.7);
+            }
+            mPreviousSpeakerId = speakerId;
+        }
         Speaker speaker = mSpeakers.speakers[speakerId];
         ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
         speaker.setVisible(View.VISIBLE);
         speakerBall.setVisibility(View.VISIBLE);
+        speakerBall.setAlpha((float) 1.0);
         GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
         if (shape != null) {
             shape.setColor(speaker.getColor());
