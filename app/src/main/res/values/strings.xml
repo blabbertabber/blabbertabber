@@ -22,5 +22,9 @@
     <string name="button_new_meeting">New Meeting</string>
     <string name="button_email">Email</string>
     <string name="button_sms">SMS</string>
+    <string name="text_duration_header">Duration</string>
+    <string name="text_max_header">Max</string>
+    <string name="text_min_header">Min</string>
+    <string name="text_average_header">Average</string>
 
 </resources>
