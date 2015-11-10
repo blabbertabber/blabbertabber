@@ -132,6 +132,7 @@ public class RecordingActivity extends Activity {
                 // The previous speaker is valid; we are not initializing.
                 // reset the size of the previous speakerBall, and dim it, too
                 Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
+                previousSpeaker.stopSpeaking();
                 View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
                 previousSpeakerBall.setScaleX(1);
                 previousSpeakerBall.setScaleY(1);
@@ -140,6 +141,7 @@ public class RecordingActivity extends Activity {
             mPreviousSpeakerId = speakerId;
         }
         Speaker speaker = mSpeakers.speakers[speakerId];
+        speaker.startSpeaking();
         ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
         speaker.setVisible(View.VISIBLE);
         speakerBall.setVisibility(View.VISIBLE);

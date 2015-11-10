@@ -10,6 +10,7 @@
         \nBlabberTabber is wrong 40% of the time. If you use the BlabberTabber supercomputers,
         you can reduce the error rate to 20%.
     </string>
+    <string name="first_time">display splash screen</string>
     <string name="launch_recording_activity">Okay, got it!</string>
 
     <string name="action_settings">Settings</string>
@@ -17,5 +18,9 @@
     <string name="button_pause">pause</string>
     <string name="button_record">record</string>
     <string name="button_reset">reset</string>
-    <string name="first_time">display splash screen</string>
+
+    <string name="button_new_meeting">New Meeting</string>
+    <string name="button_email">Email</string>
+    <string name="button_sms">SMS</string>
+
 </resources>
