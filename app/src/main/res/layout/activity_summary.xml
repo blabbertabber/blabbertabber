@@ -2,20 +2,92 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     android:orientation="vertical">
+
+    <Button
+        android:id="@+id/button_new_meeting"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="right"
+        android:layout_weight="1"
+        android:onClick="newMeeting"
+        android:text="@string/button_new_meeting" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4" />
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:paddingLeft="30dp">
+
+        <TextView
+            android:id="@+id/textview_duration_header"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="@string/text_duration_header"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_max_header"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="@string/text_max_header"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_min_header"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="@string/text_min_header"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textview_average_header"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal"
+            android:text="@string/text_average_header"
+            android:textStyle="bold" />
+
+
+        <TextView android:id="@+id/textview_duration" />
+
+        <TextView android:id="@+id/textview_max" />
+
+        <TextView android:id="@+id/textview_min" />
+
+        <TextView android:id="@+id/textview_average" />
+    </GridLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"></LinearLayout>
+
+    <GridLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#000000">
+        android:columnCount="2">
 
         <Button
-            android:id="@+id/button_new_meeting"
+            android:id="@+id/button_email"
             android:layout_width="0dp"
+            android:layout_columnWeight="1"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="newMeeting"
-            android:text="@string/button_new_meeting" />
-    </LinearLayout>
+            android:onClick="email"
+            android:text="@string/button_email" />
+
+        <Button
+            android:id="@+id/button_sms"
+            android:layout_width="0dp"
+            android:layout_columnWeight="1"
+            android:layout_height="match_parent"
+            android:onClick="sms"
+            android:text="@string/button_sms" />
+    </GridLayout>
 
 </LinearLayout>
