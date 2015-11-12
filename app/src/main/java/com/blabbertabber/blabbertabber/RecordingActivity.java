@@ -121,8 +121,9 @@ public class RecordingActivity extends Activity {
         Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
     }
 
-    public void finish(View v) {
-        finish();
+    public void summary(View v) {
+        Intent intent = new Intent(this, SummaryActivity.class);
+        startActivity(intent);
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
@@ -132,6 +133,7 @@ public class RecordingActivity extends Activity {
                 // The previous speaker is valid; we are not initializing.
                 // reset the size of the previous speakerBall, and dim it, too
                 Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
+                previousSpeaker.stopSpeaking();
                 View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
                 previousSpeakerBall.setScaleX(1);
                 previousSpeakerBall.setScaleY(1);
@@ -140,6 +142,7 @@ public class RecordingActivity extends Activity {
             mPreviousSpeakerId = speakerId;
         }
         Speaker speaker = mSpeakers.speakers[speakerId];
+        speaker.startSpeaking();
         ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
         speaker.setVisible(View.VISIBLE);
         speakerBall.setVisibility(View.VISIBLE);

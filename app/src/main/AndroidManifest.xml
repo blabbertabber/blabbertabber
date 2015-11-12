@@ -24,6 +24,7 @@
         <activity
             android:name=".RecordingActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".SummaryActivity" />
 
         <service
             android:name=".RecordingService"
