@@ -7,7 +7,7 @@
         "RECORD", and to reset the tally, press "RESET".\n
         \nWhen the meeting is over, press finish to see the final tally. You will have the option
         to email or SMS the results.\n
-        \nBlabberTabber is wrong 40% of the time. If you use the BlabberTabber supercomputers,
+        \nBlabberTabber is wrong 40% of the time. If you use the BlabberTabber cloud computers,
         you can reduce the error rate to 20%.
     </string>
     <string name="first_time">display splash screen</string>
@@ -22,9 +22,9 @@
     <string name="button_new_meeting">New Meeting</string>
     <string name="button_email">Email</string>
     <string name="button_sms">SMS</string>
+    <string name="button_exit">Exit</string>
     <string name="text_duration_header">Duration</string>
     <string name="text_max_header">Max</string>
     <string name="text_min_header">Min</string>
     <string name="text_average_header">Average</string>
-
 </resources>

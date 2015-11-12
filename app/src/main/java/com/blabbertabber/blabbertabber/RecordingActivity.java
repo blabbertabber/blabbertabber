@@ -121,8 +121,9 @@ public class RecordingActivity extends Activity {
         Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
     }
 
-    public void finish(View v) {
-        finish();
+    public void summary(View v) {
+        Intent intent = new Intent(this, SummaryActivity.class);
+        startActivity(intent);
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
