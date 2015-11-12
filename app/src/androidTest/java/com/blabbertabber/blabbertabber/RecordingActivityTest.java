@@ -62,15 +62,15 @@ public class RecordingActivityTest {
     // fail: android:visibility="gone" in activity_main.xml
     // fail: android:clickable="false" in activity_main.xml
     @Test
-    public void dummyRecordingTest() {
-        onView(withId(R.id.dummy_recording_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.dummy_recording_button)).check(matches(isClickable()));
+    public void recordingTest() {
+        onView(withId(R.id.button_record)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_record)).check(matches(isClickable()));
     }
 
     @Test
-    public void dummyStopTest() {
-        onView(withId(R.id.dummy_stop_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.dummy_stop_button)).check(matches(isClickable()));
+    public void pauseTest() {
+        onView(withId(R.id.button_pause)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_pause)).check(matches(isClickable()));
     }
 
     @Test

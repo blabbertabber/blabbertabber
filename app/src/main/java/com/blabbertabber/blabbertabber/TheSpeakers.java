@@ -60,4 +60,13 @@ public class TheSpeakers {
         }
         return singleton;
     }
+
+    // milliseconds; it's in milliseconds
+    public long getMeetingDuration() {
+        long duration = 0;
+        for (int i = 0; i < MAX_SPEAKERS; i++) {
+            duration += speakers[i].duration();
+        }
+        return duration;
+    }
 }
