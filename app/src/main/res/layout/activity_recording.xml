@@ -243,7 +243,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="finish"
+            android:onClick="summary"
             android:text="@string/button_finish" />
 
     </LinearLayout>

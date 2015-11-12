@@ -19,6 +19,7 @@ public class HelperTest {
     public void testZero_0Duration() {
         assertEquals("Zero-duration should return '0.0'", Helper.timeToHMS(0), "0.0");
     }
+
     @Test
     public void testZero_1Duration() {
         assertEquals("50ms should return '0.0'", Helper.timeToHMS(50), "0.0");
