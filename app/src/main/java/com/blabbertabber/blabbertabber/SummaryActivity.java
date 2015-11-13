@@ -26,6 +26,6 @@ public class SummaryActivity extends Activity {
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
         long meetingDuration = TheSpeakers.getInstance().getMeetingDuration();
-        durationView.setText(Helper.timeToHMS(meetingDuration));
+        durationView.setText(Helper.timeToHMMSS(meetingDuration));
     }
 }
