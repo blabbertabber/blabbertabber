@@ -91,6 +91,8 @@ public class RecordingActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
+        // close-out the current speaker
+        stopPreviousSpeaker();
     }
 
     @Override
@@ -119,6 +121,8 @@ public class RecordingActivity extends Activity {
 
     public void reset(View v) {
         Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
+        mPreviousSpeakerId = -1;
+        mSpeakers.reset();
     }
 
     public void summary(View v) {
@@ -126,19 +130,23 @@ public class RecordingActivity extends Activity {
         startActivity(intent);
     }
 
+    private void stopPreviousSpeaker() {
+        if (mPreviousSpeakerId >= 0) {
+            // The previous speaker is valid; we are not initializing.
+            // reset the size of the previous speakerBall, and dim it, too
+            Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
+            previousSpeaker.stopSpeaking();
+            View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
+            previousSpeakerBall.setScaleX(1);
+            previousSpeakerBall.setScaleY(1);
+            previousSpeakerBall.setAlpha((float) 0.7);
+        }
+    }
+
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
         if (speakerId != mPreviousSpeakerId) {
             // Aha! The speaker has changed.
-            if (mPreviousSpeakerId >= 0) {
-                // The previous speaker is valid; we are not initializing.
-                // reset the size of the previous speakerBall, and dim it, too
-                Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
-                previousSpeaker.stopSpeaking();
-                View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
-                previousSpeakerBall.setScaleX(1);
-                previousSpeakerBall.setScaleY(1);
-                previousSpeakerBall.setAlpha((float) 0.7);
-            }
+            stopPreviousSpeaker();
             mPreviousSpeakerId = speakerId;
         }
         Speaker speaker = mSpeakers.speakers[speakerId];

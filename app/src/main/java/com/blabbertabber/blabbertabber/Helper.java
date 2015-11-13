@@ -37,6 +37,7 @@ public class Helper {
         return hms;
     }
 
+    //      HMMSS → Hours Minutes Seconds, H:MM:SS
     public static String timeToHMMSS(long milliseconds) {
         Log.v(TAG, "timeToHMMSS(" + milliseconds + ")");
 
