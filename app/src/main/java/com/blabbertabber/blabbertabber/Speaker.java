@@ -23,7 +23,7 @@ public class Speaker {
     public void startSpeaking() {
         if (mStartDate == null) {
             mStartDate = new Date();
-            Log.wtf(TAG, "start time: " + format.format(mStartDate) + " mTotalSpeakingTime: " + mTotalSpeakingTime);
+            Log.v(TAG, "start time: " + format.format(mStartDate) + " mTotalSpeakingTime: " + mTotalSpeakingTime);
         }
     }
 
@@ -35,7 +35,7 @@ public class Speaker {
         long stopTime = new Date().getTime();
         mTotalSpeakingTime += (stopTime - mStartDate.getTime());
         mStartDate = null;
-        Log.wtf(TAG, "stop time: " + mStartDate + " mTotalSpeakingTime: " + mTotalSpeakingTime);
+        Log.v(TAG, "stop time: " + mStartDate + " mTotalSpeakingTime: " + mTotalSpeakingTime);
     }
 
     public int isVisible() {
