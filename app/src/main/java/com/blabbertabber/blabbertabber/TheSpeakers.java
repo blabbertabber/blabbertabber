@@ -15,7 +15,6 @@ public class TheSpeakers {
 
     protected TheSpeakers() {
         initializeSpeakers();
-
     }
 
     public synchronized static TheSpeakers getInstance() {
@@ -45,6 +44,29 @@ public class TheSpeakers {
             return 0;
         }
     }
+
+    // milliseconds
+    public long getMaxSpeakerDuration() {
+        long max = 0;
+        for (Speaker s : speakers) {
+            if (s.duration() > max) {
+                max = s.duration();
+            }
+        }
+        return max;
+    }
+
+    // milliseconds
+    public long getMinSpeakerDuration() {
+        long min = Long.MAX_VALUE;
+        for (Speaker s : speakers) {
+            if (s.duration() < min && s.duration() > 0) {
+                min = s.duration();
+            }
+        }
+        return min == Long.MAX_VALUE ? 0 : min;
+    }
+
 
     // reset the speakers' times to zero
     public void reset() {

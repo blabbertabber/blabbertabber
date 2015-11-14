@@ -33,6 +33,14 @@ public class SummaryActivity extends Activity {
         TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
         long avgSpeakerDuration = TheSpeakers.getInstance().getAverageSpeakerDuration();
         avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
+
+        TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
+        long minSpeakerDuration = TheSpeakers.getInstance().getMinSpeakerDuration();
+        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
+
+        TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
+        long maxSpeakerDuration = TheSpeakers.getInstance().getMaxSpeakerDuration();
+        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
     }
 
     public void newMeeting(View v) {
