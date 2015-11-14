@@ -16,11 +16,13 @@ public class Speaker {
     private int viewID;
     private long mTotalSpeakingTime = 0; // milliseconds
     private Date mStartDate = null;
+    private boolean mSpoke = false;
 
     public Speaker() {
     }
 
     public void startSpeaking() {
+        mSpoke = true;
         if (mStartDate == null) {
             mStartDate = new Date();
             Log.v(TAG, "start time: " + format.format(mStartDate) + " mTotalSpeakingTime: " + mTotalSpeakingTime);
@@ -64,5 +66,9 @@ public class Speaker {
 
     public void setViewID(int viewID) {
         this.viewID = viewID;
+    }
+
+    public boolean getSpoke() {
+        return mSpoke;
     }
 }
