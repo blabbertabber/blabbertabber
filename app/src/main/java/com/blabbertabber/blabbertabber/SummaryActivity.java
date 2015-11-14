@@ -1,8 +1,10 @@
 package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -26,6 +28,16 @@ public class SummaryActivity extends Activity {
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
         long meetingDuration = TheSpeakers.getInstance().getMeetingDuration();
-        durationView.setText(Helper.timeToHMS(meetingDuration));
+        durationView.setText(Helper.timeToHMMSS(meetingDuration));
+
+        TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
+        long avgSpeakerDuration = TheSpeakers.getInstance().getAverageSpeakerDuration();
+        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
+    }
+
+    public void newMeeting(View v) {
+        TheSpeakers.getInstance().reset();
+        Intent i = new Intent(this, RecordingActivity.class);
+        startActivity(i);
     }
 }

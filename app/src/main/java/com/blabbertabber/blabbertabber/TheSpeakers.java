@@ -14,11 +14,52 @@ public class TheSpeakers {
     public Speaker[] speakers = new Speaker[TheSpeakers.MAX_SPEAKERS];
 
     protected TheSpeakers() {
-        // initialization is a slog
+        initializeSpeakers();
+
+    }
+
+    public synchronized static TheSpeakers getInstance() {
+        if (singleton == null) {
+            singleton = new TheSpeakers();
+        }
+        return singleton;
+    }
+
+    // milliseconds; it's in milliseconds
+    public long getMeetingDuration() {
+        long duration = 0;
+        for (int i = 0; i < MAX_SPEAKERS; i++) {
+            duration += speakers[i].duration();
+        }
+        return duration;
+    }
+
+    // milliseconds
+    public long getAverageSpeakerDuration() {
+        long numSpeakers = 0;
+        for (int i = 0; i < MAX_SPEAKERS; i++) {
+            if (speakers[i].duration() > 0) {
+                numSpeakers++;
+            }
+        }
+        if (numSpeakers > 0) {
+            return getMeetingDuration() / numSpeakers;
+        } else {
+            return 0;
+        }
+    }
+
+    // reset the speakers' times to zero
+    public void reset() {
+        initializeSpeakers();
+    }
+
+    private void initializeSpeakers() {
         for (int i = 0; i < MAX_SPEAKERS; i++) {
             speakers[i] = new Speaker();
             speakers[i].setVisible(View.INVISIBLE);
         }
+
         speakers[0].setViewID(R.id.speaker_0);
         speakers[1].setViewID(R.id.speaker_1);
         speakers[2].setViewID(R.id.speaker_2);
@@ -52,21 +93,5 @@ public class TheSpeakers {
         speakers[13].setColor(0xff6600ff);
         speakers[14].setColor(0xff001aff);
         speakers[15].setColor(0xff0099ff);
-    }
-
-    public synchronized static TheSpeakers getInstance() {
-        if (singleton == null) {
-            singleton = new TheSpeakers();
-        }
-        return singleton;
-    }
-
-    // milliseconds; it's in milliseconds
-    public long getMeetingDuration() {
-        long duration = 0;
-        for (int i = 0; i < MAX_SPEAKERS; i++) {
-            duration += speakers[i].duration();
-        }
-        return duration;
     }
 }
