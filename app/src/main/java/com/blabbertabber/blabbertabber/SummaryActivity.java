@@ -8,8 +8,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.blabbertabber.blabbertabber.PieChart;
-
 /**
  * Created by cunnie on 11/11/15.
  */
@@ -47,7 +45,7 @@ public class SummaryActivity extends Activity {
 
         Log.wtf(TAG, "We SHOULD get here!");
         LinearLayout ll = (LinearLayout) findViewById(R.id.pie_chart_ll);
-        ll.addView(new PieChart(getApplicationContext(), new double[]{45, 45, 90, 180}));
+        ll.addView(new PieChart(getApplicationContext(), TheSpeakers.getSpeakersTimes()));
         Log.wtf(TAG, "Yeah, just drew a circle.  You should see it.");
 
     }
