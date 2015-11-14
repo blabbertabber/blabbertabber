@@ -53,14 +53,25 @@
             android:text="@string/text_average_header"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/textview_duration"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal" />
 
-        <TextView android:id="@+id/textview_duration" />
+        <TextView
+            android:id="@+id/textview_max"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal" />
 
-        <TextView android:id="@+id/textview_max" />
+        <TextView
+            android:id="@+id/textview_min"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal" />
 
-        <TextView android:id="@+id/textview_min" />
-
-        <TextView android:id="@+id/textview_average" />
+        <TextView
+            android:id="@+id/textview_average"
+            android:layout_columnWeight="1"
+            android:layout_gravity="fill_horizontal" />
     </GridLayout>
 
     <LinearLayout
