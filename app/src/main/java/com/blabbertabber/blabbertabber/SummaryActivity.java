@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.blabbertabber.blabbertabber.PieChart;
 
 /**
  * Created by cunnie on 11/11/15.
@@ -41,6 +44,12 @@ public class SummaryActivity extends Activity {
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
         long maxSpeakerDuration = TheSpeakers.getInstance().getMaxSpeakerDuration();
         maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
+
+        Log.wtf(TAG, "We SHOULD get here!");
+        LinearLayout ll = (LinearLayout) findViewById(R.id.pie_chart_ll);
+        ll.addView(new PieChart(getApplicationContext(), new double[]{45, 45, 90, 180}));
+        Log.wtf(TAG, "Yeah, just drew a circle.  You should see it.");
+
     }
 
     public void newMeeting(View v) {
