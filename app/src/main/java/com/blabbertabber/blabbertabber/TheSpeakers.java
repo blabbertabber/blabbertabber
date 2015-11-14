@@ -10,7 +10,7 @@ import android.view.View;
  */
 public class TheSpeakers {
     public static final int MAX_SPEAKERS = 16;
-    public static TheSpeakers singleton;
+    public static TheSpeakers singleton = new TheSpeakers();
     public Speaker[] speakers = new Speaker[TheSpeakers.MAX_SPEAKERS];
 
     protected TheSpeakers() {
@@ -19,9 +19,6 @@ public class TheSpeakers {
     }
 
     public synchronized static TheSpeakers getInstance() {
-        if (singleton == null) {
-            singleton = new TheSpeakers();
-        }
         return singleton;
     }
 
