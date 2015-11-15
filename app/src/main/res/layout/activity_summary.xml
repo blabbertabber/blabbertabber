@@ -19,7 +19,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
-        android:orientation="horizontal"></LinearLayout>
+        android:orientation="horizontal">
+
+        <com.blabbertabber.blabbertabber.PieChart
+            android:id="@+id/pie_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <GridLayout
         android:layout_width="fill_parent"

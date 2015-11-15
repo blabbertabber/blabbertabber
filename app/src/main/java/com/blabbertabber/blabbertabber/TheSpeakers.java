@@ -41,10 +41,8 @@ public class TheSpeakers {
     }
 
     private static void initializeSpeakers() {
+        Log.i(TAG, "initializeSpeakers()");
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            Log.wtf(TAG, "i is " + i);
-            Log.wtf(TAG, "speakerColors.length is " + speakerColors.length);
-            Log.wtf(TAG, "speakerColors[0] is " + speakerColors[0]);
             speakers[i] = new Speaker();
             speakers[i].setVisible(View.INVISIBLE);
             speakers[i].setColor(speakerColors[i]);

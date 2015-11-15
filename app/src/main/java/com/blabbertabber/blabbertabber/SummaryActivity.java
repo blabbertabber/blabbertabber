@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -42,12 +41,6 @@ public class SummaryActivity extends Activity {
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
         long maxSpeakerDuration = TheSpeakers.getInstance().getMaxSpeakerDuration();
         maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
-
-        Log.wtf(TAG, "We SHOULD get here!");
-        LinearLayout ll = (LinearLayout) findViewById(R.id.pie_chart_ll);
-        ll.addView(new PieChart(getApplicationContext(), TheSpeakers.getSpeakersTimes()));
-        Log.wtf(TAG, "Yeah, just drew a circle.  You should see it.");
-
     }
 
     public void newMeeting(View v) {
