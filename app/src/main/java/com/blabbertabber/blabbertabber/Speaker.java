@@ -8,7 +8,8 @@ import java.util.Date;
 /**
  * Created by cunnie on 11/4/15.
  */
-public class Speaker {
+
+public class Speaker implements Comparable<Speaker> {
     private static final String TAG = "Speaker";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
     private int color;
@@ -19,6 +20,11 @@ public class Speaker {
     private boolean mSpoke = false;
 
     public Speaker() {
+    }
+
+    // constructor that allows injecting totalSpeakingTime; good for tests
+    public Speaker(long totalSpeakingTime) {
+        mTotalSpeakingTime = totalSpeakingTime;
     }
 
     public void startSpeaking() {
@@ -38,6 +44,19 @@ public class Speaker {
         mTotalSpeakingTime += (stopTime - mStartDate.getTime());
         mStartDate = null;
         Log.v(TAG, "stop time: " + mStartDate + " mTotalSpeakingTime: " + mTotalSpeakingTime);
+    }
+
+    public int compareTo(Speaker s) {
+        // e.compareTo(null) should throw a NullPointerException
+        // http://docs.oracle.com/javase/7/docs/api/java/lang/Comparable.html
+        if (s == null) throw new NullPointerException();
+        if (duration() > s.duration()) {
+            return 1;
+        } else if (duration() == s.duration()) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
     public int isVisible() {
