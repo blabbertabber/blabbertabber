@@ -5,28 +5,6 @@
     android:background="#000000"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/button_new_meeting"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="right"
-        android:layout_weight="1"
-        android:onClick="newMeeting"
-        android:text="@string/button_new_meeting" />
-
-    <LinearLayout
-        android:id="@+id/pie_chart_ll"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:orientation="horizontal">
-
-        <com.blabbertabber.blabbertabber.PieChart
-            android:id="@+id/pie_chart"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-
     <GridLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -82,15 +60,188 @@
             android:layout_gravity="fill_horizontal" />
     </GridLayout>
 
-    <LinearLayout
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"></LinearLayout>
+        android:layout_weight="4"
+        android:columnCount="2">
+
+        <TextView
+            android:id="@+id/header_speaker_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/header_speaker_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/header_speaker_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/header_speaker_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/header_speaker_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/bar_speaker_15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </GridLayout>
 
     <GridLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:columnCount="2">
+        android:columnCount="3">
+
+        <Button
+            android:id="@+id/button_new_meeting"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_columnWeight="1"
+            android:onClick="newMeeting"
+            android:text="@string/button_new_meeting" />
 
         <Button
             android:id="@+id/button_email"
