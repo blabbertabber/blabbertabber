@@ -27,4 +27,6 @@
     <string name="text_max_header">Max</string>
     <string name="text_min_header">Min</string>
     <string name="text_average_header">Average</string>
+    <string name="speaker_name_title">Speaker</string>
+    <string name="speaker_duration_title">Duration</string>
 </resources>
