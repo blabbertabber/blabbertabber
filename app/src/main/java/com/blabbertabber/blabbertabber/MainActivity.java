@@ -80,4 +80,9 @@ public class MainActivity extends Activity {
     public void launchRecordingActivity(View view) {
         launchRecordingActivity();
     }
+
+    // needed for testing
+    public boolean getFirstTime() {
+        return mFirstTime;
+    }
 }
