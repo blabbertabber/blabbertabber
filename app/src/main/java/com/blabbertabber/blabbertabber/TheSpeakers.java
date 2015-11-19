@@ -3,6 +3,9 @@ package com.blabbertabber.blabbertabber;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Created by cunnie on 11/4/15.
  * <p/>
@@ -40,10 +43,19 @@ public class TheSpeakers {
         return singleton;
     }
 
+    // for testing only; allows injection of speakers
+    public static void setInstance(ArrayList<Speaker> speakerList) {
+        int i = 0;
+        for (Speaker speaker : speakerList) {
+            speakers[i] = speaker;
+            i++;
+        }
+    }
+
     private static void initializeSpeakers() {
         Log.i(TAG, "initializeSpeakers()");
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            speakers[i] = new Speaker();
+            speakers[i] = new Speaker("Speaker " + i); // Fixme: should internationalize
             speakers[i].setVisible(View.INVISIBLE);
             speakers[i].setColor(speakerColors[i]);
         }
@@ -125,5 +137,16 @@ public class TheSpeakers {
     // reset the speakers' times to zero
     public void reset() {
         initializeSpeakers();
+    }
+
+    // sort the speakers, don't include any with no speaking time
+    public ArrayList<Speaker> getSortedSpeakerList() {
+        ArrayList<Speaker> sorted = new ArrayList<Speaker>();
+        for (Speaker s : speakers) {
+            if (s.duration() > 0) sorted.add(s);
+        }
+        // We use reverseOrder() because we want it in descending order
+        Collections.sort(sorted, Collections.reverseOrder());
+        return sorted;
     }
 }
