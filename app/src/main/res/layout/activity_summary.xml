@@ -64,10 +64,25 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
-        android:columnCount="2">
+        android:columnCount="2"
+        android:paddingTop="40dp">
 
         <TextView
-            android:id="@+id/header_speaker_0"
+            android:id="@+id/speaker_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speaker_name_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/speaker_duration_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speaker_duration_title"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/speaker_name_label_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -77,7 +92,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_1"
+            android:id="@+id/speaker_name_label_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -87,7 +102,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_2"
+            android:id="@+id/speaker_name_label_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -97,7 +112,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_3"
+            android:id="@+id/speaker_name_label_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -108,7 +123,7 @@
 
 
         <TextView
-            android:id="@+id/header_speaker_4"
+            android:id="@+id/speaker_name_label_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -118,7 +133,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_5"
+            android:id="@+id/speaker_name_label_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -128,7 +143,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_6"
+            android:id="@+id/speaker_name_label_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -138,7 +153,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_7"
+            android:id="@+id/speaker_name_label_7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -149,7 +164,7 @@
 
 
         <TextView
-            android:id="@+id/header_speaker_8"
+            android:id="@+id/speaker_name_label_8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -159,7 +174,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_9"
+            android:id="@+id/speaker_name_label_9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -169,7 +184,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_10"
+            android:id="@+id/speaker_name_label_10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -179,7 +194,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_11"
+            android:id="@+id/speaker_name_label_11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -190,7 +205,7 @@
 
 
         <TextView
-            android:id="@+id/header_speaker_12"
+            android:id="@+id/speaker_name_label_12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -200,7 +215,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_13"
+            android:id="@+id/speaker_name_label_13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -210,7 +225,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_14"
+            android:id="@+id/speaker_name_label_14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -220,7 +235,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/header_speaker_15"
+            android:id="@+id/speaker_name_label_15"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

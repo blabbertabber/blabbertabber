@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertTrue;
 public class SpeakerTest {
     private static final String TAG = "SpeakerTest";
 
-//    @Test
+    //    @Test
 //    public void
     @Rule
     public ExpectedException exception = ExpectedException.none();
