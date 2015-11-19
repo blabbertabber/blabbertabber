@@ -3,16 +3,10 @@ package com.blabbertabber.blabbertabber;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
-import android.util.Log;
 
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Collection;
-
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
@@ -39,23 +33,8 @@ public class RecordingActivityTest {
 
     @Test
     public void recordingActivityIsPortrait() {
-        int orientation = getActivityInstance().getResources().getConfiguration().orientation;
+        int orientation = (new TestHelpers().getActivityInstance()).getResources().getConfiguration().orientation;
         assertEquals(orientation, Configuration.ORIENTATION_PORTRAIT);
-    }
-
-    // http://qathread.blogspot.com/2014/09/discovering-espresso-for-android-how-to.html
-    public Activity getActivityInstance() {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            public void run() {
-                Collection<Activity> resumedActivities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-                for (Activity act : resumedActivities) {
-                    Log.d("Your current activity: ", act.getClass().getName());
-                    currentActivity = act;
-                    break;
-                }
-            }
-        });
-        return currentActivity;
     }
 
     // Test the dummies; this can be fleshed out later

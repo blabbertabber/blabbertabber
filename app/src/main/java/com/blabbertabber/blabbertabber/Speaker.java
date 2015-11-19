@@ -19,11 +19,16 @@ public class Speaker implements Comparable<Speaker> {
     private Date mStartDate = null;
     private boolean mSpoke = false;
 
-    public Speaker() {
+    private String mName = null;
+
+    // constructor for setting name, preferred constructor
+    public Speaker(String name) {
+        mName = name;
     }
 
-    // constructor that allows injecting totalSpeakingTime; good for tests
-    public Speaker(long totalSpeakingTime) {
+    // constructor that allows injecting totalSpeakingTime and name; meant for tests exclusively
+    public Speaker(String name, long totalSpeakingTime) {
+        mName = name;
         mTotalSpeakingTime = totalSpeakingTime;
     }
 
@@ -53,10 +58,15 @@ public class Speaker implements Comparable<Speaker> {
         if (duration() > s.duration()) {
             return 1;
         } else if (duration() == s.duration()) {
-            return 0;
+            return mName.compareTo(s.mName);
         } else {
             return -1;
         }
+    }
+
+
+    public String getName() {
+        return mName;
     }
 
     public int isVisible() {
