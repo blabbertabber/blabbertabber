@@ -64,7 +64,6 @@ public class Speaker implements Comparable<Speaker> {
         }
     }
 
-
     public String getName() {
         return mName;
     }

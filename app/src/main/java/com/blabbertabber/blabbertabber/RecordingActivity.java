@@ -69,6 +69,14 @@ public class RecordingActivity extends Activity {
     protected void onStart() {
         super.onStart();
         Log.i(TAG, "onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        setContentView(R.layout.activity_recording);
+        // kick off the service
         Intent serviceIntent = new Intent(this, RecordingService.class);
         if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
             Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
@@ -78,19 +86,18 @@ public class RecordingActivity extends Activity {
         LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
                 new IntentFilter(Recorder.RECORD_RESULT)
         );
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume()");
-        setContentView(R.layout.activity_recording);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
+        // unregister
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        if (mServerConn != null) {
+            unbindService(mServerConn);
+        }
         // close-out the current speaker
         stopPreviousSpeaker();
     }
@@ -99,10 +106,6 @@ public class RecordingActivity extends Activity {
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
-        if (mServerConn != null) {
-            unbindService(mServerConn);
-        }
     }
 
     @Override
