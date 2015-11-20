@@ -1,5 +1,6 @@
 package com.blabbertabber.blabbertabber;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
@@ -9,9 +10,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +30,10 @@ import android.widget.Toast;
 
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
+    private static final int REQUEST_RECORD_AUDIO = 51;
     private RecordingService mRecordingService;
     private boolean mBound = false;
+
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -43,6 +49,7 @@ public class RecordingActivity extends Activity {
             Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
+
     private int mPreviousSpeakerId = -1;
     private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
@@ -76,17 +83,14 @@ public class RecordingActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
-        // kick off the service
-        Intent serviceIntent = new Intent(this, RecordingService.class);
-        if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
-            Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
-        } else {
-            Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
+        // Let's make sure we have android.permission.RECORD_AUDIO permission
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_RECORD_AUDIO);
         }
-        LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
-                new IntentFilter(Recorder.RECORD_RESULT)
-        );
-
     }
 
     @Override
@@ -95,7 +99,7 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "onPause()");
         // unregister
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
-        if (mServerConn != null) {
+        if (mServerConn != null && mBound) {
             unbindService(mServerConn);
         }
         // close-out the current speaker
@@ -168,5 +172,47 @@ public class RecordingActivity extends Activity {
         PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
         ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
         scaleAnimation.setDuration(20).start();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        // log everything
+        String argumentString = " " + requestCode + " [ ";
+        for (String perm : permissions) {
+            argumentString += perm + ", ";
+        }
+        argumentString += " ], [ ";
+        for (int grantResult : grantResults) {
+            argumentString += grantResult + ", ";
+        }
+        argumentString += " ]";
+
+        Log.i(TAG, "onRequestPermissionsResult() " + argumentString);
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, kick off the service
+                    Intent serviceIntent = new Intent(this, RecordingService.class);
+                    if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
+                        Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
+                    } else {
+                        Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
+                    }
+                    LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
+                            new IntentFilter(Recorder.RECORD_RESULT)
+                    );
+                } else {
+                    // permission denied, message & exit gracefully
+                    Toast.makeText(getApplicationContext(), "BlabberTabber is exiting because it's unable to access the microphone", Toast.LENGTH_LONG);
+                    finish();
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+        Log.wtf(TAG, "Oops, a permission was granted that you didn't ask for.");
     }
 }
