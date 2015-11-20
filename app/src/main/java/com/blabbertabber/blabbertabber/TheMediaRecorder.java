@@ -45,7 +45,6 @@ public class TheMediaRecorder extends MediaRecorder {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-
             }
         }
         throw new IllegalStateException(TAG + " setAudioSource() wasn't able to succeed");
