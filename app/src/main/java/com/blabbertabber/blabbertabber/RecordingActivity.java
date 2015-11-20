@@ -33,7 +33,6 @@ public class RecordingActivity extends Activity {
     private static final int REQUEST_RECORD_AUDIO = 51;
     private RecordingService mRecordingService;
     private boolean mBound = false;
-
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -49,7 +48,6 @@ public class RecordingActivity extends Activity {
             Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
-
     private int mPreviousSpeakerId = -1;
     private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
@@ -84,9 +82,10 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
         // Let's make sure we have android.permission.RECORD_AUDIO permission
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO);
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            registerRecordingServiceReceiver();
+        } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
@@ -116,6 +115,18 @@ public class RecordingActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy(); // yes, call super first, even with onDestroy()
         Log.i(TAG, "onDestroy()");
+    }
+
+    private void registerRecordingServiceReceiver() {
+        Intent serviceIntent = new Intent(this, RecordingService.class);
+        if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
+            Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
+        } else {
+            Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
+        }
+        LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
+                new IntentFilter(Recorder.RECORD_RESULT)
+        );
     }
 
     public void record(View v) {
@@ -186,33 +197,24 @@ public class RecordingActivity extends Activity {
             argumentString += grantResult + ", ";
         }
         argumentString += " ]";
-
         Log.i(TAG, "onRequestPermissionsResult() " + argumentString);
+
+        // http://developer.android.com/training/permissions/requesting.html
         switch (requestCode) {
             case REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, kick off the service
-                    Intent serviceIntent = new Intent(this, RecordingService.class);
-                    if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
-                        Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
-                    } else {
-                        Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
-                    }
-                    LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
-                            new IntentFilter(Recorder.RECORD_RESULT)
-                    );
+                    registerRecordingServiceReceiver();
                 } else {
                     // permission denied, message & exit gracefully
-                    Toast.makeText(getApplicationContext(), "BlabberTabber is exiting because it's unable to access the microphone", Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
-        Log.wtf(TAG, "Oops, a permission was granted that you didn't ask for.");
+        Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
     }
 }
