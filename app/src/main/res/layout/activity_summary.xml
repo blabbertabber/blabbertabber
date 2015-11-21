@@ -86,10 +86,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ImageView
+        <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_0"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="58dp" />
 
         <TextView
             android:id="@+id/speaker_name_label_1"

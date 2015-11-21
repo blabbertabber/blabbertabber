@@ -58,6 +58,8 @@ public class SummaryActivity extends Activity {
             Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
         }
 
+        RectangleView rect = new RectangleView(getApplicationContext());
+
     }
 
     public void newMeeting(View v) {
