@@ -14,19 +14,18 @@ import android.view.View;
  */
 public class RectangleView extends View {
     private static final String TAG = "RectangleView";
-    View speakerBar0;
-    private boolean mVisible = true;
+    private boolean mVisible = false;
     private int mColor = Color.GREEN;
     private float mBarRatio = (float) 0.50;
 
     public RectangleView(Context context, AttributeSet attrs) {
-        super(context);
-        Log.i(TAG, "RectangleView()");
+        super(context, attrs);
+        Log.i(TAG, "RectangleView(Context, AttributeSet)");
     }
 
     public RectangleView(Context context) {
         super(context);
-        Log.i(TAG, "RectangleView()");
+        Log.i(TAG, "RectangleView(Context)");
     }
 
     public void setColor(int color) {
@@ -55,7 +54,7 @@ public class RectangleView extends View {
             rect.left = 0;
             rect.top = 0;
             rect.right = mBarRatio * (float) getWidth();
-            Log.wtf(TAG, "getWidth() " + getWidth() + " rect.right " + rect.right);
+            Log.i(TAG, "getWidth() " + getWidth() + " rect.right " + rect.right);
             rect.bottom = getHeight();
 
             Paint myPaint = new Paint();
