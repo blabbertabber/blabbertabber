@@ -55,7 +55,6 @@ public class SummaryActivity extends Activity {
                 tv.setText((CharSequence) speaker.getName());
 
                 id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
-                Log.wtf(TAG, "speaker_duration_label_ " + id);
                 tv = (TextView) findViewById(id);
                 long speakerDuration = speaker.duration();
                 double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
@@ -63,16 +62,11 @@ public class SummaryActivity extends Activity {
                 tv.setText((CharSequence) speakerStats);
 
                 id = R.id.class.getField("bar_speaker_" + i).getInt(0);
-                Log.wtf(TAG, "bar_speaker_0 " + id);
                 RectangleView rv = (RectangleView) findViewById(id);
-                if (rv == null) {
-                    Log.wtf(TAG, "rv is null!");
-                } else {
-                    rv.setVisible(true);
-                    rv.setColor(speaker.getColor());
-                    rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
-                    rv.invalidate();
-                }
+                rv.setVisible(true);
+                rv.setColor(speaker.getColor());
+                rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
+                rv.invalidate();
             }
         } catch (NoSuchFieldException e) {
             Log.wtf(TAG, "NoSuchFieldException exception thrown on index with message " + e.getMessage());
