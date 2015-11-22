@@ -53,9 +53,9 @@ public class RectangleView extends View {
             RectF rect = new RectF();
             rect.left = 0;
             rect.top = 0;
-            rect.right = mBarRatio * (float) getWidth();
-            Log.i(TAG, "getWidth() " + getWidth() + " rect.right " + rect.right);
+            rect.right = mBarRatio * (float) (getWidth() - getLeft());
             rect.bottom = getHeight();
+            Log.i(TAG, "getWidth() " + getWidth() + " getLeft() " + getLeft() + " rect.right " + rect.right + " bottom " + rect.bottom);
 
             Paint myPaint = new Paint();
             myPaint.setColor(mColor);
