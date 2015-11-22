@@ -104,7 +104,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_0"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -120,7 +121,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_1"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -136,7 +138,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_2"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -152,7 +155,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_3"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -168,7 +172,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_4"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -184,7 +189,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_5"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -200,7 +206,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_6"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -216,7 +223,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_7"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -232,7 +240,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_8"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -248,7 +257,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_9"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -264,7 +274,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_10"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -280,7 +291,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_11"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -296,7 +308,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_12"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -312,7 +325,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_13"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -328,7 +342,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_14"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
 
         <TextView
@@ -344,7 +359,8 @@
         <com.blabbertabber.blabbertabber.RectangleView
             android:id="@+id/bar_speaker_15"
             android:layout_width="wrap_content"
-            android:layout_height="10dp" />
+            android:layout_height="12sp"
+            android:layout_gravity="center_vertical" />
 
     </GridLayout>
 
