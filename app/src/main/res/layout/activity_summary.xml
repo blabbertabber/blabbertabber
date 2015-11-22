@@ -373,7 +373,7 @@
     <GridLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:columnCount="3">
+        android:columnCount="2">
 
         <Button
             android:id="@+id/button_new_meeting"
@@ -384,20 +384,12 @@
             android:text="@string/button_new_meeting" />
 
         <Button
-            android:id="@+id/button_email"
+            android:id="@+id/button_share"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_columnWeight="1"
-            android:onClick="email"
-            android:text="@string/button_email" />
-
-        <Button
-            android:id="@+id/button_sms"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_columnWeight="1"
-            android:onClick="sms"
-            android:text="@string/button_sms" />
+            android:onClick="share"
+            android:text="@string/button_share" />
 
     </GridLayout>
 
