@@ -33,7 +33,7 @@ public class RecordingActivityTest {
 
     @Test
     public void recordingActivityIsPortrait() {
-        int orientation = (new TestHelpers().getActivityInstance()).getResources().getConfiguration().orientation;
+        int orientation = (TestHelpers.getActivityInstance()).getResources().getConfiguration().orientation;
         assertEquals(orientation, Configuration.ORIENTATION_PORTRAIT);
     }
 

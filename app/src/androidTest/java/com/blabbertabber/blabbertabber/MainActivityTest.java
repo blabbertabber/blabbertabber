@@ -41,7 +41,7 @@ public class MainActivityTest {
     public void isItFirstTime() {
         // If the activity is null, then it's not the first time the application has run, and we've
         // already launched RecordingActivity
-        Activity activity = (new TestHelpers().getActivityInstance());
+        Activity activity = (TestHelpers.getActivityInstance());
         if (activity == null) {
             firstTime = false;
         } else if (activity instanceof com.blabbertabber.blabbertabber.RecordingActivity) {
