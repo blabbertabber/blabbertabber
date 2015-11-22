@@ -16,10 +16,10 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 // Helper class for TESTs
 // not to be confused with HelperTest, which tests the Helper class
 public class TestHelpers {
-    Activity mCurrentActivity;
+    static Activity mCurrentActivity;
 
     // http://qathread.blogspot.com/2014/09/discovering-espresso-for-android-how-to.html
-    public Activity getActivityInstance() {
+    public static synchronized Activity getActivityInstance() {
         getInstrumentation().runOnMainSync(new Runnable() {
             public void run() {
                 Collection<Activity> resumedActivities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
