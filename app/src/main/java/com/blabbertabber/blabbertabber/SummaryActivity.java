@@ -48,18 +48,31 @@ public class SummaryActivity extends Activity {
 
         try {
             for (int i = 0; i < sp.size(); i++) {
+                Speaker speaker = sp.get(i);
+
                 int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
                 TextView tv = (TextView) findViewById(id);
-                tv.setText((CharSequence) sp.get(i).getName());
+                tv.setText((CharSequence) speaker.getName());
+
+                id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
+                tv = (TextView) findViewById(id);
+                long speakerDuration = speaker.duration();
+                double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
+                String speakerStats = String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent);
+                tv.setText((CharSequence) speakerStats);
+
+                id = R.id.class.getField("bar_speaker_" + i).getInt(0);
+                RectangleView rv = (RectangleView) findViewById(id);
+                rv.setVisible(true);
+                rv.setColor(speaker.getColor());
+                rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
+                rv.invalidate();
             }
         } catch (NoSuchFieldException e) {
             Log.wtf(TAG, "NoSuchFieldException exception thrown on index with message " + e.getMessage());
         } catch (IllegalAccessException e) {
             Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
         }
-
-        RectangleView rect = new RectangleView(getApplicationContext());
-
     }
 
     public void newMeeting(View v) {
