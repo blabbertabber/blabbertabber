@@ -80,4 +80,26 @@ public class SummaryActivity extends Activity {
         Intent i = new Intent(this, RecordingActivity.class);
         startActivity(i);
     }
+
+    public void share(View v) {
+        long meetingDuration = TheSpeakers.getInstance().getMeetingDuration();
+        ArrayList<Speaker> sp = TheSpeakers.getInstance().getSortedSpeakerList();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < sp.size(); i++) {
+            Speaker speaker = sp.get(i);
+            long speakerDuration = speaker.duration();
+            double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
+            String speakerStats = String.format(" %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDuration), speakerPercent);
+            sb.append(speakerStats + "  ");
+            sb.append(speaker.getName());
+            sb.append("\n");
+        }
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, "BlabberTabber result");
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
+    }
 }
