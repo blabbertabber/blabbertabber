@@ -1,7 +1,9 @@
 # Blabber Tabber
 
+<!--
 * develop: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=develop)](https://travis-ci.org/blabbertabber/blabbertabber)
 * master: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=master)](https://travis-ci.org/blabbertabber/blabbertabber)
+-->
 
 BlabberTabber is an Android Application that performs
 [speaker diarization](https://en.wikipedia.org/wiki/Speaker_diarisation).
@@ -9,13 +11,13 @@ BlabberTabber is an Android Application that performs
 
 ### Screenshots
 
-| Splash Screen | Recording Screen |
-|---------------|------------------|
-| ![splash screen](http://imgur.com/cNySdWP.png) | ![recording screen](http://imgur.com/VXf9Qzg.png) |
+| Summary Screen | Recording Screen | Splash Screen |
+|----------------|------------------|---------------|
+| ![summary screen](http://imgur.com/Om1U4ND.png) | ![recording screen](http://imgur.com/mWTBmsF.png) | ![splash screen](http://imgur.com/hlDgbZp.png) |
 
 ### Acknowledgements
 
-[Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. Thanks Charlotte.
+[Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. And the logo. Thanks Charlotte.
 
 ### Advisors
 
