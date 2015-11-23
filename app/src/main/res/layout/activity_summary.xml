@@ -9,55 +9,79 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:columnCount="4"
-        android:paddingLeft="30dp">
+        android:paddingRight="5dp">
 
         <TextView
             android:id="@+id/textview_duration_header"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
+            android:layout_gravity="right"
             android:text="@string/text_duration_header"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textview_max_header"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
+            android:layout_gravity="right"
             android:text="@string/text_max_header"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textview_min_header"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
+            android:layout_gravity="right"
             android:text="@string/text_min_header"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textview_average_header"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal"
+            android:layout_gravity="right"
             android:text="@string/text_average_header"
             android:textStyle="bold" />
 
         <TextView
+            android:layout_columnWeight="1"
+            android:layout_gravity="right"
+            android:text="@string/hmmss" />
+
+        <TextView
+            android:layout_columnWeight="1"
+            android:layout_gravity="right"
+            android:text="@string/hmmsss" />
+
+        <TextView
+            android:layout_columnWeight="1"
+            android:layout_gravity="right"
+            android:text="@string/hmmsss" />
+
+        <TextView
+            android:layout_columnWeight="1"
+            android:layout_gravity="right"
+            android:text="@string/hmmsss" />
+
+        <TextView
             android:id="@+id/textview_duration"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_gravity="right"
+            />
 
         <TextView
             android:id="@+id/textview_max"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_gravity="right"
+            />
 
         <TextView
             android:id="@+id/textview_min"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_gravity="right"
+            />
 
         <TextView
             android:id="@+id/textview_average"
             android:layout_columnWeight="1"
-            android:layout_gravity="fill_horizontal" />
+            android:layout_gravity="right"
+            />
     </GridLayout>
 
     <GridLayout
@@ -66,7 +90,7 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         android:columnCount="3"
-        android:paddingTop="40dp"
+        android:paddingTop="25dp"
         android:useDefaultMargins="true">
 
         <TextView
@@ -81,6 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/speaker_duration_title"
+            android:layout_gravity="right"
             android:textStyle="bold" />
 
         <TextView
