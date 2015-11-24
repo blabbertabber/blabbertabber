@@ -22,7 +22,7 @@ public class DeviceRecorder extends Recorder {
     protected void startRecording() {
         Log.i(TAG, "startRecording()");
         mRecorder = TheMediaRecorder.getInstance();
-        mRecorder.setAudioSource(new BestMicrophone().getBestMicrophone());
+        mRecorder.setAudioSource(BestMicrophone.getBestMicrophone());
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile("/dev/null");
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
