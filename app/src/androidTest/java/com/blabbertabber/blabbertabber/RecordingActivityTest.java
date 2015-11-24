@@ -17,7 +17,7 @@ import static junit.framework.Assert.assertEquals;
 /**
  * Created by cunnie on 9/12/15.
  * Test Recording Activity
- *
+ * <p/>
  * FIXME: these tests will fail the first time BlabberTabber is run because there will be a
  * dialog asking permission to allow BlabberTabber to access microphone
  */

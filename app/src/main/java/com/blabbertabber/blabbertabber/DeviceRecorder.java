@@ -1,10 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
-import android.media.MediaRecorder;
 import android.util.Log;
-
-import java.io.IOException;
 
 /**
  * Created by cunnie on 10/3/15.
@@ -12,7 +9,7 @@ import java.io.IOException;
  * Class that works with a REAL microphone (non-emulator)
  */
 public class DeviceRecorder extends Recorder {
-    private MediaRecorder mRecorder;
+    private TheAudioRecord mRecorder;
 
     public DeviceRecorder(Context context) {
         super(context);
@@ -21,18 +18,8 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void startRecording() {
         Log.i(TAG, "startRecording()");
-        mRecorder = TheMediaRecorder.getInstance();
-        mRecorder.setAudioSource(BestMicrophone.getBestMicrophone());
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile("/dev/null");
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
-        }
-        mRecorder.start();
+        mRecorder = TheAudioRecord.getInstance();
+        mRecorder.startRecording();
 
     }
 
