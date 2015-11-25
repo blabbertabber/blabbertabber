@@ -23,12 +23,12 @@ public class TheAudioRecord extends AudioRecord {
     private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 10; // ten periods/sec
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
-    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2; // bytes
-
+    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
+    public static TheAudioRecord singleton;
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads
-    public static TheAudioRecord singleton;
     private static short[] AUDIO_DATA = new short[RECORDER_BUFFER_SIZE_IN_BYTES / 2];  // 2 => 1 x PCM 16 / 2 bytes
+    private int maxAmplitude = Short.MIN_VALUE;
 
     protected TheAudioRecord(
             int audioSource, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes) {
@@ -76,8 +76,14 @@ public class TheAudioRecord extends AudioRecord {
 
     public int getMaxAmplitude() {
         // we had to write our own when we switched from MediaRecorder to AudioRecord
-//        short[] audioData;
-//        int shortsRead =  read(audioData, offsetInShorts, sizeInShorts);
-        return 16384;
+        maxAmplitude = Short.MIN_VALUE;
+        int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
+        for (int i = 0; i < readSize; i++) {
+            if (AUDIO_DATA[i] > maxAmplitude) {
+                maxAmplitude = AUDIO_DATA[i];
+            }
+        }
+        Log.i(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
+        return maxAmplitude;
     }
 }
