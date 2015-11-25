@@ -21,25 +21,24 @@ import static org.mockito.Mockito.when;
 public class BestMicrophoneTest {
     private static final String TAG = "BestMicrophoneTest";
     private BuildMODEL mBuildModel = mock(BuildMODEL.class);
-    public BestMicrophone test = new BestMicrophone(mBuildModel);
 
     @Test
     public void testDefaultDeviceHasMic() {
         when(mBuildModel.model()).thenReturn("fake model");
-        assertEquals("Default should use MediaRecorder.AudioSource.MIC", test.getBestMicrophone(), MediaRecorder.AudioSource.MIC);
+        assertEquals("Default should use MediaRecorder.AudioSource.DEFAULT", MediaRecorder.AudioSource.DEFAULT, BestMicrophone.getBestMicrophone(mBuildModel));
     }
 
     @Test
     public void testNexus5HasMic() {
-        Log.wtf(TAG, "test == " + test + " mBuildModel == " + mBuildModel);
+        Log.i(TAG, "mBuildModel == " + mBuildModel);
         when(mBuildModel.model()).thenReturn("Nexus 5");
-        assertEquals("Nexus 5 should use MediaRecorder.AudioSource.MIC", test.getBestMicrophone(), MediaRecorder.AudioSource.MIC);
+        assertEquals("Nexus 5 should use MediaRecorder.AudioSource.MIC", MediaRecorder.AudioSource.MIC, BestMicrophone.getBestMicrophone(mBuildModel));
     }
 
     @Test
     public void testNexus6HasVoiceRecognition() {
         when(mBuildModel.model()).thenReturn("Nexus 6");
-        assertEquals("Nexus 6 should use MediaRecorder.AudioSource.VOICE_RECOGNITION", test.getBestMicrophone(), MediaRecorder.AudioSource.VOICE_RECOGNITION);
+        assertEquals("Nexus 6 should use MediaRecorder.AudioSource.VOICE_RECOGNITION", MediaRecorder.AudioSource.VOICE_RECOGNITION, BestMicrophone.getBestMicrophone(mBuildModel));
     }
 }
 
