@@ -29,7 +29,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     // App's dependencies, including test
     compile 'com.android.support:support-annotations:23.0.1'
-
     // https://developer.android.com/tools/testing-support-library/index.html
     androidTestCompile 'com.android.support.test:runner:0.4'
     // Set this dependency to use JUnit 4 rules
@@ -41,11 +40,11 @@ dependencies {
     // https://code.google.com/p/android-test-kit/wiki/EspressoIntentsSetupInstructions
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
     // http://mockito.org/
-    androidTestCompile "org.mockito:mockito-core:1.+"
+    androidTestCompile 'org.mockito:mockito-core:1.+'
     //// [NOT NEEDED] I'm doing this because I'm clutching at straws
     //// androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
     // need mockito
-    androidTestCompile "org.mockito:mockito-core:1.+"
+    androidTestCompile 'org.mockito:mockito-core:1.+'
     // http://stackoverflow.com/questions/29290795/attempt-to-mockito-mock-any-class-generates-exceptionininitializererror
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
