@@ -31,6 +31,7 @@ import android.widget.Toast;
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 52;
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -89,6 +90,14 @@ public class RecordingActivity extends Activity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            registerRecordingServiceReceiver();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_EXTERNAL_STORAGE);
         }
     }
 
@@ -210,6 +219,16 @@ public class RecordingActivity extends Activity {
                 } else {
                     // permission denied, message & exit gracefully
                     Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                return;
+            }
+            case REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // permission denied, message & exit gracefully
+                    Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to write storage", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 return;
