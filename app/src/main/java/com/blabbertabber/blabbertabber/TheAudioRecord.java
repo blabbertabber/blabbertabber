@@ -5,8 +5,10 @@ import android.media.AudioRecord;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Cunnie on 10/8/15.
@@ -29,13 +31,13 @@ public class TheAudioRecord extends AudioRecord {
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
     private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
-    private static final String RECORDER_WAV_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.wav";
+    private static final String RECORDER_RAW_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.raw";
     public static TheAudioRecord singleton;
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads
     private static short[] AUDIO_DATA = new short[RECORDER_BUFFER_SIZE_IN_BYTES / 2];  // 2 => 1 x PCM 16 / 2 bytes
-    private static File mWavFile;
-    private static FileOutputStream mWavFileStream;
+    private static File mRawFile;
+    private static DataOutputStream mRawDataOutputStream;
 
     protected TheAudioRecord(
             int audioSource, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes) {
@@ -68,12 +70,23 @@ public class TheAudioRecord extends AudioRecord {
         Log.i(TAG, "startRecording()");
         super.startRecording();
         // open file for writing "/sdcard/BlabberTabber"; create dir if non-existing
-        mWavFile = new File(RECORDER_WAV_FILENAME);
+        mRawFile = new File(RECORDER_RAW_FILENAME);
         try {
-            mWavFileStream = new FileOutputStream(mWavFile);
+            mRawDataOutputStream = new DataOutputStream(new FileOutputStream(mRawFile));
         } catch (java.io.FileNotFoundException e) {
-            Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_WAV_FILENAME +
+            Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
                     " with message " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void stop() {
+        Log.i(TAG, "stop()");
+        super.stop();
+        try {
+            mRawDataOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -85,12 +98,20 @@ public class TheAudioRecord extends AudioRecord {
         singleton = null;
     }
 
-    // We are temporarily writing a .wav file out for postprocessing.
+    // We are temporarily writing a .raw file out for postprocessing.
     // A subsequent version will not perform this intermediate step.
     public int getMaxAmplitude() {
         int maxAmplitude = Short.MIN_VALUE;
         int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
+
         for (int i = 0; i < readSize; i++) {
+            try {
+                mRawDataOutputStream.writeShort(AUDIO_DATA[i]);
+            } catch (IOException e) {
+                Log.wtf(TAG, "IOException thrown trying to writer to file " + RECORDER_RAW_FILENAME
+                        + " with message " + e.getMessage());
+                e.printStackTrace();
+            }
             if (AUDIO_DATA[i] > maxAmplitude) {
                 maxAmplitude = AUDIO_DATA[i];
             }
