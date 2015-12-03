@@ -163,10 +163,10 @@ public class RecordingActivity extends Activity {
             // reset the size of the previous speakerBall, and dim it, too
             Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
             previousSpeaker.stopSpeaking();
-            View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
-            previousSpeakerBall.setScaleX(1);
-            previousSpeakerBall.setScaleY(1);
-            previousSpeakerBall.setAlpha((float) 0.7);
+//            View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
+//            previousSpeakerBall.setScaleX(1);
+//            previousSpeakerBall.setScaleY(1);
+//            previousSpeakerBall.setAlpha((float) 0.7);
         }
     }
 
@@ -178,20 +178,20 @@ public class RecordingActivity extends Activity {
         }
         Speaker speaker = mSpeakers.speakers[speakerId];
         speaker.startSpeaking();
-        ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
-        speaker.setVisible(View.VISIBLE);
-        speakerBall.setVisibility(View.VISIBLE);
-        speakerBall.setAlpha((float) 1.0);
-        GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
-        if (shape != null) {
-            shape.setColor(speaker.getColor());
-        }
-        speakerBall.requestLayout();
+//        ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
+//        speaker.setVisible(View.VISIBLE);
+//        speakerBall.setVisibility(View.VISIBLE);
+//        speakerBall.setAlpha((float) 1.0);
+//        GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
+//        if (shape != null) {
+//            shape.setColor(speaker.getColor());
+//        }
+//        speakerBall.requestLayout();
 
-        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (0.5 + speakerVolume / 80.0));
-        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
-        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
-        scaleAnimation.setDuration(20).start();
+//        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (0.5 + speakerVolume / 80.0));
+//        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
+//        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
+//        scaleAnimation.setDuration(20).start();
     }
 
     @Override

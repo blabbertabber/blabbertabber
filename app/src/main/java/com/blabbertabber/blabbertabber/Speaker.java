@@ -13,8 +13,6 @@ public class Speaker implements Comparable<Speaker> {
     private static final String TAG = "Speaker";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
     private int color;
-    private int visible;
-    private int viewID;
     private long mTotalSpeakingTime = 0; // milliseconds
     private Date mStartDate = null;
     private boolean mSpoke = false;
@@ -68,16 +66,8 @@ public class Speaker implements Comparable<Speaker> {
         return mName;
     }
 
-    public int isVisible() {
-        return visible;
-    }
-
     public long duration() {
         return mTotalSpeakingTime;
-    }
-
-    public void setVisible(int visible) {
-        this.visible = visible;
     }
 
     public int getColor() {
@@ -86,17 +76,5 @@ public class Speaker implements Comparable<Speaker> {
 
     public void setColor(int color) {
         this.color = color;
-    }
-
-    public int getViewID() {
-        return viewID;
-    }
-
-    public void setViewID(int viewID) {
-        this.viewID = viewID;
-    }
-
-    public boolean getSpoke() {
-        return mSpoke;
     }
 }
