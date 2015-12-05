@@ -1,4 +1,4 @@
-# Blabber Tabber
+# BlabberTabber
 
 <!--
 * develop: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=develop)](https://travis-ci.org/blabbertabber/blabbertabber)
@@ -13,11 +13,15 @@ BlabberTabber is an Android Application that performs
 
 | Summary Screen | Recording Screen | Splash Screen |
 |----------------|------------------|---------------|
-| ![summary screen](http://imgur.com/Om1U4ND.png) | ![recording screen](http://imgur.com/mWTBmsF.png) | ![splash screen](http://imgur.com/hlDgbZp.png) |
+| ![summary screen](http://imgur.com/TNbnoFl.png) | ![recording screen](http://imgur.com/HkTm1h5.png) | ![splash screen](http://imgur.com/t8CfYaL.png) |
 
 ### Acknowledgements
 
 [Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. And the logo. Thanks Charlotte.
+
+[Daniel Di Matteo](http://www.eecg.toronto.edu/~dandm/) wrote the first Android-based diarization
+[app](https://github.com/danieldimatteo/android-speech-diarization), and made helpful suggestions about
+which libraries to use.
 
 ### Advisors
 
