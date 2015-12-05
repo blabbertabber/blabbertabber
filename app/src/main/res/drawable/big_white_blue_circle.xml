@@ -4,4 +4,9 @@
     <solid android:color="#F0F6F7" />
     <size android:width="150dp" />
     <size android:height="150dp" />
+    <padding
+        android:bottom="60dp"
+        android:left="60dp"
+        android:right="60dp"
+        android:top="60dp" />
 </shape>
