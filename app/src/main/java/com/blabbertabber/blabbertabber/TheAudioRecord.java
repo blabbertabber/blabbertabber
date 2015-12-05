@@ -98,6 +98,10 @@ public class TheAudioRecord extends AudioRecord {
         singleton = null;
     }
 
+    public boolean isRecording() {
+        return (getRecordingState() == RECORDSTATE_RECORDING);
+    }
+
     // We are temporarily writing a .raw file out for postprocessing.
     // A subsequent version will not perform this intermediate step.
     public int getMaxAmplitude() {

@@ -33,6 +33,11 @@ public class DeviceRecorder extends Recorder {
     }
 
     @Override
+    public boolean isRecording() {
+        return mRecorder.isRecording();
+    }
+
+    @Override
     public int getSpeakerVolume() {
         int volume = mRecorder.getMaxAmplitude();
         volume = volume * 100 / 32768;

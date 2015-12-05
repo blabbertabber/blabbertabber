@@ -57,14 +57,27 @@ public class RecordingActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
         mSpeakers = TheSpeakers.getInstance();
+
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
-                int speaker = speakerinfo[0], volume = speakerinfo[1];
-                // do something here.
-                Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
-                updateSpeakerVolumeView(speaker, volume);
+                Log.i(TAG, "onReceive():  Just receive a message with Intent " + intent);
+                if (intent.getAction() == Recorder.RECORD_RESULT) {
+                    int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                    int speaker = speakerinfo[0], volume = speakerinfo[1];
+                    // do something here.
+                    Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
+                    updateSpeakerVolumeView(speaker, volume);
+                } else if (intent.getAction() == Recorder.RECORD_STATUS) {
+                    String statusMsg = "onReceive():  The microphone has a status of " + intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, -52);
+                    Log.wtf(TAG, statusMsg);
+                    Toast.makeText(context, statusMsg, Toast.LENGTH_LONG).show();
+                    TheAudioRecord.getInstance().stop();
+                } else {
+                    String errorMsg = "onReceive() received an Intent with unknown action " + intent.getAction();
+                    Log.wtf(TAG, errorMsg);
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
+                }
             }
         };
     }
@@ -133,6 +146,9 @@ public class RecordingActivity extends Activity {
         }
         LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
                 new IntentFilter(Recorder.RECORD_RESULT)
+        );
+        LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
+                new IntentFilter(Recorder.RECORD_STATUS)
         );
     }
 
