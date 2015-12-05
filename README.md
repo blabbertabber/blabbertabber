@@ -35,6 +35,8 @@ which libraries to use.
 
 * Gonina E., Friedland G., Cook H., Keutzer K., *[Fast Speaker Diarization Using a High-Level Scripting Language](https://www.eecs.berkeley.edu/~hcook/papers/gmm_asru2011.pdf)*, In Proc. of ASRU Workshop, 2011.
 
+* Di Matteo, D. *[Speech Diarization on a Mobile Platform](https://android-speech-diarization.googlecode.com/files/thesis.pdf)*, 2011
+
 <!-- check this out at some point:
 
 Cook H., Gonina E., Kamil S., Friedland G., Patterson D., Fox A., "CUDA-level performance with python-level productivity for Gaussian mixture model applications,", In Proc. of the 3rd USENIX conference on Hot topic in parallelism (HotPar'11). USENIX Association, Berkeley, CA, USA.
