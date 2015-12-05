@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -16,9 +15,15 @@ import java.nio.ByteOrder;
 public class WavFile {
     public static int DEFAULT_SAMPLE_RATE = 16_000;
 
-    private WavFile() {};
-    public WavFile(final File rawFile, final File waveFile){}
+    private WavFile() {
+    }
 
+    ;
+
+    public WavFile(final File rawFile, final File waveFile) {
+    }
+
+/*
     public static WavFile of (InputStream input) {
 
     }
@@ -30,6 +35,7 @@ public class WavFile {
     public static WavFile of (String rawFilepathname) {
         return of(new File(rawFilepathname));
     }
+*/
 
 
     private void rawToWave(final File rawFile, final File waveFile) throws IOException {
