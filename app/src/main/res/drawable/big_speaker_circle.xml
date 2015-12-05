@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/outer_speaker_square"
+        android:drawable="@drawable/big_transparent_square" />
+    <item
+        android:id="@+id/outer_speaker_circle"
+        android:drawable="@drawable/big_white_blue_circle" />
+    <item
+        android:id="@+id/inner_speaker_circle"
+        android:drawable="@drawable/small_red_orange_circle" />
+</layer-list>

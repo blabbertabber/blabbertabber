@@ -1,7 +1,6 @@
 package com.blabbertabber.blabbertabber;
 
 import android.util.Log;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,27 +54,9 @@ public class TheSpeakers {
     private static void initializeSpeakers() {
         Log.i(TAG, "initializeSpeakers()");
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            speakers[i] = new Speaker("Speaker " + i); // Fixme: should internationalize
-            speakers[i].setVisible(View.INVISIBLE);
+            speakers[i] = new Speaker("Speaker " + i); // TODO: internationalize
             speakers[i].setColor(speakerColors[i]);
         }
-
-        speakers[0].setViewID(R.id.speaker_0);
-        speakers[1].setViewID(R.id.speaker_1);
-        speakers[2].setViewID(R.id.speaker_2);
-        speakers[3].setViewID(R.id.speaker_3);
-        speakers[4].setViewID(R.id.speaker_4);
-        speakers[5].setViewID(R.id.speaker_5);
-        speakers[6].setViewID(R.id.speaker_6);
-        speakers[7].setViewID(R.id.speaker_7);
-        speakers[8].setViewID(R.id.speaker_8);
-        speakers[9].setViewID(R.id.speaker_9);
-        speakers[10].setViewID(R.id.speaker_10);
-        speakers[11].setViewID(R.id.speaker_11);
-        speakers[12].setViewID(R.id.speaker_12);
-        speakers[13].setViewID(R.id.speaker_13);
-        speakers[14].setViewID(R.id.speaker_14);
-        speakers[15].setViewID(R.id.speaker_15);
     }
 
     public static double[] getSpeakersTimes() {
