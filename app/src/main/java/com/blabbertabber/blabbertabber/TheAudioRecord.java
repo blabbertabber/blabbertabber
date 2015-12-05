@@ -108,7 +108,7 @@ public class TheAudioRecord extends AudioRecord {
             try {
                 mRawDataOutputStream.writeShort(AUDIO_DATA[i]);
             } catch (IOException e) {
-                Log.wtf(TAG, "IOException thrown trying to writer to file " + RECORDER_RAW_FILENAME
+                Log.wtf(TAG, "IOException thrown trying to write to file " + RECORDER_RAW_FILENAME
                         + " with message " + e.getMessage());
                 e.printStackTrace();
             }

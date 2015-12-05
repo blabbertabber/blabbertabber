@@ -1,5 +1,8 @@
 package com.blabbertabber.blabbertabber;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -12,13 +15,13 @@ import java.nio.ByteOrder;
 /**
  * Created by brendancunnie on 11/29/15.
  */
-public class WavFile {
+public class WavFile  {
+    private static final String TAG = "WavFile";
     public static int DEFAULT_SAMPLE_RATE = 16_000;
+    File wavFile;
 
     private WavFile() {
     }
-
-
 
 /*
     public static WavFile of (InputStream input) {
@@ -26,15 +29,14 @@ public class WavFile {
     }
 */
 
-    public static WavFile of (File rawFile) {
+    public static WavFile of (File rawFile) throws IOException {
         WavFile wavFile = new WavFile();
-        // remove ".raw" extension if it exists
-        //waveFilePath = rawFile.getName().replace(".raw$","");
-        // append ".wav"
+        String wavFilePath = convertFilenameFromRawToWav(rawFile.getPath());
+        wavFile.rawToWave(rawFile, new File(wavFilePath));
         return wavFile;
     }
 
-    public static WavFile of (String rawFilepathname) {
+    public static WavFile of (String rawFilepathname) throws IOException {
         return of(new File(rawFilepathname));
     }
 
@@ -46,6 +48,7 @@ public class WavFile {
     }
 
     private void rawToWave(final File rawFile, final File waveFile) throws IOException {
+        wavFile = waveFile;
 
         byte[] rawData = new byte[(int) rawFile.length()];
         DataInputStream input = null;

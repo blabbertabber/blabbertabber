@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -151,7 +152,16 @@ public class RecordingActivity extends Activity {
 
     public void summary(View v) {
         /// Transform the raw file into a .wav file
-        WavFile wavFile = WavFile.of(new File(TheAudioRecord.RECORDER_RAW_FILENAME));
+        WavFile wavFile = null;
+        try {
+            wavFile = WavFile.of(new File(TheAudioRecord.RECORDER_RAW_FILENAME));
+        } catch (IOException e) {
+            String errorTxt = "Whoops! couldn't convert " + TheAudioRecord.RECORDER_RAW_FILENAME
+                    + ": " + e.getMessage();
+            Log.wtf(TAG, errorTxt);
+            Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
         /// process the .wav file
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
