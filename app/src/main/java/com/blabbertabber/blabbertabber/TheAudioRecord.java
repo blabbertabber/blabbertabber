@@ -31,7 +31,7 @@ public class TheAudioRecord extends AudioRecord {
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
     private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
-    private static final String RECORDER_RAW_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.raw";
+    public static final String RECORDER_RAW_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.raw";
     public static TheAudioRecord singleton;
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads

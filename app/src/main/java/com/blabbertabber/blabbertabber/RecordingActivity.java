@@ -18,6 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.File;
+
 /**
  * Created by cunnie on 8/16/15.
  * Activity to record and identify voices.
@@ -64,7 +66,6 @@ public class RecordingActivity extends Activity {
                 updateSpeakerVolumeView(speaker, volume);
             }
         };
-
     }
 
     @Override
@@ -149,6 +150,9 @@ public class RecordingActivity extends Activity {
     }
 
     public void summary(View v) {
+        /// Transform the raw file into a .wav file
+        WavFile wavFile = WavFile.of(new File(TheAudioRecord.RECORDER_RAW_FILENAME));
+        /// process the .wav file
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
     }
