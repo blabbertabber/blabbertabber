@@ -26,6 +26,11 @@ public class EmulatorRecorder extends Recorder {
     }
 
     @Override
+    public boolean isRecording() {
+        return true;
+    }
+
+    @Override
     public int getSpeakerVolume() {
         return ThreadLocalRandom.current().nextInt(0, 100);
     }

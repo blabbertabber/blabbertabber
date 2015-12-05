@@ -18,8 +18,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.lang.Thread.sleep;
 
 public abstract class Recorder implements Runnable {
-    static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.REQUEST_PROCESSED";
-    static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MSG";
+    static final public String RECORD_STATUS = "com.blabbertabber.blabbertabber.RecordingService.RECORD_STATUS";
+    static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.RECORD_RESULT";
+    static final public String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_STATUS_MESSAGE";
+    static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MESSAGE";
     protected static final String TAG = "Recorder";
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
@@ -58,9 +60,15 @@ public abstract class Recorder implements Runnable {
         startRecording();
         try {
             while (true) {
-                sleep(50);
-                Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
-                sendResult(getSpeakerId(), getSpeakerVolume());
+                if (isRecording()) {
+                    sleep(50);
+                    Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
+                    sendResult(getSpeakerId(), getSpeakerVolume());
+                } else {
+                    Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
+                    sendStatus(-1);
+                    sleep(2500);
+                }
             }
         } catch (InterruptedException e) {
             Log.i(TAG, "InterruptedException, return");
@@ -77,9 +85,17 @@ public abstract class Recorder implements Runnable {
         mBroadcastManager.sendBroadcast(intent);
     }
 
+    public void sendStatus(int status) {
+        Intent intent = new Intent(RECORD_STATUS);
+        intent.putExtra(RECORD_STATUS_MESSAGE, status);
+        mBroadcastManager.sendBroadcast(intent);
+    }
+
     protected abstract void startRecording();
 
     protected abstract void stopRecording();
+
+    public abstract boolean isRecording();
 
     // Who is currently speaking?
     public int getSpeakerId() {
