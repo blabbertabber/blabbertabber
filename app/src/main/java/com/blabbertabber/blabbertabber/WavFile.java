@@ -18,25 +18,32 @@ public class WavFile {
     private WavFile() {
     }
 
-    ;
 
-    public WavFile(final File rawFile, final File waveFile) {
-    }
 
 /*
     public static WavFile of (InputStream input) {
 
     }
+*/
 
     public static WavFile of (File rawFile) {
-
+        WavFile wavFile = new WavFile();
+        // remove ".raw" extension if it exists
+        //waveFilePath = rawFile.getName().replace(".raw$","");
+        // append ".wav"
+        return wavFile;
     }
 
     public static WavFile of (String rawFilepathname) {
         return of(new File(rawFilepathname));
     }
-*/
 
+    // Returns an appropriately named .wav file path.
+    // TODO: Consider making this private or moving to a different class.
+    public static String convertFilenameFromRawToWav(String filename) {
+        filename = filename.replaceFirst("\\.raw$", "");
+        return filename + ".wav";
+    }
 
     private void rawToWave(final File rawFile, final File waveFile) throws IOException {
 
