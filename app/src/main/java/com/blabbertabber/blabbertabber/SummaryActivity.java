@@ -3,6 +3,8 @@ package com.blabbertabber.blabbertabber;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -15,11 +17,20 @@ import java.util.ArrayList;
 public class SummaryActivity extends Activity {
 
     private static final String TAG = "SummaryActivity";
+    private static final CharSequence DRAWER_TITLE = "BlabberTabber Options"; // TODO internationalize, make string
+    private static final CharSequence NORMAL_TITLE = "BlabberTabber";
+    // Nav Drawer variables
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_menu_black_24px, R.string.drawer_open, R.string.drawer_close)
     }
 
     @Override
@@ -101,5 +112,17 @@ public class SummaryActivity extends Activity {
         sendIntent.putExtra(Intent.EXTRA_SUBJECT, "BlabberTabber result");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
+    }
+
+    public void onDrawerClosed(View view) {
+        super.onDrawerClosed(view);
+        getActionBar().setTitle(NORMAL_TITLE);
+        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+    }
+
+    public void onDrawerOpened(View view) {
+        super.onDrawerOpened(view);
+        getActionBar().setTitle(DRAWER_TITLE);
+        invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
     }
 }
