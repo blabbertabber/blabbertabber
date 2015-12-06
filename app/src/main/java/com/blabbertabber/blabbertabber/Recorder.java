@@ -22,6 +22,8 @@ public abstract class Recorder implements Runnable {
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.RECORD_RESULT";
     static final public String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_STATUS_MESSAGE";
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MESSAGE";
+    static final public int UNKNOWN_STATUS = -1;
+    static final public int MICROPHONE_UNAVAILABLE = -2;
     protected static final String TAG = "Recorder";
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
@@ -66,7 +68,7 @@ public abstract class Recorder implements Runnable {
                     sendResult(getSpeakerId(), getSpeakerVolume());
                 } else {
                     Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
-                    sendStatus(-1);
+                    sendStatus(MICROPHONE_UNAVAILABLE);
                     sleep(2500);
                 }
             }
