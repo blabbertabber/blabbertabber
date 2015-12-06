@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by cunnie on 8/16/15.
@@ -67,16 +68,19 @@ public class RecordingActivity extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive():  Just receive a message with Intent " + intent);
-                if (intent.getAction() == Recorder.RECORD_RESULT) {
+                if (intent.getAction().equals(Recorder.RECORD_RESULT)) {
                     int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
                     int speaker = speakerinfo[0], volume = speakerinfo[1];
                     // do something here.
                     Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
                     updateSpeakerVolumeView(speaker, volume);
-                } else if (intent.getAction() == Recorder.RECORD_STATUS) {
-                    String statusMsg = "onReceive():  The microphone has a status of " + intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, -52);
+                } else if (Objects.equals(intent.getAction(), Recorder.RECORD_STATUS)) {
+                    // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
+                    String statusMsg = "onReceive():  The microphone has a status of "
+                            + intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
                     Log.wtf(TAG, statusMsg);
-                    Toast.makeText(context, statusMsg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.",
+                            Toast.LENGTH_LONG).show();
                     TheAudioRecord.getInstance().stop();
                 } else {
                     String errorMsg = "onReceive() received an Intent with unknown action " + intent.getAction();
