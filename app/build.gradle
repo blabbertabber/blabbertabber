@@ -24,11 +24,18 @@ android {
     }
 }
 
+// https://github.com/codepath/android_guides/wiki/Design-Support-Library
+ext {
+    supportLibVersion = '23.1.1'  // variable that can be referenced to keep support libs consistent
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // App's dependencies, including test
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support:appcompat-v7:${supportLibVersion}'
+    compile 'com.android.support:support-annotations:${supportLibVersion}'
+    // needed for NavigationView
+    compile 'com.android.support:design:23.1.1'
     // We need the next line, otherwise we'll get an error:
     // "Resolved versions for app * and test app * differ". http://g.co/androidstudio/app-test-app-conflict
     androidTestCompile 'com.android.support:support-annotations:23.1.1'

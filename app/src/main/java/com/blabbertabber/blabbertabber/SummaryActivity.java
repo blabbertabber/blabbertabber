@@ -3,9 +3,12 @@ package com.blabbertabber.blabbertabber;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,15 +25,37 @@ public class SummaryActivity extends Activity {
     // Nav Drawer variables
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
 
+        // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (mDrawerLayout == null) {
+            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
+            return;
+        } else {
+            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
+        }
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_menu_black_24px, R.string.drawer_open, R.string.drawer_close)
+                R.string.drawer_open, R.string.drawer_close) {
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getActionBar().setTitle(NORMAL_TITLE);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            public void onDrawerOpened(View view) {
+                super.onDrawerOpened(view);
+                getActionBar().setTitle(DRAWER_TITLE);
+                invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
+            }
+        };
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     @Override
@@ -114,15 +139,16 @@ public class SummaryActivity extends Activity {
         startActivity(sendIntent);
     }
 
-    public void onDrawerClosed(View view) {
-        super.onDrawerClosed(view);
-        getActionBar().setTitle(NORMAL_TITLE);
-        invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-    }
-
-    public void onDrawerOpened(View view) {
-        super.onDrawerOpened(view);
-        getActionBar().setTitle(DRAWER_TITLE);
-        invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        menuItem.setChecked(true);
+                        mDrawerLayout.closeDrawers();
+                        return true;
+                    }
+                }
+        );
     }
 }
