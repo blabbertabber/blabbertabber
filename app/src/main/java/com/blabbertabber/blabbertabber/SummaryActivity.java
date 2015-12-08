@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,38 +22,42 @@ public class SummaryActivity extends Activity {
     private static final CharSequence NORMAL_TITLE = "BlabberTabber";
     // Nav Drawer variables
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private Toolbar mToolbar;
+    private NavigationView mNavigationView;
+//    private ActionBarDrawerToggle mDrawerToggle;
+//    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
 
+        // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
+        setContentView(R.layout.activity_summary);
         // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (mDrawerLayout == null) {
-            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
-            return;
-        } else {
-            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
-        }
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.drawer_open, R.string.drawer_close) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getActionBar().setTitle(NORMAL_TITLE);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            public void onDrawerOpened(View view) {
-                super.onDrawerOpened(view);
-                getActionBar().setTitle(DRAWER_TITLE);
-                invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
-            }
-        };
+//        mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
+//        if (mDrawerLayout == null) {
+//            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
+//            return;
+//        } else {
+//            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
+//        }
+//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+//                R.string.drawer_open, R.string.drawer_close) {
+//            public void onDrawerClosed(View view) {
+//                super.onDrawerClosed(view);
+//                getActionBar().setTitle(NORMAL_TITLE);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//
+//            public void onDrawerOpened(View view) {
+//                super.onDrawerOpened(view);
+//                getActionBar().setTitle(DRAWER_TITLE);
+//                invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
+//            }
+//        };
         // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+//        mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
     }
 
     @Override
@@ -111,6 +113,10 @@ public class SummaryActivity extends Activity {
         }
     }
 
+    public void replayMeeting(View v) {
+        Toast.makeText(getApplicationContext(), "Playing back the meeting", Toast.LENGTH_LONG).show();
+    }
+
     public void newMeeting(View v) {
         TheSpeakers.getInstance().reset();
         Intent i = new Intent(this, RecordingActivity.class);
@@ -139,16 +145,25 @@ public class SummaryActivity extends Activity {
         startActivity(sendIntent);
     }
 
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        menuItem.setChecked(true);
-                        mDrawerLayout.closeDrawers();
-                        return true;
-                    }
-                }
-        );
-    }
+    /* Called whenever we call invalidateOptionsMenu() */
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        // If the nav drawer is open, hide action items related to the content view
+//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+//        return super.onPrepareOptionsMenu(menu);
+//    }
+//
+//    private void setupDrawerContent(NavigationView navigationView) {
+//        navigationView.setNavigationItemSelectedListener(
+//                new NavigationView.OnNavigationItemSelectedListener() {
+//                    @Override
+//                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+//                        menuItem.setChecked(true);
+//                        mDrawerLayout.closeDrawers();
+//                        return true;
+//                    }
+//                }
+//        );
+//    }
 }
