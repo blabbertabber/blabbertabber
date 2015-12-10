@@ -35,13 +35,13 @@ public class SummaryActivity extends Activity {
         setContentView(R.layout.activity_summary);
         // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
-//        if (mDrawerLayout == null) {
-//            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
-//            return;
-//        } else {
-//            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
-//        }
+        mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
+        if (mDrawerLayout == null) {
+            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
+            return;
+        } else {
+            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
+        }
 //        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
 //                R.string.drawer_open, R.string.drawer_close) {
 //            public void onDrawerClosed(View view) {
