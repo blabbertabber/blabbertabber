@@ -29,4 +29,9 @@
     <string name="text_average_header">Average</string>
     <string name="speaker_name_title">Speaker</string>
     <string name="speaker_duration_title">Duration</string>
+    <string name="play_meeting_wav">Replay Meeting</string>
+    <string name="drawer_open">Open Sesame!</string>
+    <string name="drawer_close">Close Sesame!</string>
+    <string name="drawer_description">Beautiful Drawers!</string>
+    <string name="drawer_title">Advanced</string>
 </resources>

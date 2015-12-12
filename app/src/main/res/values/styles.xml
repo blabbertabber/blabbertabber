@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="BlabberTabberTheme" parent="@android:style/Theme.Material.Light">
+    <style name="BlabberTabberTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="android:colorBackground">@color/blabbertabber_background_material_light</item>
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
