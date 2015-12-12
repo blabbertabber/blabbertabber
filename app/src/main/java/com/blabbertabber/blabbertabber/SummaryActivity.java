@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 /**
  * Created by cunnie on 11/11/15.
+ * Shows a bar chart of speakers in decreasing order
  */
 public class SummaryActivity extends Activity {
 
@@ -23,8 +25,6 @@ public class SummaryActivity extends Activity {
     // Nav Drawer variables
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
-//    private ActionBarDrawerToggle mDrawerToggle;
-//    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,22 +42,6 @@ public class SummaryActivity extends Activity {
         } else {
             Log.i(TAG, "onCreate() mDrawerLayout is not null!");
         }
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-//                R.string.drawer_open, R.string.drawer_close) {
-//            public void onDrawerClosed(View view) {
-//                super.onDrawerClosed(view);
-//                getActionBar().setTitle(NORMAL_TITLE);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//
-//            public void onDrawerOpened(View view) {
-//                super.onDrawerOpened(view);
-//                getActionBar().setTitle(DRAWER_TITLE);
-//                invalidateOptionsMenu();  // creates call to onPrepareOptionsMenu
-//            }
-//        };
-        // Set the drawer toggle as the DrawerListener
-//        mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
     }
 
     @Override
@@ -90,7 +74,7 @@ public class SummaryActivity extends Activity {
 
                 int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
                 TextView tv = (TextView) findViewById(id);
-                tv.setText((CharSequence) speaker.getName());
+                tv.setText(speaker.getName());
 
                 id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
                 tv = (TextView) findViewById(id);
@@ -113,7 +97,8 @@ public class SummaryActivity extends Activity {
         }
     }
 
-    public void replayMeeting(View v) {
+    public void replayMeeting(MenuItem menuItem) {
+        Log.i(TAG, "replayMeeting()");
         Toast.makeText(getApplicationContext(), "Playing back the meeting", Toast.LENGTH_LONG).show();
     }
 
