@@ -3,23 +3,45 @@ package com.blabbertabber.blabbertabber;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 /**
  * Created by cunnie on 11/11/15.
+ * Shows a bar chart of speakers in decreasing order
  */
 public class SummaryActivity extends Activity {
 
     private static final String TAG = "SummaryActivity";
+    private static final CharSequence DRAWER_TITLE = "BlabberTabber Options"; // TODO internationalize, make string
+    private static final CharSequence NORMAL_TITLE = "BlabberTabber";
+    // Nav Drawer variables
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+
+        // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
+        setContentView(R.layout.activity_summary);
+        // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
+        if (mDrawerLayout == null) {
+            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
+            return;
+        } else {
+            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
+        }
     }
 
     @Override
@@ -52,7 +74,7 @@ public class SummaryActivity extends Activity {
 
                 int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
                 TextView tv = (TextView) findViewById(id);
-                tv.setText((CharSequence) speaker.getName());
+                tv.setText(speaker.getName());
 
                 id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
                 tv = (TextView) findViewById(id);
@@ -73,6 +95,11 @@ public class SummaryActivity extends Activity {
         } catch (IllegalAccessException e) {
             Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
         }
+    }
+
+    public void replayMeeting(MenuItem menuItem) {
+        Log.i(TAG, "replayMeeting()");
+        Toast.makeText(getApplicationContext(), "Playing back the meeting", Toast.LENGTH_LONG).show();
     }
 
     public void newMeeting(View v) {
