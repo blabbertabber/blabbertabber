@@ -3,6 +3,7 @@
     <group android:checkableBehavior="single" >
         <item
             android:id="@+id/play_meeting_wav"
-            android:title="@string/play_meeting_wav" />
+            android:title="@string/play_meeting_wav"
+            android:onClick="replayMeeting" />
     </group>
 </menu>
