@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single" >
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/play_meeting_wav"
-            android:title="@string/play_meeting_wav"
-            android:onClick="replayMeeting" />
+            android:onClick="replayMeeting"
+            android:title="@string/play_meeting_wav" />
         <item
             android:id="@+id/show_splash"
-            android:title="@string/launch_main_activity"
-            android:onClick="launchMainActivity" />
+            android:onClick="launchMainActivity"
+            android:title="@string/launch_main_activity" />
     </group>
 </menu>

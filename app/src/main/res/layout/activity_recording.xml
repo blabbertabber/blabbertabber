@@ -24,37 +24,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
+        <ImageButton
             android:id="@+id/button_record"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="record"
-            android:text="@string/button_record" />
+            android:src="@drawable/ic_hearing_black_24px" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_pause"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="pause"
-            android:text="@string/button_pause" />
+            android:src="@drawable/ic_pause_circle_outline_black_24px" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_reset"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="reset"
-            android:text="@string/button_reset" />
+            android:src="@drawable/ic_settings_backup_restore" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_finish"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="summary"
-            android:text="@string/button_finish" />
+            android:src="@drawable/ic_publish_black_24px" />
 
     </LinearLayout>
 
