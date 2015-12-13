@@ -7,16 +7,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-
-import java.io.File;
 
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
-    private boolean mFirstTime = true;
     public static boolean resetFirstTime = false;
+    private boolean mFirstTime = true;
     private int rushLimbaughIsWrongCount = 0;
 
     @Override
