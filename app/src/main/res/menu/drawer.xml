@@ -5,5 +5,9 @@
             android:id="@+id/play_meeting_wav"
             android:title="@string/play_meeting_wav"
             android:onClick="replayMeeting" />
+        <item
+            android:id="@+id/show_splash"
+            android:title="@string/launch_main_activity"
+            android:onClick="launchMainActivity" />
     </group>
 </menu>

@@ -2,6 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -99,7 +101,31 @@ public class SummaryActivity extends Activity {
 
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
-        Toast.makeText(getApplicationContext(), "Playing back the meeting", Toast.LENGTH_LONG).show();
+        String wavFilePath = WavFile.convertFilenameFromRawToWav(TheAudioRecord.RECORDER_RAW_FILENAME);
+        File wavFile = new File(wavFilePath);
+        Uri wavFileURI = Uri.fromFile(wavFile);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(wavFileURI, "audio/x-wav");
+        if (wavFile.exists()) {
+            Log.i(TAG, "replayMeeting(): wavFile " + wavFilePath + " exists, playing");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                Log.v(TAG, "replayMeeting(): resolved activity");
+                startActivity(intent);
+            } else {
+                Log.v(TAG, "replayMeeting(): couldn't resolve activity");
+            }
+        } else {
+            Log.i(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
+            Toast.makeText(getApplicationContext(), "Can't play meeting file " + wavFilePath + "; it doesn't exist.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void launchMainActivity(MenuItem menuitem) {
+        Log.i(TAG, "launchMainActivity()");
+        MainActivity.resetFirstTime = true;
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     public void newMeeting(View v) {
