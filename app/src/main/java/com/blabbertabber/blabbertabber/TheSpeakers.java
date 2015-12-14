@@ -14,22 +14,22 @@ import java.util.Collections;
 public class TheSpeakers {
     public static final int MAX_SPEAKERS = 16;
     public static final int[] speakerColors = {
-            0xffff6600,
-            0xffffE600,
-            0xff99ff00,
-            0xff1aff00,
-            0xffff001a,
-            0xffff8b3d,
-            0xffffaf7a,
-            0xff00ff66,
-            0xffff0099,
-            0xff7acaff,
-            0xff3db1ff,
-            0xff00ffe6,
-            0xffe600ff,
-            0xff6600ff,
-            0xff001aff,
-            0xff0099ff};
+            0xb0ff6600,
+            0xb0ffE600,
+            0xb099ff00,
+            0xb01aff00,
+            0xb0ff001a,
+            0xb0ff8b3d,
+            0xb0ffaf7a,
+            0xb000ff66,
+            0xb0ff0099,
+            0xb07acaff,
+            0xb03db1ff,
+            0xb000ffe6,
+            0xb0e600ff,
+            0xb06600ff,
+            0xb0001aff,
+            0xb00099ff};
     private static final String TAG = "TheSpeakers";
     public static Speaker[] speakers = new Speaker[TheSpeakers.MAX_SPEAKERS];
     public static TheSpeakers singleton = new TheSpeakers();
