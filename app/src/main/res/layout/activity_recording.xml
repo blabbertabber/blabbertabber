@@ -11,6 +11,11 @@
         android:layout_weight="4">
 
 
+        <com.blabbertabber.blabbertabber.PieSlice
+            android:id="@+id/yellow_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ImageView
             android:id="@+id/speaker_ball"
             android:layout_width="match_parent"
