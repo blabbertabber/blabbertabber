@@ -29,7 +29,7 @@ public class PieSlice extends View {
         super(context);
     }
 
-    private void init(Context context, AttributeSet attrs){
+    private void init(Context context, AttributeSet attrs) {
         // http://stackoverflow.com/questions/8302229/accessing-attrs-in-attributeset-for-custom-components
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.PieSlice);
         color = a.getColor(R.styleable.PieSlice_pieColor, Color.BLACK);
