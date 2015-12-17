@@ -11,10 +11,30 @@
         android:layout_weight="4">
 
 
-        <com.blabbertabber.blabbertabber.PieSlice
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
             android:id="@+id/yellow_pie_slice"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#c0ffff00"
+            pie_slice:startAngle="0"
+            pie_slice:sweepAngle="45" />
+
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/red_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#c0ff0000"
+            pie_slice:startAngle="90"
+            pie_slice:sweepAngle="30" />
+
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/blue_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#c00000ff"
+            pie_slice:startAngle="180"
+            pie_slice:sweepAngle="60" />
+
 
         <ImageView
             android:id="@+id/speaker_ball"
