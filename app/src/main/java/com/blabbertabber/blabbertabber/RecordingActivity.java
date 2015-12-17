@@ -1,6 +1,8 @@
 package com.blabbertabber.blabbertabber;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -52,6 +54,13 @@ public class RecordingActivity extends Activity {
     private int mPreviousSpeakerId = -1;
     private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
+    private PieSlice bluePieSlice;
+    private PieSlice redPieSlice;
+    private PieSlice yellowPieSlice;
+    private ObjectAnimator rotateBlue;
+    private ObjectAnimator rotateRed;
+    private ObjectAnimator rotateYellow;
+    private AnimatorSet animatorSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +93,18 @@ public class RecordingActivity extends Activity {
                 }
             }
         };
+        bluePieSlice = (PieSlice) findViewById(R.id.blue_pie_slice);
+        redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
+        yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
+
+        Log.i(TAG, "onCreate() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
+
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 720).setDuration(5000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -720).setDuration(5000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(5000);
+
+        animatorSet = new AnimatorSet();
+        animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
     }
 
     @Override
@@ -113,6 +134,7 @@ public class RecordingActivity extends Activity {
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
         }
+//        animatorSet.start();
     }
 
     @Override
