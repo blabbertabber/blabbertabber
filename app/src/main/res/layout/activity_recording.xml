@@ -11,6 +11,31 @@
         android:layout_weight="4">
 
 
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/yellow_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#b0fee500"
+            pie_slice:startAngle="0"
+            pie_slice:sweepAngle="45" />
+
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/red_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#b0fe0019"
+            pie_slice:startAngle="90"
+            pie_slice:sweepAngle="30" />
+
+        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/blue_pie_slice"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            pie_slice:pieColor="#b00099fe"
+            pie_slice:startAngle="180"
+            pie_slice:sweepAngle="60" />
+
+
         <ImageView
             android:id="@+id/speaker_ball"
             android:layout_width="match_parent"
@@ -22,7 +47,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
         <ImageButton
             android:id="@+id/button_record"
@@ -31,7 +59,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="record"
-            android:src="@drawable/ic_hearing_black_24px" />
+            android:src="@drawable/ic_hearing_black" />
 
         <ImageButton
             android:id="@+id/button_pause"
@@ -40,7 +68,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="pause"
-            android:src="@drawable/ic_pause_circle_outline_black_24px" />
+            android:src="@drawable/ic_pause_circle_outline_black" />
 
         <ImageButton
             android:id="@+id/button_reset"
@@ -49,7 +77,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="reset"
-            android:src="@drawable/ic_settings_backup_restore_24dp" />
+            android:src="@drawable/ic_settings_backup_restore" />
 
         <ImageButton
             android:id="@+id/button_finish"
@@ -58,7 +86,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="summary"
-            android:src="@drawable/ic_publish_24dp" />
+            android:src="@drawable/ic_publish" />
 
     </LinearLayout>
 

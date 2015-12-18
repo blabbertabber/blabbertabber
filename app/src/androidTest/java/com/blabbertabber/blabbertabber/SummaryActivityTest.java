@@ -36,5 +36,4 @@ public class SummaryActivityTest {
         onView(withId(R.id.button_share)).check(matches(isDisplayed()));
         onView(withId(R.id.button_share)).check(matches(isClickable()));
     }
-
 }
