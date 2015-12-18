@@ -3,6 +3,7 @@ package com.blabbertabber.blabbertabber;
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -93,18 +94,7 @@ public class RecordingActivity extends Activity {
                 }
             }
         };
-        bluePieSlice = (PieSlice) findViewById(R.id.blue_pie_slice);
-        redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
-        yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        Log.i(TAG, "onCreate() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
-
-        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 720).setDuration(5000);
-        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -720).setDuration(5000);
-        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(5000);
-
-        animatorSet = new AnimatorSet();
-        animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
     }
 
     @Override
@@ -134,7 +124,27 @@ public class RecordingActivity extends Activity {
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
         }
-//        animatorSet.start();
+        bluePieSlice = (PieSlice) findViewById(R.id.blue_pie_slice);
+        redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
+        yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
+
+        Log.i(TAG, "onResume() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
+
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
+        } else {
+            animatorSet.resume();
+        }
     }
 
     @Override
@@ -148,6 +158,8 @@ public class RecordingActivity extends Activity {
         }
         // close-out the current speaker
         stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     @Override
@@ -179,10 +191,15 @@ public class RecordingActivity extends Activity {
 
     public void record(View v) {
         Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
+        animatorSet.resume();
     }
 
     public void pause(View v) {
         Toast.makeText(getApplicationContext(), "You have paused the Recording", Toast.LENGTH_SHORT).show();
+        // close-out the current speaker
+        stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     public void reset(View v) {

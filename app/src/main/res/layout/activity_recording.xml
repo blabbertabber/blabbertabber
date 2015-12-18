@@ -15,7 +15,7 @@
             android:id="@+id/yellow_pie_slice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            pie_slice:pieColor="#c0ffff00"
+            pie_slice:pieColor="#b0fee500"
             pie_slice:startAngle="0"
             pie_slice:sweepAngle="45" />
 
@@ -23,7 +23,7 @@
             android:id="@+id/red_pie_slice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            pie_slice:pieColor="#c0ff0000"
+            pie_slice:pieColor="#b0fe0019"
             pie_slice:startAngle="90"
             pie_slice:sweepAngle="30" />
 
@@ -31,7 +31,7 @@
             android:id="@+id/blue_pie_slice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            pie_slice:pieColor="#c00000ff"
+            pie_slice:pieColor="#b00099fe"
             pie_slice:startAngle="180"
             pie_slice:sweepAngle="60" />
 
