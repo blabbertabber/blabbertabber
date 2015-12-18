@@ -1,6 +1,9 @@
 package com.blabbertabber.blabbertabber;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -52,6 +55,13 @@ public class RecordingActivity extends Activity {
     private int mPreviousSpeakerId = -1;
     private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
+    private PieSlice bluePieSlice;
+    private PieSlice redPieSlice;
+    private PieSlice yellowPieSlice;
+    private ObjectAnimator rotateBlue;
+    private ObjectAnimator rotateRed;
+    private ObjectAnimator rotateYellow;
+    private AnimatorSet animatorSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,7 @@ public class RecordingActivity extends Activity {
                 }
             }
         };
+
     }
 
     @Override
@@ -97,22 +108,42 @@ public class RecordingActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
-        // Let's make sure we have android.permission.RECORD_AUDIO permission
+        // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            registerRecordingServiceReceiver();
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                registerRecordingServiceReceiver();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
         }
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            registerRecordingServiceReceiver();
+        bluePieSlice = (PieSlice) findViewById(R.id.blue_pie_slice);
+        redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
+        yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
+
+        Log.i(TAG, "onResume() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
+
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_WRITE_EXTERNAL_STORAGE);
+            animatorSet.resume();
         }
     }
 
@@ -127,6 +158,8 @@ public class RecordingActivity extends Activity {
         }
         // close-out the current speaker
         stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     @Override
@@ -158,10 +191,15 @@ public class RecordingActivity extends Activity {
 
     public void record(View v) {
         Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
+        animatorSet.resume();
     }
 
     public void pause(View v) {
         Toast.makeText(getApplicationContext(), "You have paused the Recording", Toast.LENGTH_SHORT).show();
+        // close-out the current speaker
+        stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     public void reset(View v) {
@@ -243,10 +281,7 @@ public class RecordingActivity extends Activity {
             case REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, kick off the service
-                    registerRecordingServiceReceiver();
-                } else {
+                        && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     // permission denied, message & exit gracefully
                     Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
                     finish();
