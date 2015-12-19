@@ -26,11 +26,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Created by cunnie on 8/16/15.
- * Activity to record and identify voices.
+ * Activity to record sound.
+ * TODO: reflect volume in animation somehow.
  */
-
-
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
@@ -63,6 +61,14 @@ public class RecordingActivity extends Activity {
     private ObjectAnimator rotateYellow;
     private AnimatorSet animatorSet;
 
+    /**
+     * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
+     * Intent RECORD_STATUS.
+     * Extracts the volumes and speaker id from the RECORD_RESULT messages.
+     * Gracefully handles any RECORD_STATUS message as a failure.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +80,7 @@ public class RecordingActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive():  Just receive a message with Intent " + intent);
                 if (intent.getAction().equals(Recorder.RECORD_RESULT)) {
+                    /// TODO: remove speaker id, and change data passed to just an int.  No array needed.
                     int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
                     int speaker = speakerinfo[0], volume = speakerinfo[1];
                     // do something here.

@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Created by brendancunnie on 11/29/15.
+ * Utility class to convert the .raw pcm file to a .wav file.
  */
 public class WavFile {
     private static final String TAG = "WavFile";
@@ -19,12 +19,6 @@ public class WavFile {
 
     private WavFile() {
     }
-
-/*
-    public static WavFile of (InputStream input) {
-
-    }
-*/
 
     public static WavFile of(File rawFile) throws IOException {
         WavFile wavFile = new WavFile();
@@ -108,5 +102,4 @@ public class WavFile {
             output.write(value.charAt(i));
         }
     }
-
 }

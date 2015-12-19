@@ -3,9 +3,8 @@ package com.blabbertabber.blabbertabber;
 import android.os.Build;
 
 /**
- * Created by cunnie on 10/6/15.
- * <p/>
- * This is a class that wraps "Build.MODEL", which returns a String of the model phone we're running
+ * This is a utility class that wraps "Build.MODEL", to allow more rigorous testing.
+ * BuildMODEL.model() returns a String of the model phone we're running
  * on, e.g. "Nexus 5X".
  * <p/>
  * It's split out to its own class to enable testing via mock().

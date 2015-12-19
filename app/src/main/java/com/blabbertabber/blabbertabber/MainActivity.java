@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+/**
+ * The splash screen.
+ * It is shown only the first time the application is openned.
+ */
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
     public static boolean resetFirstTime = false;

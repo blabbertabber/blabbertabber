@@ -3,22 +3,21 @@ package com.blabbertabber.blabbertabber;
 import android.util.Log;
 
 /**
- * Created by cunnie on 11/11/15.
- * <p/>
  * Useful helper functions
  */
 public class Helper {
     private static final String TAG = "Helper";
 
-    /*
-     Converts time to a string, e.g. "1:59:30.1"
-     or "3.6" or "5:33.2".
-     Rolled my own because JDK 7's DateFormat class seemed
-     to require some unnatural contortions. JDK 8 has a much
-     richer library.
-
-     HMMSSm → Hours Minutes Seconds milliSeconds, H:MM:SS.m
-*/
+    /**
+     * Converts time to a string, e.g. "1:59:30.1"
+     * or "3.6" or "5:33.2".
+     * Rolled my own because JDK 7's DateFormat class seemed
+     * to require some unnatural contortions. JDK 8 has a much
+     * richer library.
+     *
+     * @param milliseconds Time in millseconds since start of meeting
+     * @return String formatted time interval string in "H:MM:SS.m" format.
+     */
     public static String timeToHMMSSm(long milliseconds) {
         Log.v(TAG, "timeToHMMSSm(" + milliseconds + ")");
 
@@ -38,6 +37,14 @@ public class Helper {
     }
 
     //      HMMSS → Hours Minutes Seconds, H:MM:SS
+
+    /**
+     * Converts time to a string, e.g. "1:59:30"
+     * or "3.6" or "5:33".
+     *
+     * @param milliseconds Time in millseconds since start of meeting
+     * @return String formatted time interval string in "H:MM:SS" format.
+     */
     public static String timeToHMMSS(long milliseconds) {
         Log.v(TAG, "timeToHMMSS(" + milliseconds + ")");
 
