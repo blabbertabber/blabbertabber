@@ -121,7 +121,9 @@ public class TheAudioRecord extends AudioRecord {
         // 2x longer than the sample time to write (i.e. we drop 1/2 the sound)
         // if we foolishly use writeShort() instead
         for (int i = 0; i < readSize; i++) {
-            // if we ever run on a little-endian processor (Intel) this might be a problem:
+            // http://developer.android.com/reference/android/media/AudioFormat.html
+            // "...when the short is stored in a ByteBuffer, it is native endian (as compared to the default Java big endian)."
+            // However the following lines seem to work both on ARM (big endian) and x86_64 emulator (little endian)
             rawAudio[i * 2] = (byte) (AUDIO_DATA[i] >> 8);
             rawAudio[i * 2 + 1] = (byte) AUDIO_DATA[i];
             if (AUDIO_DATA[i] > maxAmplitude) {
