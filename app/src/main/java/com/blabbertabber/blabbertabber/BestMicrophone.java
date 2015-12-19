@@ -4,8 +4,6 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 /**
- * Created by cunnie on 10/6/15.
- * <p/>
  * Determines the best Microphone (MediaRecorder.AudioSource.XXX) to use
  */
 
@@ -31,7 +29,10 @@ public class BestMicrophone {
         return getBestMicrophone(new BuildMODEL());
     }
 
-    // method
+    // Determines the best Media.AudioSource microphone for the specific Android model on which
+    // BlabberTabber is running.
+    // @param buildModel The model of the android on which BlabberTabber is running.
+    // @return The best microphone/AudioSource (e.g. MediaRecord.AudioSource.DEFAULT)
     public static int getBestMicrophone(BuildMODEL buildModel) {
         String model = buildModel.model();
         Log.v(TAG, "getBestMicrophone() Build.MODEL == " + model);

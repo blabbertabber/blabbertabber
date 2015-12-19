@@ -4,9 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * Created by cunnie on 10/3/15.
- * <p/>
- * Class that works with a REAL microphone (non-emulator)
+ * Wrapper of the AudioRecord singleton (with more consistent method names), exposing
+ * only the needed methods.
+ * Class that works with a REAL microphone (non-emulator).
+ * This class inherits from a Runnable that Recording Service starts when it is created.
  */
 public class DeviceRecorder extends Recorder {
     private TheAudioRecord mRecorder;
@@ -20,7 +21,6 @@ public class DeviceRecorder extends Recorder {
         Log.i(TAG, "startRecording()");
         mRecorder = TheAudioRecord.getInstance();
         mRecorder.startRecording();
-
     }
 
     @Override

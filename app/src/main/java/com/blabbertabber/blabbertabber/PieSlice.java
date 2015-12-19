@@ -11,7 +11,8 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Created by cunnie on 12/15/15.
+ * Show a section of a pie slice around the speaker ball.
+ * Used for animations.
  */
 public class PieSlice extends View {
     private static final String TAG = "PieSlice";
@@ -20,17 +21,32 @@ public class PieSlice extends View {
     private float startAngle = 0;
     private float sweepAngle = 45;
 
+    /**
+     * Constructor.  PieSlice is used in the layout.xml, so you need a constructor to which
+     * the framework will pass Context and Attribute set.
+     *
+     * @param context required parameter by framework, but unnused here.
+     * @param attrs   required parameter by framework, but unnused here.
+     */
     public PieSlice(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
+    /// TODO: needed?
     public PieSlice(Context context) {
         super(context);
     }
 
+    /**
+     * Initialize color and angle from attributes set in layout.xml
+     *
+     * @param context
+     * @param attrs
+     */
     private void init(Context context, AttributeSet attrs) {
         // http://stackoverflow.com/questions/8302229/accessing-attrs-in-attributeset-for-custom-components
+        /// TODO: can we use the passed context instead of getContext()?
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.PieSlice);
         color = a.getColor(R.styleable.PieSlice_pieColor, Color.BLACK);
         startAngle = a.getFloat(R.styleable.PieSlice_startAngle, 0);

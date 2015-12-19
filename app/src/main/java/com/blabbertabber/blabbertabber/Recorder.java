@@ -1,13 +1,5 @@
 package com.blabbertabber.blabbertabber;
 
-/**
- * Created by Cunnie on 9/16/15.
- * <p/>
- * Class that returns speaker and volume
- * This is a throw-away class that will be replaced by actual speaker diarization software
- * which will be some type of service
- */
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -17,6 +9,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Class that returns speaker and volume.
+ * This is executed as a thread from RecordingService.
+ */
 public abstract class Recorder implements Runnable {
     static final public String RECORD_STATUS = "com.blabbertabber.blabbertabber.RecordingService.RECORD_STATUS";
     static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.RecordingService.RECORD_RESULT";
@@ -31,7 +27,6 @@ public abstract class Recorder implements Runnable {
     private int speaker;
     private long nextSpeakerChange;
 
-    // Constructor
     public Recorder(Context context) {
         mContext = context;
         // speakers change on average every 5 seconds
@@ -40,6 +35,10 @@ public abstract class Recorder implements Runnable {
         Log.i(TAG, "Recorder()");
     }
 
+    /**
+     * Start the recording, and broadcast the speaker volume via Intent RECORD_RESULT.
+     * This is called by RecordingService on RecordingService's creation.
+     */
     public void run() {
         Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
         // https://developer.android.com/training/multiple-threads/define-runnable.html
@@ -47,24 +46,13 @@ public abstract class Recorder implements Runnable {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
 
-        // TODO:  Writer code to set up AudioRecord stuff
-        // Loop, getting pack sliced of audio record data
-        // while ...
-        //   get volume from AudioRecord data
-        //   Do mathematical logic to determine speaker id
-        //   Notify listener(s) of speakerId and speakerVolume
-        /*
-            for (ResponseReceivedListener listener:listeners){
-               listener.onResponseReceived(arg1, arg2);
-            }
-         */
-
         startRecording();
         try {
             while (true) {
                 if (isRecording()) {
                     sleep(50);
                     Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
+                    /// TODO: remove getSpeakerId()
                     sendResult(getSpeakerId(), getSpeakerVolume());
                 } else {
                     Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
@@ -81,12 +69,25 @@ public abstract class Recorder implements Runnable {
         }
     }
 
+    /**
+     * Utility method to broadcast the recorded volume.
+     *
+     * @param id     The id of the speaker speaking.
+     * @param volume The volume.  0-100 inclusive.
+     */
+    /// TODO: remove references to id.
+    /// TODO: should we change volume range to signed short?
     public void sendResult(int id, int volume) {
         Intent intent = new Intent(RECORD_RESULT);
         intent.putExtra(RECORD_MESSAGE, new int[]{id, volume});
         mBroadcastManager.sendBroadcast(intent);
     }
 
+    /**
+     * Utility method to broadcast the recorder status.
+     *
+     * @param status The status, e.g. MICROPHONE_UNAVAILABLE
+     */
     public void sendStatus(int status) {
         Intent intent = new Intent(RECORD_STATUS);
         intent.putExtra(RECORD_STATUS_MESSAGE, status);
@@ -100,6 +101,7 @@ public abstract class Recorder implements Runnable {
     public abstract boolean isRecording();
 
     // Who is currently speaking?
+    /// TODO: Remove this method.
     public int getSpeakerId() {
         if (System.currentTimeMillis() > nextSpeakerChange) {
             speaker = nextSpeaker();
@@ -112,6 +114,7 @@ public abstract class Recorder implements Runnable {
     public abstract int getSpeakerVolume();
 
     // usually returns a speaker different than the current speaker, possibly a new speaker
+    /// TODO: remove this method.
     private int nextSpeaker() {
         if (newSpeaker()) {
             int nextSpeaker = numSpeakers;
@@ -125,6 +128,7 @@ public abstract class Recorder implements Runnable {
     }
 
     // Are we adding a completely new speaker who hasn't spoken yet?
+    /// TODO: remove this method.
     private boolean newSpeaker() {
         double p = ((TheSpeakers.MAX_SPEAKERS - numSpeakers) / (TheSpeakers.MAX_SPEAKERS - 1.0));
         Log.i(TAG, "newSpeaker(): " + p);

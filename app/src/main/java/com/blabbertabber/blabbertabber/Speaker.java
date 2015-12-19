@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by cunnie on 11/4/15.
+ * Tracks the duration information for each speaker.
+ * Implements Comparable to facilitate sorting.
  */
-
 public class Speaker implements Comparable<Speaker> {
     private static final String TAG = "Speaker";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
