@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Created by brendancunnie on 11/21/15.
+ * Used in the SummaryActivity to draw the bars.
  */
 public class RectangleView extends View {
     private static final String TAG = "RectangleView";

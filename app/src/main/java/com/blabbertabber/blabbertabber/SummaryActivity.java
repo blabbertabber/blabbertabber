@@ -16,7 +16,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by cunnie on 11/11/15.
  * Shows a bar chart of speakers in decreasing order
  */
 public class SummaryActivity extends Activity {
@@ -99,6 +98,12 @@ public class SummaryActivity extends Activity {
         }
     }
 
+    /**
+     * Replays the most recent meeting.
+     * Called by the navigation drawer.
+     *
+     * @param menuItem Item selected in navigation drawer.  Unused within method.
+     */
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
         String wavFilePath = WavFile.convertFilenameFromRawToWav(TheAudioRecord.RECORDER_RAW_FILENAME);

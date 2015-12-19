@@ -6,8 +6,10 @@ import android.util.Log;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Created by cunnie on 10/3/15.
  * Class that works with an emulator (no microphone)
+ * It appears that the emulator on Macs that have builtin microphones, e.g. Brendan's
+ * MacBook Pro, works fine with the emulator; however, the emulator on Macs that don't
+ * have builtin microphones, e.g. Brian's Mac Pro, crash when they try to access the microphone.
  */
 public class EmulatorRecorder extends Recorder {
 

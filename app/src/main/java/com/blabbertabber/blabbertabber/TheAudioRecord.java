@@ -11,13 +11,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Created by Cunnie on 10/8/15.
+ * Singletonized version of AudioRecord.
+ * Contained by DeviceRecorder.
+ * <p/>
  * http://www.javaworld.com/article/2073352/core-java/simply-singleton.html
+ * <p/>
+ * BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
+ * release() calls MediaRecorder.reset() instead of MediaRecorder.release();
  */
-
-// BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
-//    release() calls MediaRecorder.reset() instead of MediaRecorder.release();
-
 public class TheAudioRecord extends AudioRecord {
     private static final String TAG = "TheAudioRecord";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
@@ -104,6 +105,11 @@ public class TheAudioRecord extends AudioRecord {
 
     // We are temporarily writing a .raw file out for postprocessing.
     // A subsequent version will not perform this intermediate step.
+
+    /**
+     * @return int  The maximum volume over the most recent section of time.
+     * The range is that of a signed short.
+     */
     public int getMaxAmplitude() {
         int maxAmplitude = Short.MIN_VALUE;
         int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);

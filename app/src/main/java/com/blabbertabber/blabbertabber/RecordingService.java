@@ -7,7 +7,11 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-
+/**
+ * Do we really need to do this?
+ * This class spawns the DeviceRecorder or EmulatorRecorder thread.  But can that thread be
+ * spawned just as easily in RecordingActivity?
+ */
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
     private final IBinder mBinder = new RecordingBinder();
