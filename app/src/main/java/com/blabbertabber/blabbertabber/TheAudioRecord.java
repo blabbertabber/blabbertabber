@@ -111,22 +111,31 @@ public class TheAudioRecord extends AudioRecord {
      * The range is that of a signed short.
      */
     public int getMaxAmplitude() {
+        Log.i(TAG, "getMaxAmplitude()");
         int maxAmplitude = Short.MIN_VALUE;
         int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
+        byte[] rawAudio = new byte[AUDIO_DATA.length * 2];
 
+        // Performance: we must copy the PCM data into an array of bytes so that
+        // we can write the RawDataOutputStream in one shot; otherwise it can take
+        // 2x longer than the sample time to write (i.e. we drop 1/2 the sound)
+        // if we foolishly use writeShort() instead
         for (int i = 0; i < readSize; i++) {
-            try {
-                mRawDataOutputStream.writeShort(AUDIO_DATA[i]);
-            } catch (IOException e) {
-                Log.wtf(TAG, "IOException thrown trying to write to file " + RECORDER_RAW_FILENAME
-                        + " with message " + e.getMessage());
-                e.printStackTrace();
-            }
+            // if we ever run on a little-endian processor (Intel) this might be a problem:
+            rawAudio[i * 2] = (byte) (AUDIO_DATA[i] >> 8);
+            rawAudio[i * 2 + 1] = (byte) AUDIO_DATA[i];
             if (AUDIO_DATA[i] > maxAmplitude) {
                 maxAmplitude = AUDIO_DATA[i];
             }
         }
-        Log.i(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
+        try {
+            mRawDataOutputStream.write(rawAudio, 0, readSize * 2);
+        } catch (IOException e) {
+            Log.wtf(TAG, "IOException thrown trying to write to file " + RECORDER_RAW_FILENAME
+                    + " with message " + e.getMessage());
+            e.printStackTrace();
+        }
+        Log.i(TAG,"getMaxAmplitude() readsize: "+readSize+" maxAmplitude "+maxAmplitude);
         return maxAmplitude;
     }
 }
