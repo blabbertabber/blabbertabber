@@ -3,6 +3,7 @@ package com.blabbertabber.blabbertabber;
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -245,13 +246,8 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "stopPreviousSpeaker()");
         if (mPreviousSpeakerId >= 0) {
             // The previous speaker is valid; we are not initializing.
-            // reset the size of the previous speakerBall, and dim it, too
             Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
             previousSpeaker.stopSpeaking();
-//            View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
-//            previousSpeakerBall.setScaleX(1);
-//            previousSpeakerBall.setScaleY(1);
-//            previousSpeakerBall.setAlpha((float) 0.7);
         }
     }
 
@@ -263,20 +259,23 @@ public class RecordingActivity extends Activity {
         }
         Speaker speaker = mSpeakers.speakers[speakerId];
         speaker.startSpeaking();
-//        ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
-//        speaker.setVisible(View.VISIBLE);
-//        speakerBall.setVisibility(View.VISIBLE);
-//        speakerBall.setAlpha((float) 1.0);
-//        GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
-//        if (shape != null) {
-//            shape.setColor(speaker.getColor());
-//        }
-//        speakerBall.requestLayout();
 
-//        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (0.5 + speakerVolume / 80.0));
-//        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
-//        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
-//        scaleAnimation.setDuration(20).start();
+        // PieSlices are "maxed-out" by default
+        // Max-out corresponds to a 32767 speaker volume
+        // .80 * PieSlice is the min, corresponding to a 0 speaker volume
+        // "goldenRatio" has nothing to do with the Golden Ratio
+        float goldenRatio = (float) (0.2 * (double) speakerVolume / (double) Short.MAX_VALUE + 0.8);
+        Log.d(TAG, "updateSpeakerVolumeView() goldenRatio: " + goldenRatio);
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (goldenRatio));
+        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (goldenRatio));
+
+        ObjectAnimator bScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(bluePieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
+
+        AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
+        ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
+        ephemeralAnimatorSet.start();
     }
 
     @Override
