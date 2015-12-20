@@ -50,7 +50,7 @@ public abstract class Recorder implements Runnable {
         try {
             while (true) {
                 if (isRecording()) {
-                    sleep(50);
+                    sleep(100);
                     Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
                     /// TODO: remove getSpeakerId()
                     sendResult(getSpeakerId(), getSpeakerVolume());

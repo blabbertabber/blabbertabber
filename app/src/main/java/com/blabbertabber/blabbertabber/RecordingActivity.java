@@ -3,6 +3,7 @@ package com.blabbertabber.blabbertabber;
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -78,7 +79,7 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "onReceive():  Just receive a message with Intent " + intent);
+                Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(Recorder.RECORD_RESULT)) {
                     /// TODO: remove speaker id, and change data passed to just an int.  No array needed.
                     int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
@@ -101,7 +102,6 @@ public class RecordingActivity extends Activity {
                 }
             }
         };
-
     }
 
     @Override
@@ -135,23 +135,10 @@ public class RecordingActivity extends Activity {
         redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
         yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        Log.i(TAG, "onResume() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
-
-        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-        if (animatorSet == null) {
-            animatorSet = new AnimatorSet();
-            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
-            animatorSet.start();
-        } else {
-            animatorSet.resume();
-        }
+        // start recording as soon as we resume
+        // TODO: decide if someone pauses the meeting, switches to another activity, switches
+        // back to this activity--do we resume right away or honor the pause? We currently resume.
+        record(findViewById(R.id.button_record));
     }
 
     @Override
@@ -163,17 +150,17 @@ public class RecordingActivity extends Activity {
         if (mServerConn != null && mBound) {
             unbindService(mServerConn);
         }
-        // close-out the current speaker
-        stopPreviousSpeaker();
-        // pause the animation
-        animatorSet.pause();
+        pause(findViewById(R.id.button_pause));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
-    }
+        // clear out the animatorSet; it doesn't recover properly (paused/started/running
+        // are all true, but the animations are frozen
+        animatorSet.cancel(); // cancel() is quicker than end(); it doesn't wait for animations to finish
+        animatorSet = null;    }
 
     @Override
     protected void onDestroy() {
@@ -197,12 +184,31 @@ public class RecordingActivity extends Activity {
     }
 
     public void record(View v) {
-        Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
-        animatorSet.resume();
+        Log.i(TAG, "record()");
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null ) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
+        } else {
+            Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
+                    " animatorSet.isStarted(): " + animatorSet.isStarted() +
+                    " animatorSet.isRunning(): " + animatorSet.isRunning());
+            if (animatorSet.isPaused()) {
+                animatorSet.resume();
+            }
+        }
     }
 
     public void pause(View v) {
-        Toast.makeText(getApplicationContext(), "You have paused the Recording", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "pause()");
         // close-out the current speaker
         stopPreviousSpeaker();
         // pause the animation
@@ -210,12 +216,16 @@ public class RecordingActivity extends Activity {
     }
 
     public void reset(View v) {
-        Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "reset()");
         mPreviousSpeakerId = -1;
         mSpeakers.reset();
+        // reset the animation
+        animatorSet.end();
+        animatorSet.start();
     }
 
     public void summary(View v) {
+        Log.i(TAG, "summary()");
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
@@ -233,15 +243,11 @@ public class RecordingActivity extends Activity {
     }
 
     private void stopPreviousSpeaker() {
+        Log.i(TAG, "stopPreviousSpeaker()");
         if (mPreviousSpeakerId >= 0) {
             // The previous speaker is valid; we are not initializing.
-            // reset the size of the previous speakerBall, and dim it, too
             Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
             previousSpeaker.stopSpeaking();
-//            View previousSpeakerBall = findViewById(previousSpeaker.getViewID());
-//            previousSpeakerBall.setScaleX(1);
-//            previousSpeakerBall.setScaleY(1);
-//            previousSpeakerBall.setAlpha((float) 0.7);
         }
     }
 
@@ -253,20 +259,23 @@ public class RecordingActivity extends Activity {
         }
         Speaker speaker = mSpeakers.speakers[speakerId];
         speaker.startSpeaking();
-//        ImageView speakerBall = (ImageView) findViewById(speaker.getViewID());
-//        speaker.setVisible(View.VISIBLE);
-//        speakerBall.setVisibility(View.VISIBLE);
-//        speakerBall.setAlpha((float) 1.0);
-//        GradientDrawable shape = (GradientDrawable) speakerBall.getDrawable();
-//        if (shape != null) {
-//            shape.setColor(speaker.getColor());
-//        }
-//        speakerBall.requestLayout();
 
-//        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (0.5 + speakerVolume / 80.0));
-//        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (0.5 + speakerVolume / 80.0));
-//        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
-//        scaleAnimation.setDuration(20).start();
+        // PieSlices are "maxed-out" by default
+        // Max-out corresponds to a 32767 speaker volume
+        // .80 * PieSlice is the min, corresponding to a 0 speaker volume
+        // "goldenRatio" has nothing to do with the Golden Ratio
+        float goldenRatio = (float) (0.2 * (double) speakerVolume / (double) Short.MAX_VALUE + 0.8);
+        Log.d(TAG, "updateSpeakerVolumeView() goldenRatio: " + goldenRatio);
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (goldenRatio));
+        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (goldenRatio));
+
+        ObjectAnimator bScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(bluePieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
+
+        AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
+        ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
+        ephemeralAnimatorSet.start();
     }
 
     @Override
