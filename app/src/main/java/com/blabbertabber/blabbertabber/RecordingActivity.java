@@ -150,7 +150,9 @@ public class RecordingActivity extends Activity {
             animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
             animatorSet.start();
         } else {
-            animatorSet.resume();
+            if (animatorSet.isPaused()) {
+                animatorSet.resume();
+            }
         }
     }
 
@@ -173,6 +175,8 @@ public class RecordingActivity extends Activity {
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
+        animatorSet.end();
+        animatorSet = null;
     }
 
     @Override
@@ -198,7 +202,13 @@ public class RecordingActivity extends Activity {
 
     public void record(View v) {
         Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
-        animatorSet.resume();
+        if (animatorSet != null) {
+            if (animatorSet.isPaused()) {
+                animatorSet.resume();
+            }
+        } else {
+            rotatePieSlices();
+        }
     }
 
     public void pause(View v) {
@@ -213,6 +223,9 @@ public class RecordingActivity extends Activity {
         Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
         mPreviousSpeakerId = -1;
         mSpeakers.reset();
+        // reset the animation
+        animatorSet.end();
+        animatorSet.start();
     }
 
     public void summary(View v) {
@@ -268,6 +281,32 @@ public class RecordingActivity extends Activity {
 //        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
 //        scaleAnimation.setDuration(20).start();
     }
+
+    private void rotatePieSlices() {
+        // the first ObjectAnimator in an AnimatorSet gets reset, but its
+        // brethren do not (e.g. the blue pie slice will "jump" to its initial position
+        // at the top of the screen while the red & yellow slices move smoothly along.
+        // We have an invisible, null animator that gets reset without disrupting the
+        // animation
+        ObjectAnimator nullAnimator = ObjectAnimator.ofFloat(findViewById(R.id.speaker_ball), View.ALPHA, 1).setDuration(1_000);
+        ObjectAnimator rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        ObjectAnimator rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        ObjectAnimator rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        nullAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null) {
+            animatorSet = new AnimatorSet();
+            animatorSet.playTogether(nullAnimator, rotateBlue, rotateRed, rotateYellow);
+            animatorSet.start();
+        } else {
+            animatorSet.resume();
+        }
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

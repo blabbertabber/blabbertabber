@@ -137,7 +137,7 @@ public class TheAudioRecord extends AudioRecord {
                     + " with message " + e.getMessage());
             e.printStackTrace();
         }
-        Log.i(TAG,"getMaxAmplitude() readsize: "+readSize+" maxAmplitude "+maxAmplitude);
+        Log.i(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
         return maxAmplitude;
     }
 }
