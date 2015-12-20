@@ -111,7 +111,6 @@ public class TheAudioRecord extends AudioRecord {
      * The range is that of a signed short.
      */
     public int getMaxAmplitude() {
-        Log.i(TAG, "getMaxAmplitude()");
         int maxAmplitude = Short.MIN_VALUE;
         int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
         byte[] rawAudio = new byte[AUDIO_DATA.length * 2];
@@ -137,7 +136,8 @@ public class TheAudioRecord extends AudioRecord {
                     + " with message " + e.getMessage());
             e.printStackTrace();
         }
-        Log.i(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
+        // Log.v instead of Log.i because this routine is called very, very often
+        Log.v(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
         return maxAmplitude;
     }
 }

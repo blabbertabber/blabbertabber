@@ -41,7 +41,7 @@ public class DeviceRecorder extends Recorder {
     public int getSpeakerVolume() {
         int volume = mRecorder.getMaxAmplitude();
         volume = volume * 100 / 32768;
-        Log.i(TAG, "getSpeakerVolume() volume is " + volume);
+        Log.v(TAG, "getSpeakerVolume() volume: " + volume);
         return volume;
     }
 }
