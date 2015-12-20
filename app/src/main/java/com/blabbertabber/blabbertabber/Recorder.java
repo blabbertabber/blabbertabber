@@ -50,7 +50,8 @@ public abstract class Recorder implements Runnable {
         try {
             while (true) {
                 if (isRecording()) {
-                    sleep(100);
+                    // sample at twice the AudioRecord buffer size or else choppiness
+                    sleep(50);
                     Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
                     /// TODO: remove getSpeakerId()
                     sendResult(getSpeakerId(), getSpeakerVolume());
