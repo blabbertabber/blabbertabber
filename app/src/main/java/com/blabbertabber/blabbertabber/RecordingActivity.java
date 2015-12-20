@@ -78,7 +78,7 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "onReceive():  Just receive a message with Intent " + intent);
+                Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(Recorder.RECORD_RESULT)) {
                     /// TODO: remove speaker id, and change data passed to just an int.  No array needed.
                     int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
@@ -101,7 +101,6 @@ public class RecordingActivity extends Activity {
                 }
             }
         };
-
     }
 
     @Override
@@ -135,25 +134,10 @@ public class RecordingActivity extends Activity {
         redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
         yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        Log.i(TAG, "onResume() bluePieSlice: " + bluePieSlice + " redPieSlice " + redPieSlice + " yellowPieSlice " + yellowPieSlice);
-
-        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-        if (animatorSet == null) {
-            animatorSet = new AnimatorSet();
-            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
-            animatorSet.start();
-        } else {
-            if (animatorSet.isPaused()) {
-                animatorSet.resume();
-            }
-        }
+        // start recording as soon as we resume
+        // TODO: decide if someone pauses the meeting, switches to another activity, switches
+        // back to this activity--do we resume right away or honor the pause? We currently resume.
+        record(findViewById(R.id.button_record));
     }
 
     @Override
@@ -165,19 +149,17 @@ public class RecordingActivity extends Activity {
         if (mServerConn != null && mBound) {
             unbindService(mServerConn);
         }
-        // close-out the current speaker
-        stopPreviousSpeaker();
-        // pause the animation
-        animatorSet.pause();
+        pause(findViewById(R.id.button_pause));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
-        animatorSet.end();
-        animatorSet = null;
-    }
+        // clear out the animatorSet; it doesn't recover properly (paused/started/running
+        // are all true, but the animations are frozen
+        animatorSet.cancel(); // cancel() is quicker than end(); it doesn't wait for animations to finish
+        animatorSet = null;    }
 
     @Override
     protected void onDestroy() {
@@ -201,18 +183,31 @@ public class RecordingActivity extends Activity {
     }
 
     public void record(View v) {
-        Toast.makeText(getApplicationContext(), "You are recording", Toast.LENGTH_SHORT).show();
-        if (animatorSet != null) {
+        Log.i(TAG, "record()");
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null ) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
+        } else {
+            Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
+                    " animatorSet.isStarted(): " + animatorSet.isStarted() +
+                    " animatorSet.isRunning(): " + animatorSet.isRunning());
             if (animatorSet.isPaused()) {
                 animatorSet.resume();
             }
-        } else {
-            rotatePieSlices();
         }
     }
 
     public void pause(View v) {
-        Toast.makeText(getApplicationContext(), "You have paused the Recording", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "pause()");
         // close-out the current speaker
         stopPreviousSpeaker();
         // pause the animation
@@ -220,7 +215,7 @@ public class RecordingActivity extends Activity {
     }
 
     public void reset(View v) {
-        Toast.makeText(getApplicationContext(), "You have reset the Recording", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "reset()");
         mPreviousSpeakerId = -1;
         mSpeakers.reset();
         // reset the animation
@@ -229,6 +224,7 @@ public class RecordingActivity extends Activity {
     }
 
     public void summary(View v) {
+        Log.i(TAG, "summary()");
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
@@ -246,6 +242,7 @@ public class RecordingActivity extends Activity {
     }
 
     private void stopPreviousSpeaker() {
+        Log.i(TAG, "stopPreviousSpeaker()");
         if (mPreviousSpeakerId >= 0) {
             // The previous speaker is valid; we are not initializing.
             // reset the size of the previous speakerBall, and dim it, too
@@ -281,32 +278,6 @@ public class RecordingActivity extends Activity {
 //        ObjectAnimator scaleAnimation = ObjectAnimator.ofPropertyValuesHolder(speakerBall, phvx, phvy);
 //        scaleAnimation.setDuration(20).start();
     }
-
-    private void rotatePieSlices() {
-        // the first ObjectAnimator in an AnimatorSet gets reset, but its
-        // brethren do not (e.g. the blue pie slice will "jump" to its initial position
-        // at the top of the screen while the red & yellow slices move smoothly along.
-        // We have an invisible, null animator that gets reset without disrupting the
-        // animation
-        ObjectAnimator nullAnimator = ObjectAnimator.ofFloat(findViewById(R.id.speaker_ball), View.ALPHA, 1).setDuration(1_000);
-        ObjectAnimator rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-        ObjectAnimator rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-        ObjectAnimator rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-        nullAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-        if (animatorSet == null) {
-            animatorSet = new AnimatorSet();
-            animatorSet.playTogether(nullAnimator, rotateBlue, rotateRed, rotateYellow);
-            animatorSet.start();
-        } else {
-            animatorSet.resume();
-        }
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
