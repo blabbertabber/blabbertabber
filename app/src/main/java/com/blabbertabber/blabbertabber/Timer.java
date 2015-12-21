@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 /**
- * Created by cunnie on 12/21/15.
+ * Simple Timer class to track the length of meetings, and to pause when appropriate
  */
 public class Timer {
     private long startTime;
@@ -13,6 +13,10 @@ public class Timer {
         reset();
     }
 
+    /**
+     * How much time has elapsed
+     * @return long the number of milliseconds elapsed, e.g. 5000 => 5 seconds
+     */
     public long time() {
         if (started) {
             if (running) {
@@ -25,6 +29,9 @@ public class Timer {
         }
     }
 
+    /**
+     * resets the timer. Time elapsed is back to 0; the timer is not running.
+     */
     public void reset() {
         started = false;
         running = false;
@@ -32,6 +39,9 @@ public class Timer {
         elapsedTime = 0;
     }
 
+    /**
+     * begins the timer (clicking the start button on a stopwatch)
+     */
     public void start() {
         if (!started) {
             started = true;
@@ -45,6 +55,10 @@ public class Timer {
         }
     }
 
+    /**
+     * pauses the timer. The timer will no longer increment the elapsed amount of time
+     * but won't reset it either. call start() to resume the incrementing of elapsed time.
+     */
     public void stop() {
         if (running) {
             running = false;
