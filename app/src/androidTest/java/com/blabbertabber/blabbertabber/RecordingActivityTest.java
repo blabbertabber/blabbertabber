@@ -78,9 +78,4 @@ public class RecordingActivityTest {
         onView(withId(R.id.button_record)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
         onView(withId(R.id.button_pause)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
-
-    @Test
-    public void pushRecordingTestSecondTime() {
-    }
-
 }

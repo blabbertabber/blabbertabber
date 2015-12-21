@@ -74,7 +74,7 @@ public abstract class Recorder implements Runnable {
      * Utility method to broadcast the recorded volume.
      *
      * @param id     The id of the speaker speaking.
-     * @param volume The volume.  0-100 inclusive.
+     * @param volume The volume.  0-32767 inclusive.
      */
     /// TODO: remove references to id.
     /// TODO: should we change volume range to signed short?
