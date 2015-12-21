@@ -116,4 +116,34 @@ public class TimerTest {
         time = timer.time();
         assertTrue("Started, time elapsed should return should return '50' milliseconds, +/- 40% " + time, time > 30 && time < 70);
     }
+
+    @Test
+    public void startedStoppedStartedStopped() {
+        timer.start();
+        try {
+            Thread.currentThread().sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        timer.stop();
+        try {
+            Thread.currentThread().sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        timer.start();
+        try {
+            Thread.currentThread().sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        timer.stop();
+        try {
+            Thread.currentThread().sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        time = timer.time();
+        assertTrue("Started, time elapsed should return should return '100' milliseconds, +/- 40% " + time, time > 70 && time < 130);
+    }
 }
