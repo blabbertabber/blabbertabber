@@ -226,14 +226,14 @@ public class RecordingActivity extends Activity {
 
     private void record() {
         // wrapper-function to resume the recording
-        // pass an arbitrary (unused) View to togglePauseRecord which does the work
+        // pass an arbitrary (unused) View to togglePauseRecord
         getRecording = false;
         togglePauseRecord(findViewById(R.id.toggle_pause_record));
     }
 
     private void pause() {
         // wrapper-function to pause the recording
-        // pass an arbitrary (unused) View to togglePauseRecord which does the work
+        // pass an arbitrary (unused) View to togglePauseRecord
         getRecording = true;
         togglePauseRecord(findViewById(R.id.toggle_pause_record));
     }
