@@ -50,23 +50,29 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
-        <ImageButton
-            android:id="@+id/button_record"
-            style="?android:attr/borderlessButtonStyle"
+        <FrameLayout
+            android:id="@+id/toggle_pause_record"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="record"
-            android:src="@drawable/ic_hearing_black" />
+            android:layout_weight="1">
 
-        <ImageButton
-            android:id="@+id/button_pause"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:onClick="pause"
-            android:src="@drawable/ic_pause_circle_outline_black" />
+            <ImageButton
+                android:id="@+id/button_record"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                android:onClick="togglePauseRecord"
+                android:src="@drawable/ic_hearing_black" />
+
+            <ImageButton
+                android:id="@+id/button_pause"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:onClick="togglePauseRecord"
+                android:src="@drawable/ic_pause_circle_outline_black" />
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/button_reset"
