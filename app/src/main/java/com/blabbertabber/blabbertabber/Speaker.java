@@ -43,7 +43,7 @@ public class Speaker implements Comparable<Speaker> {
             Log.wtf(TAG, "WTF?  It should be impossible to call stopSpeaking() before calling startSpeaking().");
             return;
         }
-        long stopTime = new Date().getTime();
+        long stopTime = System.currentTimeMillis();
         mTotalSpeakingTime += (stopTime - mStartDate.getTime());
         mStartDate = null;
         Log.v(TAG, "stop time: " + mStartDate + " mTotalSpeakingTime: " + mTotalSpeakingTime);
