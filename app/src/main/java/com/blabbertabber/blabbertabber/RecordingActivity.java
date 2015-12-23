@@ -34,7 +34,6 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 52;
-    public boolean getRecording = true; // meeting is recorded == true; paused == false
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -186,56 +185,53 @@ public class RecordingActivity extends Activity {
     }
 
     public void togglePauseRecord(View v) {
-        Log.i(TAG, "togglePauseRecord() getRecording initial state: " + getRecording);
-        if (getRecording) {
-            getRecording = false;
-            findViewById(R.id.button_record).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
-            // close-out the current speaker
-            stopPreviousSpeaker();
-            // pause the animation
-            animatorSet.pause();
+        Log.i(TAG, "togglePauseRecord() getRecording initial state: " + RecordingService.recording);
+        if (RecordingService.recording) {
+            pause();
         } else {
-            // resume the recording
-            getRecording = true;
-            findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
-            findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
-
-            rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-            rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-            rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-            rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-            rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-            rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-            if (animatorSet == null) {
-                animatorSet = new AnimatorSet();
-                animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
-                animatorSet.start();
-            } else {
-                Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
-                        " animatorSet.isStarted(): " + animatorSet.isStarted() +
-                        " animatorSet.isRunning(): " + animatorSet.isRunning());
-                if (animatorSet.isPaused()) {
-                    animatorSet.resume();
-                }
-            }
+            record();
         }
     }
 
     private void record() {
-        // wrapper-function to resume the recording
-        // pass an arbitrary (unused) View to togglePauseRecord
-        getRecording = false;
-        togglePauseRecord(findViewById(R.id.toggle_pause_record));
+        Log.i(TAG, "record()");
+        RecordingService.recording = true;
+        // start the animations
+        findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
+
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
+        } else {
+            Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
+                    " animatorSet.isStarted(): " + animatorSet.isStarted() +
+                    " animatorSet.isRunning(): " + animatorSet.isRunning());
+            if (animatorSet.isPaused()) {
+                animatorSet.resume();
+            }
+        }
     }
 
     private void pause() {
-        // wrapper-function to pause the recording
-        // pass an arbitrary (unused) View to togglePauseRecord
-        getRecording = true;
-        togglePauseRecord(findViewById(R.id.toggle_pause_record));
+        Log.i(TAG, "pause()");
+        RecordingService.recording = false;
+        // stop the animations
+        findViewById(R.id.button_record).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
+        // close-out the current speaker
+        stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     public void reset(View v) {
@@ -245,7 +241,8 @@ public class RecordingActivity extends Activity {
         // reset the animation and begin recording
         animatorSet.end();
         animatorSet.start();
-        record();
+        RecordingService.reset = true;
+        record(); // start recording again immediately after a reset
     }
 
     public void summary(View v) {
