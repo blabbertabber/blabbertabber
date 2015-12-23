@@ -10,26 +10,31 @@ import android.util.Log;
  * This class inherits from a Runnable that Recording Service starts when it is created.
  */
 public class DeviceRecorder extends Recorder {
-    private TheAudioRecord mRecorder;
+    private TheAudioRecord mRecorder = TheAudioRecord.getInstance();
 
     public DeviceRecorder(Context context) {
         super(context);
     }
 
     @Override
-    protected void startRecording() {
-        Log.i(TAG, "startRecording()");
-        mRecorder = TheAudioRecord.getInstance();
+    protected void pause() {
+        Log.i(TAG, "pause()");
+        mRecorder.stop();
+    }
+
+    @Override
+    protected void start() {
+        Log.i(TAG, "start()");
         mRecorder.startRecording();
     }
 
     @Override
-    protected void stopRecording() {
-        Log.i(TAG, "stopRecording()");
-
+    protected void stop() {
+        Log.i(TAG, "stop()");
         mRecorder.stop();
         mRecorder.release();
-        mRecorder = null;
+        mRecorder = TheAudioRecord.getInstance(); // update the mRecorder to avoid
+        // `java.lang.IllegalStateException: startRecording() called on an uninitialized AudioRecord.`
     }
 
     @Override

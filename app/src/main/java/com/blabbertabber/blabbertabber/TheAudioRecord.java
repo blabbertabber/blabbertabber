@@ -17,7 +17,10 @@ import java.io.IOException;
  * http://www.javaworld.com/article/2073352/core-java/simply-singleton.html
  * <p/>
  * BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
- * release() calls MediaRecorder.reset() instead of MediaRecorder.release();
+ * release() calls AudioRecord.release() instead of MediaRecorder.release();
+ *
+ * We adhere to AudioRecord's asymmetric naming conventions (startRecording() vs. stop()),
+ * but we plan to symmetricize them in any calling class (e.g. DeviceRecorder)
  */
 public class TheAudioRecord extends AudioRecord {
     private static final String TAG = "TheAudioRecord";
@@ -68,35 +71,49 @@ public class TheAudioRecord extends AudioRecord {
 
     @Override
     public void startRecording() {
-        Log.i(TAG, "startRecording()");
         super.startRecording();
+        Log.i(TAG, "startRecording()");
         // open file for writing "/sdcard/BlabberTabber"; create dir if non-existing
         mRawFile = new File(RECORDER_RAW_FILENAME);
-        try {
-            mRawDataOutputStream = new DataOutputStream(new FileOutputStream(mRawFile));
-        } catch (java.io.FileNotFoundException e) {
-            Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
-                    " with message " + e.getMessage());
+        if ( mRawDataOutputStream == null ) {
+            try {
+                mRawDataOutputStream = new DataOutputStream(new FileOutputStream(mRawFile));
+            } catch (java.io.FileNotFoundException e) {
+                Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
+                        " with message " + e.getMessage());
+            }
         }
     }
 
+    /**
+     * We stop the recording, but we do NOT close the file in the event that the user
+     * decides to resume the recording later. This is more of a "pause" than a "stop"
+     */
     @Override
     public void stop() {
-        Log.i(TAG, "stop()");
         super.stop();
+        Log.i(TAG, "stop()");
+    }
+
+    /**
+     * If the user calls the release, then the recording is over, so we close the file
+     * and nullify the AudioRecord.
+     *
+     * developer.android.com/reference/android/media/AudioRecord.html
+     * "The object can no longer be used and the reference should be set to null after a call to release()"
+     */
+    @Override
+    public void release() {
+        super.release();
+        Log.i(TAG, "release()");
         try {
             mRawDataOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void release() {
-        // developer.android.com/reference/android/media/AudioRecord.html
-        // " The object can no longer be used and the reference should be set to null after a call to release()"
-        super.release();
         singleton = null;
+        getInstance();  // recreate the singleton to avoid `java.lang.NullPointerException: Attempt
+        // to invoke virtual method 'boolean com.blabbertabber.blabbertabber.TheAudioRecord.isRecording()'`
     }
 
     public boolean isRecording() {
