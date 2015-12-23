@@ -46,25 +46,45 @@ public abstract class Recorder implements Runnable {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
 
-        startRecording();
+        start();
         try {
             while (true) {
-                if (isRecording()) {
-                    // sample at twice the AudioRecord buffer size or else choppiness
-                    sleep(50);
-                    Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
-                    /// TODO: remove getSpeakerId()
-                    sendResult(getSpeakerId(), getSpeakerVolume());
+                if (RecordingService.reset) {
+                    Log.i(TAG, "run() resetting");
+                    stop();
+                    RecordingService.reset = false; // re-cock the trigger
+                } else if (RecordingService.recording) {
+                    if (isRecording()) {
+                        // sample at twice the AudioRecord buffer size or else choppiness
+                        sleep(50);
+                        Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
+                        /// TODO: remove getSpeakerId()
+                        sendResult(getSpeakerId(), getSpeakerVolume());
+                    } else {
+                        // RecordingService.recording has signalled us to begin recording
+                        start();
+                        Log.i(TAG, "run() resuming");
+                        if (!isRecording()) {
+                            // Something's wrong: we should be recording but we aren't; most likely
+                            // another app has grabbed the microphone.
+                            Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
+                            sendStatus(MICROPHONE_UNAVAILABLE);
+                            sleep(2500);
+                        }
+                    }
+                } else if (isRecording()) {
+                    // RecordingService.recording has signalled us to pause() recording
+                    pause();
+                    Log.i(TAG, "run() pausing");
                 } else {
-                    Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
-                    sendStatus(MICROPHONE_UNAVAILABLE);
-                    sleep(2500);
+                    // we should be paused, we are paused, let's rest
+                    sleep(100);
                 }
             }
         } catch (InterruptedException e) {
             Log.i(TAG, "InterruptedException, return");
             e.printStackTrace();
-            stopRecording();
+            stop();
             Log.i(TAG, "run() STOPPING Thread ID " + Thread.currentThread().getId());
             return; // <- avoids spawning many threads when changing orientation
         }
@@ -95,9 +115,11 @@ public abstract class Recorder implements Runnable {
         mBroadcastManager.sendBroadcast(intent);
     }
 
-    protected abstract void startRecording();
+    protected abstract void start();    // starts the recording, resumes recording
 
-    protected abstract void stopRecording();
+    protected abstract void pause();    // pauses the recording
+
+    protected abstract void stop();     // stops the recording, closes file, cannot resume after stop().
 
     public abstract boolean isRecording();
 
