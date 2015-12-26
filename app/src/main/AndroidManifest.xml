@@ -24,8 +24,7 @@
         </activity>
         <activity
             android:name=".RecordingActivity"
-            android:noHistory="true"
-            android:screenOrientation="portrait" />
+            android:noHistory="true" />
         <activity android:name=".SummaryActivity" />
 
         <service

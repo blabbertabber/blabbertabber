@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Thread.sleep;
@@ -20,6 +21,7 @@ public abstract class Recorder implements Runnable {
     static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.RecordingService.RECORD_MESSAGE";
     static final public int UNKNOWN_STATUS = -1;
     static final public int MICROPHONE_UNAVAILABLE = -2;
+    static final public int CANT_WRITE_MEETING_FILE = -3;
     protected static final String TAG = "Recorder";
     public int numSpeakers;
     private LocalBroadcastManager mBroadcastManager;
@@ -59,7 +61,14 @@ public abstract class Recorder implements Runnable {
                         sleep(50);
                         Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId());
                         /// TODO: remove getSpeakerId()
-                        sendResult(getSpeakerId(), getSpeakerVolume());
+                        try {
+                            sendResult(getSpeakerId(), getSpeakerVolume());
+                        } catch (IOException e) {
+                            Log.v(TAG, "run() Thread ID " + Thread.currentThread().getId() + " NOT recording()");
+                            e.printStackTrace();
+                            sendStatus(CANT_WRITE_MEETING_FILE);
+                            sleep(2500);
+                        }
                     } else {
                         // RecordingService.recording has signalled us to begin recording
                         start();
@@ -134,7 +143,7 @@ public abstract class Recorder implements Runnable {
         return speaker;
     }
 
-    public abstract int getSpeakerVolume();
+    public abstract int getSpeakerVolume() throws IOException;
 
     // usually returns a speaker different than the current speaker, possibly a new speaker
     /// TODO: remove this method.
