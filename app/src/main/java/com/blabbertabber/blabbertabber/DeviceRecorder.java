@@ -3,6 +3,8 @@ package com.blabbertabber.blabbertabber;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.IOException;
+
 /**
  * Wrapper of the AudioRecord singleton (with more consistent method names), exposing
  * only the needed methods.
@@ -25,6 +27,9 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void start() {
         Log.i(TAG, "start()");
+        // make sure mRecorder is fresh; if it's stale we'll get a
+        // `java.lang.IllegalStateException: startRecording() called on an uninitialized AudioRecord.`
+        mRecorder = TheAudioRecord.getInstance();
         mRecorder.startRecording();
     }
 
@@ -43,9 +48,13 @@ public class DeviceRecorder extends Recorder {
     }
 
     @Override
-    public int getSpeakerVolume() {
+    public int getSpeakerVolume() throws IOException {
         int volume = mRecorder.getMaxAmplitude();
         Log.v(TAG, "getSpeakerVolume() volume: " + volume);
         return volume;
+    }
+
+    private TheAudioRecord getRecorder() {
+        return TheAudioRecord.getInstance();
     }
 }
