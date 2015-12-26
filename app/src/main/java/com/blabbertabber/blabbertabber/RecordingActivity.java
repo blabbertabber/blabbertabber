@@ -89,12 +89,24 @@ public class RecordingActivity extends Activity {
                     updateSpeakerVolumeView(speaker, volume);
                 } else if (Objects.equals(intent.getAction(), Recorder.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
-                    String statusMsg = "onReceive():  The microphone has a status of "
-                            + intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
+                    int status = intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
+                    String statusMsg = "onReceive():  The microphone has a status of " + status;
                     Log.wtf(TAG, statusMsg);
-                    Toast.makeText(context, "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.",
+                    String toastMessage;
+                    switch (status) {
+                        case Recorder.MICROPHONE_UNAVAILABLE:
+                            toastMessage = "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.";
+                            break;
+                        case Recorder.CANT_WRITE_MEETING_FILE:
+                            toastMessage = "Error recording the meeting to disk; make sure you've closed all BlabberTabber instances and try again.";
+                            break;
+                        case Recorder.UNKNOWN_STATUS:
+                        default:
+                            toastMessage = "I have no idea what went wrong; restart BlabberTabber and see if that fixes it";
+                    }
+                    Toast.makeText(context, toastMessage,
                             Toast.LENGTH_LONG).show();
-                    TheAudioRecord.getInstance().stop();
+                    finish();
                 } else {
                     String errorMsg = "onReceive() received an Intent with unknown action " + intent.getAction();
                     Log.wtf(TAG, errorMsg);
@@ -135,7 +147,6 @@ public class RecordingActivity extends Activity {
         redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
         yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        // start recording as soon as we resume
         // TODO: decide if someone pauses the meeting, switches to another activity, switches
         // back to this activity--do we resume right away or honor the pause? We currently resume.
         record();
@@ -195,7 +206,14 @@ public class RecordingActivity extends Activity {
 
     private void record() {
         Log.i(TAG, "record()");
+        // Make sure we have all the necessary permissions, then begin recording:
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            Log.i(TAG, "record() bailing out early, don't have permissions");
+            return;
+        }
         RecordingService.recording = true;
+
         // start the animations
         findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
         findViewById(R.id.button_pause).setVisibility(View.VISIBLE);

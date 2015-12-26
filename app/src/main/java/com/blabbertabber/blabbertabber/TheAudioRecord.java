@@ -18,7 +18,7 @@ import java.io.IOException;
  * <p/>
  * BUGS: uses 'static' which makes testing much more difficult, for example we don't test that
  * release() calls AudioRecord.release() instead of MediaRecorder.release();
- *
+ * <p/>
  * We adhere to AudioRecord's asymmetric naming conventions (startRecording() vs. stop()),
  * but we plan to symmetricize them in any calling class (e.g. DeviceRecorder)
  */
@@ -31,7 +31,7 @@ public class TheAudioRecord extends AudioRecord {
     private static final int RECORDER_SAMPLE_RATE_IN_HZ = 16_000;
     private static final int RECORDER_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-    private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 10; // ten periods/sec
+    private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5; // five periods/sec
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
     private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
@@ -40,7 +40,6 @@ public class TheAudioRecord extends AudioRecord {
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads
     private static short[] AUDIO_DATA = new short[RECORDER_BUFFER_SIZE_IN_BYTES / 2];  // 2 => 1 x PCM 16 / 2 bytes
-    private static File mRawFile;
     private static DataOutputStream mRawDataOutputStream;
 
     protected TheAudioRecord(
@@ -53,7 +52,8 @@ public class TheAudioRecord extends AudioRecord {
     public synchronized static TheAudioRecord getInstance() {
         Log.i(TAG, "getInstance()");
         if (singleton == null) {
-            singleton = new TheAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+            TheAudioRecord temp;
+            temp = new TheAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                     RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
 
             File file = new File(BLABBERTABBER_DIRECTORY);
@@ -65,6 +65,18 @@ public class TheAudioRecord extends AudioRecord {
             } else {
                 Log.i(TAG, "getInstance() could not create " + BLABBERTABBER_DIRECTORY + ".");
             }
+            // open file for writing "/sdcard/BlabberTabber"; create dir if necessary
+            File rawFile = new File(RECORDER_RAW_FILENAME);
+            if (mRawDataOutputStream == null) {
+                try {
+                    mRawDataOutputStream = new DataOutputStream(new FileOutputStream(rawFile));
+                } catch (java.io.FileNotFoundException e) {
+                    Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
+                            " with message " + e.getMessage());
+                }
+            }
+            singleton = temp;
+            Log.i(TAG, "getInstance() singleton created: " + singleton);
         }
         return singleton;
     }
@@ -73,16 +85,6 @@ public class TheAudioRecord extends AudioRecord {
     public void startRecording() {
         super.startRecording();
         Log.i(TAG, "startRecording()");
-        // open file for writing "/sdcard/BlabberTabber"; create dir if non-existing
-        mRawFile = new File(RECORDER_RAW_FILENAME);
-        if ( mRawDataOutputStream == null ) {
-            try {
-                mRawDataOutputStream = new DataOutputStream(new FileOutputStream(mRawFile));
-            } catch (java.io.FileNotFoundException e) {
-                Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
-                        " with message " + e.getMessage());
-            }
-        }
     }
 
     /**
@@ -98,7 +100,7 @@ public class TheAudioRecord extends AudioRecord {
     /**
      * If the user calls the release, then the recording is over, so we close the file
      * and nullify the AudioRecord.
-     *
+     * <p/>
      * developer.android.com/reference/android/media/AudioRecord.html
      * "The object can no longer be used and the reference should be set to null after a call to release()"
      */
@@ -111,6 +113,7 @@ public class TheAudioRecord extends AudioRecord {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mRawDataOutputStream = null; // to avoid pesky java.io.IOException: write failed: EBADF (Bad file descriptor)
         singleton = null;
         getInstance();  // recreate the singleton to avoid `java.lang.NullPointerException: Attempt
         // to invoke virtual method 'boolean com.blabbertabber.blabbertabber.TheAudioRecord.isRecording()'`
@@ -126,35 +129,42 @@ public class TheAudioRecord extends AudioRecord {
     /**
      * @return int  The maximum volume over the most recent section of time.
      * The range is that of a signed short.
+     * @throws IOException if it can't write to the file; it's unintuitive that the exception is
+     * thrown in getMaxAmplitude() (i.e. "what does getMaxAmplitude() have to do with writing a file?")
      */
-    public int getMaxAmplitude() {
+    public int getMaxAmplitude() throws IOException {
+        Log.v(TAG, "getMaxAmplitude()");
         int maxAmplitude = Short.MIN_VALUE;
-        int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
-        byte[] rawAudio = new byte[AUDIO_DATA.length * 2];
+        // if our singleton is null, then we skip writing to mRawDataOutputStream to avoid
+        // `java.lang.NullPointerException: Attempt to invoke virtual method 'void java.io.DataOutputStream.write(byte[], int, int)' on a null object reference`
+        if ( singleton != null ) {
+            int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
+            // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
+            if (readSize > 0) {
+                byte[] rawAudio = new byte[AUDIO_DATA.length * 2];
 
-        // Performance: we must copy the PCM data into an array of bytes so that
-        // we can write the RawDataOutputStream in one shot; otherwise it can take
-        // 2x longer than the sample time to write (i.e. we drop 1/2 the sound)
-        // if we foolishly use writeShort() instead
-        for (int i = 0; i < readSize; i++) {
-            // http://developer.android.com/reference/android/media/AudioFormat.html
-            // "...when the short is stored in a ByteBuffer, it is native endian (as compared to the default Java big endian)."
-            // However the following lines seem to work both on ARM (big endian) and x86_64 emulator (little endian)
-            rawAudio[i * 2] = (byte) (AUDIO_DATA[i] >> 8);
-            rawAudio[i * 2 + 1] = (byte) AUDIO_DATA[i];
-            if (AUDIO_DATA[i] > maxAmplitude) {
-                maxAmplitude = AUDIO_DATA[i];
+                // Performance: we must copy the PCM data into an array of bytes so that
+                // we can write the RawDataOutputStream in one shot; otherwise it can take
+                // 2x longer than the sample time to write (i.e. we drop 1/2 the sound)
+                // if we foolishly use writeShort() instead
+                for (int i = 0; i < readSize; i++) {
+                    // http://developer.android.com/reference/android/media/AudioFormat.html
+                    // "...when the short is stored in a ByteBuffer, it is native endian (as compared to the default Java big endian)."
+                    // However the following lines seem to work both on ARM (big endian) and x86_64 emulator (little endian)
+                    rawAudio[i * 2] = (byte) (AUDIO_DATA[i] >> 8);
+                    rawAudio[i * 2 + 1] = (byte) AUDIO_DATA[i];
+                    if (AUDIO_DATA[i] > maxAmplitude) {
+                        maxAmplitude = AUDIO_DATA[i];
+                    }
+                }
+                mRawDataOutputStream.write(rawAudio, 0, readSize * 2);
+                Log.v(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
+            } else {
+                Log.i(TAG, "getMaxAmplitude() NEGATIVE readsize: " + readSize + " maxAmplitude " + maxAmplitude);
             }
+        } else {
+            Log.v(TAG, "getMaxAmplitude() maxAmplitude " + maxAmplitude);
         }
-        try {
-            mRawDataOutputStream.write(rawAudio, 0, readSize * 2);
-        } catch (IOException e) {
-            Log.wtf(TAG, "IOException thrown trying to write to file " + RECORDER_RAW_FILENAME
-                    + " with message " + e.getMessage());
-            e.printStackTrace();
-        }
-        // Log.v instead of Log.i because this routine is called very, very often
-        Log.v(TAG, "getMaxAmplitude() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
         return maxAmplitude;
     }
 }
