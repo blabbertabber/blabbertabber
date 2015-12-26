@@ -22,8 +22,8 @@ import java.io.IOException;
  * We adhere to AudioRecord's asymmetric naming conventions (startRecording() vs. stop()),
  * but we plan to symmetricize them in any calling class (e.g. DeviceRecorder)
  */
-public class TheAudioRecord extends AudioRecord {
-    private static final String TAG = "TheAudioRecord";
+public class AudioRecordWrapper {
+    private static final String TAG = "AudioRecordWrapper";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     // http://developer.android.com/reference/android/media/AudioRecord.html
     // "44100Hz is currently the only rate that is guaranteed to work on all devices"
@@ -36,28 +36,25 @@ public class TheAudioRecord extends AudioRecord {
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
     private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
     public static final String RECORDER_RAW_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.raw";
-    public static TheAudioRecord singleton;
+    private static AudioRecord audioRecord = null;
+    ////public static AudioRecordWrapper singleton;
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads
     private static short[] AUDIO_DATA = new short[RECORDER_BUFFER_SIZE_IN_BYTES / 2];  // 2 => 1 x PCM 16 / 2 bytes
-    private static DataOutputStream mRawDataOutputStream;
+    private static DataOutputStream mRawDataOutputStream = null;
 
-    protected TheAudioRecord(
-            int audioSource, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes) {
-        // Exists only to defeat instantiation.
-        super(audioSource, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes);
-        Log.i(TAG, "TheAudioRecord() bufferSizeInBytes == " + bufferSizeInBytes);
+    private AudioRecordWrapper() {
     }
 
-    public synchronized static TheAudioRecord getInstance() {
-        Log.i(TAG, "getInstance()");
-        if (singleton == null) {
-            TheAudioRecord temp;
-            temp = new TheAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+    private synchronized static AudioRecord getAudioRecord() {
+        Log.i(TAG, "getAudioRecord()");
+        if (audioRecord == null) {
+            audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                     RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
 
+            // Everything that's recorded over the life of audioRecord is written to a file.
+            // audioRecord.release() closes the file.
             File file = new File(BLABBERTABBER_DIRECTORY);
-
             if (file.exists()) {
                 Log.i(TAG, "getInstance() " + BLABBERTABBER_DIRECTORY + " already exists");
             } else if (file.mkdirs()) {
@@ -66,34 +63,38 @@ public class TheAudioRecord extends AudioRecord {
                 Log.i(TAG, "getInstance() could not create " + BLABBERTABBER_DIRECTORY + ".");
             }
             // open file for writing "/sdcard/BlabberTabber"; create dir if necessary
-            File rawFile = new File(RECORDER_RAW_FILENAME);
             if (mRawDataOutputStream == null) {
+                File rawFile = new File(RECORDER_RAW_FILENAME);
                 try {
-                    mRawDataOutputStream = new DataOutputStream(new FileOutputStream(rawFile));
+                    mRawDataOutputStream = new DataOutputStream(new FileOutputStream(rawFile, true));
                 } catch (java.io.FileNotFoundException e) {
                     Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
                             " with message " + e.getMessage());
                 }
             }
-            singleton = temp;
-            Log.i(TAG, "getInstance() singleton created: " + singleton);
         }
-        return singleton;
+        return audioRecord;
     }
 
-    @Override
-    public void startRecording() {
-        super.startRecording();
+    public synchronized static void startRecording() {
+        getAudioRecord().startRecording();
         Log.i(TAG, "startRecording()");
+    }
+
+    public synchronized static void newMeetingFile() {
+        Log.i(TAG, "newMeetingFile()");
+        File rawFile = new File(RECORDER_RAW_FILENAME);
+        if (rawFile.exists()) {
+            rawFile.delete();
+        }
     }
 
     /**
      * We stop the recording, but we do NOT close the file in the event that the user
      * decides to resume the recording later. This is more of a "pause" than a "stop"
      */
-    @Override
-    public void stop() {
-        super.stop();
+    public synchronized static void stop() {
+        getAudioRecord().stop();
         Log.i(TAG, "stop()");
     }
 
@@ -104,23 +105,21 @@ public class TheAudioRecord extends AudioRecord {
      * developer.android.com/reference/android/media/AudioRecord.html
      * "The object can no longer be used and the reference should be set to null after a call to release()"
      */
-    @Override
-    public void release() {
-        super.release();
+    public synchronized static void close() {
         Log.i(TAG, "release()");
+        audioRecord.release();
+        audioRecord = null;
         try {
             mRawDataOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            mRawDataOutputStream = null; // to avoid pesky java.io.IOException: write failed: EBADF (Bad file descriptor)
         }
-        mRawDataOutputStream = null; // to avoid pesky java.io.IOException: write failed: EBADF (Bad file descriptor)
-        singleton = null;
-        getInstance();  // recreate the singleton to avoid `java.lang.NullPointerException: Attempt
-        // to invoke virtual method 'boolean com.blabbertabber.blabbertabber.TheAudioRecord.isRecording()'`
     }
 
-    public boolean isRecording() {
-        return (getRecordingState() == RECORDSTATE_RECORDING);
+    public synchronized static boolean isRecording() {
+        return (audioRecord != null && audioRecord.getRecordingState() == audioRecord.RECORDSTATE_RECORDING);
     }
 
     // We are temporarily writing a .raw file out for postprocessing.
@@ -132,13 +131,13 @@ public class TheAudioRecord extends AudioRecord {
      * @throws IOException if it can't write to the file; it's unintuitive that the exception is
      * thrown in getMaxAmplitude() (i.e. "what does getMaxAmplitude() have to do with writing a file?")
      */
-    public int getMaxAmplitude() throws IOException {
+    public synchronized static int getMaxAmplitude() throws IOException {
         Log.v(TAG, "getMaxAmplitude()");
         int maxAmplitude = Short.MIN_VALUE;
         // if our singleton is null, then we skip writing to mRawDataOutputStream to avoid
         // `java.lang.NullPointerException: Attempt to invoke virtual method 'void java.io.DataOutputStream.write(byte[], int, int)' on a null object reference`
-        if ( singleton != null ) {
-            int readSize = read(AUDIO_DATA, 0, AUDIO_DATA.length);
+        if ( audioRecord != null ) {
+            int readSize = audioRecord.read(AUDIO_DATA, 0, AUDIO_DATA.length);
             // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
             if (readSize > 0) {
                 byte[] rawAudio = new byte[AUDIO_DATA.length * 2];

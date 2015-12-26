@@ -268,9 +268,9 @@ public class RecordingActivity extends Activity {
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
-            wavFile = WavFile.of(new File(TheAudioRecord.RECORDER_RAW_FILENAME));
+            wavFile = WavFile.of(new File(AudioRecordWrapper.RECORDER_RAW_FILENAME));
         } catch (IOException e) {
-            String errorTxt = "Whoops! couldn't convert " + TheAudioRecord.RECORDER_RAW_FILENAME
+            String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.RECORDER_RAW_FILENAME
                     + ": " + e.getMessage();
             Log.wtf(TAG, errorTxt);
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
