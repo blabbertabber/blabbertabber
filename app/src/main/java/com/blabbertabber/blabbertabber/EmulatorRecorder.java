@@ -9,7 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Class that works with an emulator (no microphone)
  * It appears that the emulator on Macs that have builtin microphones, e.g. Brendan's
  * MacBook Pro, works fine with the emulator; however, the emulator on Macs that don't
- * have builtin microphones, e.g. Brian's Mac Pro, crash when they try to access the microphone.
+ * have builtin microphones, e.g. Brian's Mac Pro, crash the application when it tries
+ * to access the microphone.
  */
 public class EmulatorRecorder extends Recorder {
 
@@ -18,13 +19,18 @@ public class EmulatorRecorder extends Recorder {
     }
 
     @Override
-    protected void startRecording() {
-        Log.i(TAG, "startRecording()");
+    protected void pause() {
+        Log.i(TAG, "pause();");
     }
 
     @Override
-    protected void stopRecording() {
-        Log.i(TAG, "stopRecording()");
+    protected void start() {
+        Log.i(TAG, "start()");
+    }
+
+    @Override
+    protected void stop() {
+        Log.i(TAG, "stop()");
     }
 
     @Override

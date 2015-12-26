@@ -34,7 +34,6 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 52;
-    public boolean getRecording = true; // meeting is recorded == true; paused == false
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -90,12 +89,24 @@ public class RecordingActivity extends Activity {
                     updateSpeakerVolumeView(speaker, volume);
                 } else if (Objects.equals(intent.getAction(), Recorder.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
-                    String statusMsg = "onReceive():  The microphone has a status of "
-                            + intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
+                    int status = intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
+                    String statusMsg = "onReceive():  The microphone has a status of " + status;
                     Log.wtf(TAG, statusMsg);
-                    Toast.makeText(context, "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.",
+                    String toastMessage;
+                    switch (status) {
+                        case Recorder.MICROPHONE_UNAVAILABLE:
+                            toastMessage = "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.";
+                            break;
+                        case Recorder.CANT_WRITE_MEETING_FILE:
+                            toastMessage = "Error recording the meeting to disk; make sure you've closed all BlabberTabber instances and try again.";
+                            break;
+                        case Recorder.UNKNOWN_STATUS:
+                        default:
+                            toastMessage = "I have no idea what went wrong; restart BlabberTabber and see if that fixes it";
+                    }
+                    Toast.makeText(context, toastMessage,
                             Toast.LENGTH_LONG).show();
-                    TheAudioRecord.getInstance().stop();
+                    finish();
                 } else {
                     String errorMsg = "onReceive() received an Intent with unknown action " + intent.getAction();
                     Log.wtf(TAG, errorMsg);
@@ -136,7 +147,6 @@ public class RecordingActivity extends Activity {
         redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
         yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        // start recording as soon as we resume
         // TODO: decide if someone pauses the meeting, switches to another activity, switches
         // back to this activity--do we resume right away or honor the pause? We currently resume.
         record();
@@ -186,56 +196,60 @@ public class RecordingActivity extends Activity {
     }
 
     public void togglePauseRecord(View v) {
-        Log.i(TAG, "togglePauseRecord() getRecording initial state: " + getRecording);
-        if (getRecording) {
-            getRecording = false;
-            findViewById(R.id.button_record).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
-            // close-out the current speaker
-            stopPreviousSpeaker();
-            // pause the animation
-            animatorSet.pause();
+        Log.i(TAG, "togglePauseRecord() getRecording initial state: " + RecordingService.recording);
+        if (RecordingService.recording) {
+            pause();
         } else {
-            // resume the recording
-            getRecording = true;
-            findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
-            findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
-
-            rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-            rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-            rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-            rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-            rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-            rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-            if (animatorSet == null) {
-                animatorSet = new AnimatorSet();
-                animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
-                animatorSet.start();
-            } else {
-                Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
-                        " animatorSet.isStarted(): " + animatorSet.isStarted() +
-                        " animatorSet.isRunning(): " + animatorSet.isRunning());
-                if (animatorSet.isPaused()) {
-                    animatorSet.resume();
-                }
-            }
+            record();
         }
     }
 
     private void record() {
-        // wrapper-function to resume the recording
-        // pass an arbitrary (unused) View to togglePauseRecord
-        getRecording = false;
-        togglePauseRecord(findViewById(R.id.toggle_pause_record));
+        Log.i(TAG, "record()");
+        // Make sure we have all the necessary permissions, then begin recording:
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            Log.i(TAG, "record() bailing out early, don't have permissions");
+            return;
+        }
+        RecordingService.recording = true;
+
+        // start the animations
+        findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
+
+        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
+        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
+        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
+
+        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
+        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
+        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
+
+        if (animatorSet == null) {
+            animatorSet = new AnimatorSet();
+            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
+            animatorSet.start();
+        } else {
+            Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
+                    " animatorSet.isStarted(): " + animatorSet.isStarted() +
+                    " animatorSet.isRunning(): " + animatorSet.isRunning());
+            if (animatorSet.isPaused()) {
+                animatorSet.resume();
+            }
+        }
     }
 
     private void pause() {
-        // wrapper-function to pause the recording
-        // pass an arbitrary (unused) View to togglePauseRecord
-        getRecording = true;
-        togglePauseRecord(findViewById(R.id.toggle_pause_record));
+        Log.i(TAG, "pause()");
+        RecordingService.recording = false;
+        // stop the animations
+        findViewById(R.id.button_record).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
+        // close-out the current speaker
+        stopPreviousSpeaker();
+        // pause the animation
+        animatorSet.pause();
     }
 
     public void reset(View v) {
@@ -245,7 +259,8 @@ public class RecordingActivity extends Activity {
         // reset the animation and begin recording
         animatorSet.end();
         animatorSet.start();
-        record();
+        RecordingService.reset = true;
+        record(); // start recording again immediately after a reset
     }
 
     public void summary(View v) {
@@ -253,9 +268,9 @@ public class RecordingActivity extends Activity {
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
-            wavFile = WavFile.of(new File(TheAudioRecord.RECORDER_RAW_FILENAME));
+            wavFile = WavFile.of(new File(AudioRecordWrapper.RECORDER_RAW_FILENAME));
         } catch (IOException e) {
-            String errorTxt = "Whoops! couldn't convert " + TheAudioRecord.RECORDER_RAW_FILENAME
+            String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.RECORDER_RAW_FILENAME
                     + ": " + e.getMessage();
             Log.wtf(TAG, errorTxt);
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
