@@ -106,7 +106,7 @@ public class SummaryActivity extends Activity {
      */
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
-        String wavFilePath = WavFile.convertFilenameFromRawToWav(TheAudioRecord.RECORDER_RAW_FILENAME);
+        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioRecordWrapper.RECORDER_RAW_FILENAME);
         File wavFile = new File(wavFilePath);
         Uri wavFileURI = Uri.fromFile(wavFile);
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -135,6 +135,8 @@ public class SummaryActivity extends Activity {
 
     public void newMeeting(View v) {
         TheSpeakers.getInstance().reset();
+        // clear out the old, raw-PCM file
+        AudioRecordWrapper.newMeetingFile();
         Intent i = new Intent(this, RecordingActivity.class);
         startActivity(i);
     }
