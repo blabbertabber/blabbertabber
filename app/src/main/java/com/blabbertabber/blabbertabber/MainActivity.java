@@ -11,7 +11,7 @@ import android.view.View;
 
 /**
  * The splash screen.
- * It is shown only the first time the application is openned.
+ * It is shown only the first time the application is opened.
  */
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        Log.i(TAG, "onPause()");
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -51,6 +52,7 @@ public class MainActivity extends Activity {
     }
 
     public void launchRecordingActivity() {
+        Log.i(TAG, "launchRecordingActivity()");
         mFirstTime = false;
         resetFirstTime = false;
 
