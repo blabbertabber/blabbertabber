@@ -6,14 +6,12 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Wrapper of the AudioRecord singleton (with more consistent method names), exposing
+ * AudioRecordWrapper of the AudioRecord (with more consistent method names), exposing
  * only the needed methods.
  * Class that works with a REAL microphone (non-emulator).
  * This class inherits from a Runnable that Recording Service starts when it is created.
  */
 public class DeviceRecorder extends Recorder {
-    private TheAudioRecord mRecorder = TheAudioRecord.getInstance();
-
     public DeviceRecorder(Context context) {
         super(context);
     }
@@ -21,7 +19,7 @@ public class DeviceRecorder extends Recorder {
     @Override
     protected void pause() {
         Log.i(TAG, "pause()");
-        mRecorder.stop();
+        AudioRecordWrapper.stop();
     }
 
     @Override
@@ -29,32 +27,26 @@ public class DeviceRecorder extends Recorder {
         Log.i(TAG, "start()");
         // make sure mRecorder is fresh; if it's stale we'll get a
         // `java.lang.IllegalStateException: startRecording() called on an uninitialized AudioRecord.`
-        mRecorder = TheAudioRecord.getInstance();
-        mRecorder.startRecording();
+        AudioRecordWrapper.startRecording();
     }
 
     @Override
     protected void stop() {
         Log.i(TAG, "stop()");
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = TheAudioRecord.getInstance(); // update the mRecorder to avoid
+        AudioRecordWrapper.stop();
+        AudioRecordWrapper.close();
         // `java.lang.IllegalStateException: startRecording() called on an uninitialized AudioRecord.`
     }
 
     @Override
     public boolean isRecording() {
-        return mRecorder.isRecording();
+        return AudioRecordWrapper.isRecording();
     }
 
     @Override
     public int getSpeakerVolume() throws IOException {
-        int volume = mRecorder.getMaxAmplitude();
+        int volume = AudioRecordWrapper.getMaxAmplitude();
         Log.v(TAG, "getSpeakerVolume() volume: " + volume);
         return volume;
-    }
-
-    private TheAudioRecord getRecorder() {
-        return TheAudioRecord.getInstance();
     }
 }
