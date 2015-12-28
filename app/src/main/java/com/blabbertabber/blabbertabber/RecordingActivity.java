@@ -258,7 +258,7 @@ public class RecordingActivity extends Activity {
 
     public void summary(View v) {
         Log.i(TAG, "summary()");
-        /// Transform the raw file into a .wav file
+        // Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
             wavFile = WavFile.of(this, new File(AudioRecordWrapper.getRawFilePathName()));
@@ -269,7 +269,13 @@ public class RecordingActivity extends Activity {
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+        String[] LiumParams = {"--fInputMask=" + AudioRecordWrapper.RECORDER_FILENAME_NO_EXTENSION + ".wav",
+                "--sOutputMask=" + AudioRecordWrapper.RECORDER_FILENAME_NO_EXTENSION + ".seg",
+                "--doCEClustering", "showName"};
+
         /// process the .wav file
+//        fr.lium.spkDiarization.system.Diarization.main(LiumParams);
+
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
     }
