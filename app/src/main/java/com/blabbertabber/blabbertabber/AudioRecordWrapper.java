@@ -25,7 +25,7 @@ import java.io.IOException;
 public class AudioRecordWrapper {
     ////private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
     public static final String RECORDER_RAW_FILENAME = "meeting.raw";
-    public static final String RECORDER_RAW_PATHNAME = "meeting.raw";
+    ////public static final String RECORDER_RAW_PATHNAME = "meeting.raw";
     private static final String TAG = "AudioRecordWrapper";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     // http://developer.android.com/reference/android/media/AudioRecord.html
@@ -118,6 +118,11 @@ public class AudioRecordWrapper {
      */
     public synchronized static void close() {
         Log.i(TAG, "release()");
+        try {
+            int throwAway = getMaxAmplitude(); // transcribe the outstanding audiobuffer to file before close()
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         audioRecord.release();
         audioRecord = null;
         try {
