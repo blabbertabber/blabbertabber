@@ -274,7 +274,7 @@ public class RecordingActivity extends Activity {
                 "--doCEClustering", "showName"};
 
         /// process the .wav file
-//        fr.lium.spkDiarization.system.Diarization.main(LiumParams);
+        fr.lium.spkDiarization.system.Diarization.main(LiumParams);
 
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
@@ -346,4 +346,12 @@ public class RecordingActivity extends Activity {
         }
         Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
     }
+
+/*    private class diarize extends AsyncTask<Void, Integer, Void> {
+        int DONE_LINEARSEG = 50;
+        int DONE_LINEARCLUST = 100;
+        String[] linearSegParams = {"--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=/sdcard/test.mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=/sdcard/test.uem.seg", "--sOutputMask=/sdcard/test.s.seg", "test"};
+        String[] linearClustParams = {"--trace", "--help", "--fInputMask=/sdcard/test.mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=/sdcard/test.s.seg", "--sOutputMask=/sdcard/test.l.seg", "--cMethod=l", "--cThr=2", "test"};
+
+    }*/
 }
