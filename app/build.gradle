@@ -56,4 +56,6 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     compile files('/Users/cunnie/workspace/blabbertabber/libs/lium_spkdiarization-8.4.1.jar')
+    //    compile files('libs/lium_spkdiarization-8.4.1-blabbertabber.jar')
+    compile files('libs/lium_spkdiarization-8.4.1-bt5.jar')
 }
