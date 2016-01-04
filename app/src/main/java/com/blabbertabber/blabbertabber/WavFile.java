@@ -7,7 +7,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -59,7 +58,7 @@ public class WavFile {
         DataOutputStream output = null;
         try {
             Log.i(TAG, "About to write to wav file in path " + waveFile.getAbsolutePath());
-            output = new DataOutputStream(context.openFileOutput(waveFile.getAbsolutePath(), Context.MODE_WORLD_READABLE));
+            output = new DataOutputStream(context.openFileOutput(waveFile.getName(), Context.MODE_WORLD_READABLE));
             // WAVE header
             // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
             writeString(output, "RIFF"); // chunk id
