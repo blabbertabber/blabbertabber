@@ -33,7 +33,7 @@ import java.util.Objects;
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 52;
+    private static final AnimatorSet NULL_ANIMATOR_SET = new AnimatorSet();
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -60,7 +60,7 @@ public class RecordingActivity extends Activity {
     private ObjectAnimator rotateBlue;
     private ObjectAnimator rotateRed;
     private ObjectAnimator rotateYellow;
-    private AnimatorSet animatorSet;
+    private AnimatorSet animatorSet = NULL_ANIMATOR_SET;    // Null object pattern
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -130,14 +130,7 @@ public class RecordingActivity extends Activity {
         // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                registerRecordingServiceReceiver();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        REQUEST_WRITE_EXTERNAL_STORAGE);
-            }
+            registerRecordingServiceReceiver();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO},
@@ -171,7 +164,7 @@ public class RecordingActivity extends Activity {
         // clear out the animatorSet; it doesn't recover properly (paused/started/running
         // are all true, but the animations are frozen)
         animatorSet.cancel(); // cancel() is quicker than end(); it doesn't wait for animations to finish
-        animatorSet = null;
+        animatorSet = NULL_ANIMATOR_SET;
     }
 
     @Override
@@ -207,8 +200,8 @@ public class RecordingActivity extends Activity {
     private void record() {
         Log.i(TAG, "record()");
         // Make sure we have all the necessary permissions, then begin recording:
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(getApplicationContext(), "record() bailing out early, don't have permissions", Toast.LENGTH_LONG).show();
             Log.i(TAG, "record() bailing out early, don't have permissions");
             return;
         }
@@ -226,7 +219,7 @@ public class RecordingActivity extends Activity {
         rotateRed.setRepeatCount(ValueAnimator.INFINITE);
         rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
 
-        if (animatorSet == null) {
+        if (animatorSet == NULL_ANIMATOR_SET) {
             animatorSet = new AnimatorSet();
             animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
             animatorSet.start();
@@ -268,9 +261,9 @@ public class RecordingActivity extends Activity {
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
-            wavFile = WavFile.of(new File(AudioRecordWrapper.RECORDER_RAW_FILENAME));
+            wavFile = WavFile.of(this, new File(AudioRecordWrapper.getRawFilePathName()));
         } catch (IOException e) {
-            String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.RECORDER_RAW_FILENAME
+            String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.getRawFilePathName()
                     + ": " + e.getMessage();
             Log.wtf(TAG, errorTxt);
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
@@ -312,6 +305,7 @@ public class RecordingActivity extends Activity {
         ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
         ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
 
+        // shrink and expand the pie slices, depending on how loudly people are talking
         AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
         ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
         ephemeralAnimatorSet.start();
@@ -331,7 +325,7 @@ public class RecordingActivity extends Activity {
         argumentString += " ]";
         Log.i(TAG, "onRequestPermissionsResult() " + argumentString);
 
-        // http://developer.android.com/training/permissions/requesting.html
+        // boilerplate from http://developer.android.com/training/permissions/requesting.html
         switch (requestCode) {
             case REQUEST_RECORD_AUDIO: {
                 // If request is cancelled, the result arrays are empty.
@@ -339,16 +333,6 @@ public class RecordingActivity extends Activity {
                         && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     // permission denied, message & exit gracefully
                     Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                return;
-            }
-            case REQUEST_WRITE_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    // permission denied, message & exit gracefully
-                    Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to write storage", Toast.LENGTH_LONG).show();
                     finish();
                 }
                 return;

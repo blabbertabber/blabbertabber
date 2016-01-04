@@ -1,10 +1,12 @@
 package com.blabbertabber.blabbertabber;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,15 +22,16 @@ public class WavFile {
     private WavFile() {
     }
 
-    public static WavFile of(File rawFile) throws IOException {
+    public static WavFile of(Context context, File rawFile) throws IOException {
         WavFile wavFile = new WavFile();
         String wavFilePath = convertFilenameFromRawToWav(rawFile.getPath());
-        wavFile.rawToWave(rawFile, new File(wavFilePath));
+        Log.i(TAG, "wavFilePath: " + wavFilePath);
+        wavFile.rawToWave(context, rawFile, new File(wavFilePath));
         return wavFile;
     }
 
-    public static WavFile of(String rawFilepathname) throws IOException {
-        return of(new File(rawFilepathname));
+    public static WavFile of(Context context, String rawFilepathname) throws IOException {
+        return of(context, new File(rawFilepathname));
     }
 
     // Returns an appropriately named .wav file path.
@@ -38,7 +41,7 @@ public class WavFile {
         return filename + ".wav";
     }
 
-    private void rawToWave(final File rawFile, final File waveFile) throws IOException {
+    private void rawToWave(Context context, final File rawFile, final File waveFile) throws IOException {
         wavFile = waveFile;
 
         byte[] rawData = new byte[(int) rawFile.length()];
@@ -54,7 +57,8 @@ public class WavFile {
 
         DataOutputStream output = null;
         try {
-            output = new DataOutputStream(new FileOutputStream(waveFile));
+            Log.i(TAG, "About to write to wav file in path " + waveFile.getAbsolutePath());
+            output = new DataOutputStream(context.openFileOutput(waveFile.getName(), Context.MODE_WORLD_READABLE));
             // WAVE header
             // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
             writeString(output, "RIFF"); // chunk id
