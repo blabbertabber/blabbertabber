@@ -12,14 +12,18 @@ import java.io.IOException;
  * This class inherits from a Runnable that Recording Service starts when it is created.
  */
 public class DeviceRecorder extends Recorder {
+    Context mContext;
+
     public DeviceRecorder(Context context) {
         super(context);
+        mContext = context;
     }
 
     @Override
     protected void pause() {
         Log.i(TAG, "pause()");
         AudioRecordWrapper.stop();
+
     }
 
     @Override
@@ -27,7 +31,7 @@ public class DeviceRecorder extends Recorder {
         Log.i(TAG, "start()");
         // make sure mRecorder is fresh; if it's stale we'll get a
         // `java.lang.IllegalStateException: startRecording() called on an uninitialized AudioRecord.`
-        AudioRecordWrapper.startRecording();
+        AudioRecordWrapper.startRecording(mContext);
     }
 
     @Override

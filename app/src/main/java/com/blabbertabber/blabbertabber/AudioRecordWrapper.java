@@ -1,8 +1,8 @@
 package com.blabbertabber.blabbertabber;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -23,6 +23,9 @@ import java.io.IOException;
  * but we plan to symmetricize them in any calling class (e.g. DeviceRecorder)
  */
 public class AudioRecordWrapper {
+    ////private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
+    public static final String RECORDER_RAW_FILENAME = "meeting.raw";
+    public static final String RECORDER_RAW_PATHNAME = "meeting.raw";
     private static final String TAG = "AudioRecordWrapper";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     // http://developer.android.com/reference/android/media/AudioRecord.html
@@ -34,19 +37,17 @@ public class AudioRecordWrapper {
     private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5; // five periods/sec
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
-    private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
-    public static final String RECORDER_RAW_FILENAME = BLABBERTABBER_DIRECTORY + "meeting.raw";
     private static AudioRecord audioRecord = null;
-    ////public static AudioRecordWrapper singleton;
     // Stuff needed for getMaxAmplitude()
     // http://stackoverflow.com/questions/15804903/android-dev-audiorecord-without-blocking-or-threads
     private static short[] AUDIO_DATA = new short[RECORDER_BUFFER_SIZE_IN_BYTES / 2];  // 2 => 1 x PCM 16 / 2 bytes
     private static DataOutputStream mRawDataOutputStream = null;
+    private static String rawFilePathName;
 
     private AudioRecordWrapper() {
     }
 
-    private synchronized static AudioRecord getAudioRecord() {
+    private synchronized static AudioRecord getAudioRecord(Context context) {
         Log.i(TAG, "getAudioRecord()");
         if (audioRecord == null) {
             audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
@@ -54,36 +55,44 @@ public class AudioRecordWrapper {
 
             // Everything that's recorded over the life of audioRecord is written to a file.
             // audioRecord.release() closes the file.
-            File file = new File(BLABBERTABBER_DIRECTORY);
+            ///File file = new File(BLABBERTABBER_DIRECTORY);
+            File file = context.getFilesDir();
             if (file.exists()) {
-                Log.i(TAG, "getInstance() " + BLABBERTABBER_DIRECTORY + " already exists");
+                Log.i(TAG, "getInstance() " + file.getAbsolutePath() + " already exists");
             } else if (file.mkdirs()) {
-                Log.i(TAG, "getInstance() " + BLABBERTABBER_DIRECTORY + " created");
+                Log.i(TAG, "getInstance() " + file.getAbsolutePath() + " created");
             } else {
-                Log.i(TAG, "getInstance() could not create " + BLABBERTABBER_DIRECTORY + ".");
+                Log.i(TAG, "getInstance() could not create " + file.getAbsolutePath() + ".");
             }
-            // open file for writing "/sdcard/BlabberTabber"; create dir if necessary
+            // open file for writing "/data/user/0/com.blabbertabber.blabbertabber/files/meeting.raw"; create dir if necessary
             if (mRawDataOutputStream == null) {
-                File rawFile = new File(RECORDER_RAW_FILENAME);
+                rawFilePathName = file.getAbsolutePath() + "/" + RECORDER_RAW_FILENAME;
+                File rawFile = new File(rawFilePathName);
                 try {
                     mRawDataOutputStream = new DataOutputStream(new FileOutputStream(rawFile, true));
                 } catch (java.io.FileNotFoundException e) {
-                    Log.wtf(TAG, "Could not open FileOutputStream " + RECORDER_RAW_FILENAME +
+                    Log.wtf(TAG, "Could not open FileOutputStream " + rawFilePathName +
                             " with message " + e.getMessage());
+                    Log.wtf(TAG, "The file thinks his absolute path is " + rawFile.getAbsolutePath() + "  and absolute file is " + rawFile.getAbsoluteFile());
                 }
             }
         }
         return audioRecord;
     }
 
-    public synchronized static void startRecording() {
-        getAudioRecord().startRecording();
+    public static String getRawFilePathName() {
+        Log.i(TAG, "getRawFilePathName(): '" + rawFilePathName + "'");
+        return rawFilePathName;
+    }
+
+    public synchronized static void startRecording(Context context) {
+        getAudioRecord(context).startRecording();
         Log.i(TAG, "startRecording()");
     }
 
     public synchronized static void newMeetingFile() {
         Log.i(TAG, "newMeetingFile()");
-        File rawFile = new File(RECORDER_RAW_FILENAME);
+        File rawFile = new File(getRawFilePathName());
         if (rawFile.exists()) {
             rawFile.delete();
         }
@@ -94,7 +103,9 @@ public class AudioRecordWrapper {
      * decides to resume the recording later. This is more of a "pause" than a "stop"
      */
     public synchronized static void stop() {
-        getAudioRecord().stop();
+        // We call audioRecord.stop() instead of getAudioRecord(context).stop()
+        // because we don't have context and it's expensive/bad practice to keep state
+        audioRecord.stop();
         Log.i(TAG, "stop()");
     }
 
@@ -129,14 +140,14 @@ public class AudioRecordWrapper {
      * @return int  The maximum volume over the most recent section of time.
      * The range is that of a signed short.
      * @throws IOException if it can't write to the file; it's unintuitive that the exception is
-     * thrown in getMaxAmplitude() (i.e. "what does getMaxAmplitude() have to do with writing a file?")
+     *                     thrown in getMaxAmplitude() (i.e. "what does getMaxAmplitude() have to do with writing a file?")
      */
     public synchronized static int getMaxAmplitude() throws IOException {
         Log.v(TAG, "getMaxAmplitude()");
         int maxAmplitude = Short.MIN_VALUE;
         // if our singleton is null, then we skip writing to mRawDataOutputStream to avoid
         // `java.lang.NullPointerException: Attempt to invoke virtual method 'void java.io.DataOutputStream.write(byte[], int, int)' on a null object reference`
-        if ( audioRecord != null ) {
+        if (audioRecord != null) {
             int readSize = audioRecord.read(AUDIO_DATA, 0, AUDIO_DATA.length);
             // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
             if (readSize > 0) {
