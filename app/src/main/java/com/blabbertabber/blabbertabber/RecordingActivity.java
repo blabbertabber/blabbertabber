@@ -261,7 +261,7 @@ public class RecordingActivity extends Activity {
         /// Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
-            wavFile = WavFile.of(new File(AudioRecordWrapper.getRawFilePathName()));
+            wavFile = WavFile.of(this, new File(AudioRecordWrapper.getRawFilePathName()));
         } catch (IOException e) {
             String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.getRawFilePathName()
                     + ": " + e.getMessage();
