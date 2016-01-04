@@ -15,6 +15,7 @@ public class Timer {
 
     /**
      * How much time has elapsed
+     *
      * @return long the number of milliseconds elapsed, e.g. 5000 => 5 seconds
      */
     public long time() {

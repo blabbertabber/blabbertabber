@@ -14,10 +14,6 @@ import android.util.Log;
  */
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
-    private final IBinder mBinder = new RecordingBinder();
-    private Thread mThreadRecorder;
-    // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-    private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
     // http://www.ibm.com/developerworks/java/library/j-jtp06197/index.html
     // 'volatile' because it will be accessed across threads, "volatile reads are cheap"
     // read-mostly, only written when the recording is paused.
@@ -25,6 +21,10 @@ public class RecordingService extends Service {
     // whether the app is recording is a global condition. Sorry, zealots, pander your dogma elsewhere.
     public static volatile boolean recording = true;
     public static volatile boolean reset = false;
+    private final IBinder mBinder = new RecordingBinder();
+    private Thread mThreadRecorder;
+    // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
+    private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
 
     public RecordingService() {
     }

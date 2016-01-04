@@ -106,7 +106,7 @@ public class SummaryActivity extends Activity {
      */
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
-        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioRecordWrapper.RECORDER_RAW_FILENAME);
+        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioRecordWrapper.getRawFilePathName());
         File wavFile = new File(wavFilePath);
         Uri wavFileURI = Uri.fromFile(wavFile);
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -120,7 +120,8 @@ public class SummaryActivity extends Activity {
                 Log.v(TAG, "replayMeeting(): couldn't resolve activity");
             }
         } else {
-            Log.i(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
+            Log.e(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
+            Log.wtf(TAG, "The raw file's path name is " + AudioRecordWrapper.getRawFilePathName());
             Toast.makeText(getApplicationContext(), "Can't play meeting file " + wavFilePath + "; it doesn't exist.", Toast.LENGTH_LONG).show();
         }
     }
