@@ -1,5 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -23,6 +25,7 @@ public class WavFile {
     public static WavFile of(File rawFile) throws IOException {
         WavFile wavFile = new WavFile();
         String wavFilePath = convertFilenameFromRawToWav(rawFile.getPath());
+        Log.i(TAG, "wavFilePath: " + wavFilePath);
         wavFile.rawToWave(rawFile, new File(wavFilePath));
         return wavFile;
     }
