@@ -57,17 +57,17 @@ public class AudioRecordWrapper {
             // Everything that's recorded over the life of audioRecord is written to a file.
             // audioRecord.release() closes the file.
             ///File file = new File(BLABBERTABBER_DIRECTORY);
-            File file = context.getFilesDir();
-            if (file.exists()) {
-                Log.i(TAG, "getInstance() " + file.getAbsolutePath() + " already exists");
-            } else if (file.mkdirs()) {
-                Log.i(TAG, "getInstance() " + file.getAbsolutePath() + " created");
+            File sharedDirectory = context.getFilesDir();
+            if (sharedDirectory.exists()) {
+                Log.i(TAG, "getInstance() " + sharedDirectory.getAbsolutePath() + " already exists");
+            } else if (sharedDirectory.mkdirs()) {
+                Log.i(TAG, "getInstance() " + sharedDirectory.getAbsolutePath() + " created");
             } else {
-                Log.i(TAG, "getInstance() could not create " + file.getAbsolutePath() + ".");
+                Log.i(TAG, "getInstance() could not create " + sharedDirectory.getAbsolutePath() + ".");
             }
             // open file for writing "/data/user/0/com.blabbertabber.blabbertabber/files/meeting.raw"; create dir if necessary
             if (mRawDataOutputStream == null) {
-                rawFilePathName = file.getAbsolutePath() + "/" + RECORDER_RAW_FILENAME;
+                rawFilePathName = sharedDirectory.getAbsolutePath() + "/" + RECORDER_RAW_FILENAME;
                 File rawFile = new File(rawFilePathName);
                 try {
                     mRawDataOutputStream = new DataOutputStream(new FileOutputStream(rawFile, true));
