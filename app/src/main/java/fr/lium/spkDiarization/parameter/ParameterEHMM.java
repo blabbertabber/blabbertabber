@@ -1,107 +1,72 @@
 package fr.lium.spkDiarization.parameter;
 
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
-/**
- * The Class ParameterEHMM.
- */
-public class ParameterEHMM extends ParameterBase implements Cloneable {
-	// Type of EHMM.
-	/**
-	 * The Enum TypeEHMMList.
-	 */
-	public static enum TypeEHMMList {
+import gnu.getopt.LongOpt;
 
-		/** The Re seg. */
-		ReSeg,
-		/** The two spk. */
-		twoSpk,
-		/** The n spk. */
-		nSpk
-	};
+public class ParameterEHMM implements ParameterInterface {
+    public static String[] TypeEHMMString = {"reSeg", "2Spk", "nSpk"};
+    public int ReferenceTypeEHMM = -1;
 
-	/** The Type ehmm string. */
-	public static String[] TypeEHMMString = { "reSeg", "2Spk", "nSpk" };
+    ;
+    private int typeEHMM; // Minimum of iteration of EM algorithm.
 
-	/** The type ehmm. */
-	private int typeEHMM; // Minimum of iteration of EM algorithm.
+    public ParameterEHMM(ArrayList<LongOpt> list, Parameter param) {
+        super();
+        setTypeEHMM(TypeEHMMString[TypeEHMMList.ReSeg.ordinal()]);
+        ReferenceTypeEHMM = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-	/**
-	 * The Class ActionTypeEHMM.
-	 */
-	private class ActionTypeEHMM extends LongOptAction {
+    @Override
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("nbOfSpeakers", 1, null, ReferenceTypeEHMM));
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setTypeEHMM(optarg);
-		}
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#log(java.util.logging.Logger, fr.lium.spkDiarization.parameter.LongOptWithAction)
-		 */
-		@Override
-		public void log(Logger logger, LongOptWithAction longOpt) {
-			logger.config("info[--" + longOpt.getName() + " \t number of speakers " + formatStrigArray(TypeEHMMString)
-					+ " = " + TypeEHMMString[getTypeEHMM()] + " / " + getTypeEHMM() + " [" + logger.getName() + "]");
-		}
-	}
+    @Override
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceTypeEHMM) {
+            setTypeEHMM(optarg);
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * Instantiates a new parameter ehmm.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterEHMM(Parameter parameter) {
-		super(parameter);
-		setTypeEHMM(TypeEHMMString[TypeEHMMList.ReSeg.ordinal()]);
-		addOption(new LongOptWithAction("typeEHMM", new ActionTypeEHMM(), ""));
-	}
+    private void setTypeEHMM(String optarg) {
+        if (optarg.equals(TypeEHMMString[TypeEHMMList.ReSeg.ordinal()])) {
+            typeEHMM = TypeEHMMList.ReSeg.ordinal();
+        } else if (optarg.equals(TypeEHMMString[TypeEHMMList.twoSpk.ordinal()])) {
+            typeEHMM = TypeEHMMList.twoSpk.ordinal();
+        } else if (optarg.equals(TypeEHMMString[TypeEHMMList.nSpk.ordinal()])) {
+            typeEHMM = TypeEHMMList.nSpk.ordinal();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterEHMM clone() throws CloneNotSupportedException {
-		return (ParameterEHMM) super.clone();
-	}
+    /**
+     * @return the typeEHMM
+     */
+    public int getTypeEHMM() {
+        return typeEHMM;
+    }
 
-	/**
-	 * Sets the type ehmm.
-	 * 
-	 * @param optarg the new type ehmm
-	 */
-	private void setTypeEHMM(String optarg) {
-		if (optarg.equals(TypeEHMMString[TypeEHMMList.ReSeg.ordinal()])) {
-			typeEHMM = TypeEHMMList.ReSeg.ordinal();
-		} else if (optarg.equals(TypeEHMMString[TypeEHMMList.twoSpk.ordinal()])) {
-			typeEHMM = TypeEHMMList.twoSpk.ordinal();
-		} else if (optarg.equals(TypeEHMMString[TypeEHMMList.nSpk.ordinal()])) {
-			typeEHMM = TypeEHMMList.nSpk.ordinal();
-		}
-	}
+    /**
+     * @param typeEHMM the typeEHMM to set
+     */
+    public void setTypeEHMM(int typeEHMM) {
+        this.typeEHMM = typeEHMM;
+    }
 
-	/**
-	 * Sets the type ehmm.
-	 * 
-	 * @param typeEHMM the typeEHMM to set
-	 */
-	public void setTypeEHMM(int typeEHMM) {
-		this.typeEHMM = typeEHMM;
-	}
+    public void print() {
+        System.out.print("info[ParameterEHMM] \t --nbOfSpeakers \t number of speakers (" + TypeEHMMString[TypeEHMMList.ReSeg.ordinal()] +
+                ", " + TypeEHMMString[TypeEHMMList.twoSpk.ordinal()] +
+                ", " + TypeEHMMString[TypeEHMMList.nSpk.ordinal()] + ") = ");
+        System.out.println(TypeEHMMString[getTypeEHMM()] + " / " + getTypeEHMM());
+    }
 
-	/**
-	 * Gets the type ehmm.
-	 * 
-	 * @return the typeEHMM
-	 */
-	public int getTypeEHMM() {
-		return typeEHMM;
-	}
+    // Type of EHMM.
+    public enum TypeEHMMList {
+        ReSeg, twoSpk, nSpk
+    }
 
 }

@@ -1,185 +1,101 @@
 /**
- * 
  * <p>
  * ParameterFilter
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          not more use
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * not more use
  */
 
 package fr.lium.spkDiarization.parameter;
 
-/**
- * The Class ParameterFilter.
- */
-public class ParameterFilter extends ParameterBase implements Cloneable {
+import java.util.ArrayList;
 
-	/** The silence minimum length. */
-	private Integer silenceMinimumLength;
+import gnu.getopt.LongOpt;
 
-	/**
-	 * The Class ActionSilenceMinimumLength.
-	 */
-	private class ActionSilenceMinimumLength extends LongOptAction {
+public class ParameterFilter implements ParameterInterface {
+    public static int ReferenceSilenceMinimumLength = -1;
+    public static int ReferenceSpeechMinimumLength = -1;
+    public static int ReferenceSegmentPadding = -1;
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setSilenceMinimumLength(Integer.parseInt(optarg));
-		}
+    private int silenceMinimumLength;
+    private int speechMinimumLength;
+    private int segmentPadding;
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return silenceMinimumLength.toString();
-		}
-	}
+    public ParameterFilter(ArrayList<LongOpt> list, Parameter param) {
+        setSilenceMinimumLength(150);
+        setSpeechMinimumLength(150);
+        setSegmentPadding(25);
+        ReferenceSilenceMinimumLength = param.getNextOptionIndex();
+        ReferenceSpeechMinimumLength = param.getNextOptionIndex();
+        ReferenceSegmentPadding = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-	/** The speech minimum length. */
-	private Integer speechMinimumLength;
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceSilenceMinimumLength) {
+            setSilenceMinimumLength(Integer.parseInt(optarg));
+            return true;
+        } else if (option == ReferenceSpeechMinimumLength) {
+            setSpeechMinimumLength(Integer.parseInt(optarg));
+            return true;
+        } else if (option == ReferenceSegmentPadding) {
+            setSegmentPadding(Integer.parseInt(optarg));
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * The Class ActionSpeechMinimumLength.
-	 */
-	private class ActionSpeechMinimumLength extends LongOptAction {
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("fltSegMinLenSil", 1, null, ReferenceSilenceMinimumLength));
+        list.add(new LongOpt("fltSegMinLenSpeech", 1, null, ReferenceSpeechMinimumLength));
+        list.add(new LongOpt("fltSegPadding", 1, null, ReferenceSegmentPadding));
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setSpeechMinimumLength(Integer.parseInt(optarg));
-		}
+    public int getSilenceMinimumLength() {
+        return silenceMinimumLength;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return speechMinimumLength.toString();
-		}
-	}
+    public void setSilenceMinimumLength(int segMinLenSil) {
+        this.silenceMinimumLength = segMinLenSil;
+    }
 
-	/** The segment padding. */
-	private Integer segmentPadding;
+    public int getSpeechMinimumLength() {
+        return speechMinimumLength;
+    }
 
-	/**
-	 * The Class ActionSegmentPadding.
-	 */
-	private class ActionSegmentPadding extends LongOptAction {
+    public void setSpeechMinimumLength(int segMinLenSpeech) {
+        this.speechMinimumLength = segMinLenSpeech;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setSegmentPadding(Integer.parseInt(optarg));
-		}
+    public int getSegmentPadding() {
+        return segmentPadding;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return segmentPadding.toString();
-		}
-	}
+    public void setSegmentPadding(int segPadding) {
+        this.segmentPadding = segPadding;
+    }
 
-	/**
-	 * Instantiates a new parameter filter.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterFilter(Parameter parameter) {
-		super(parameter);
-		setSilenceMinimumLength(150);
-		setSpeechMinimumLength(150);
-		setSegmentPadding(25);
-		addOption(new LongOptWithAction("fltSegMinLenSil", new ActionSilenceMinimumLength(), ""));
-		addOption(new LongOptWithAction("fltSegMinLenSpeech", new ActionSpeechMinimumLength(), ""));
-		addOption(new LongOptWithAction("fltSegPadding", new ActionSegmentPadding(), ""));
-	}
+    public void printSilenceMinimumLength() {
+        System.out.println("info[ParameterFilter] \t --fltSegMinLenSil = " + getSilenceMinimumLength());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterFilter clone() throws CloneNotSupportedException { // TODO Auto-generated method stub
-		return (ParameterFilter) super.clone();
-	}
+    public void printSpeechMinimumLength() {
+        System.out.println("info[ParameterFilter] \t --fltSegMinLenSpeech = " + getSpeechMinimumLength());
+    }
 
-	/**
-	 * Gets the silence minimum length.
-	 * 
-	 * @return the silence minimum length
-	 */
-	public int getSilenceMinimumLength() {
-		return silenceMinimumLength;
-	}
-
-	/**
-	 * Sets the silence minimum length.
-	 * 
-	 * @param segMinLenSil the new silence minimum length
-	 */
-	public void setSilenceMinimumLength(int segMinLenSil) {
-		this.silenceMinimumLength = segMinLenSil;
-	}
-
-	/**
-	 * Gets the speech minimum length.
-	 * 
-	 * @return the speech minimum length
-	 */
-	public int getSpeechMinimumLength() {
-		return speechMinimumLength;
-	}
-
-	/**
-	 * Sets the speech minimum length.
-	 * 
-	 * @param segMinLenSpeech the new speech minimum length
-	 */
-	public void setSpeechMinimumLength(int segMinLenSpeech) {
-		this.speechMinimumLength = segMinLenSpeech;
-	}
-
-	/**
-	 * Gets the segment padding.
-	 * 
-	 * @return the segment padding
-	 */
-	public int getSegmentPadding() {
-		return segmentPadding;
-	}
-
-	/**
-	 * Sets the segment padding.
-	 * 
-	 * @param segPadding the new segment padding
-	 */
-	public void setSegmentPadding(int segPadding) {
-		this.segmentPadding = segPadding;
-	}
+    public void printSegmentPadding() {
+        System.out.println("info[ParameterFilter] \t --fltSegPadding = " + getSegmentPadding());
+    }
 }

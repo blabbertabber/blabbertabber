@@ -1,141 +1,80 @@
 /**
- * 
  * <p>
  * ParameterAdjustSegmentation
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          not more use
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * not more use
  */
 
 package fr.lium.spkDiarization.parameter;
 
-/**
- * The Class ParameterAdjustSegmentation.
- */
-public class ParameterAdjustSegmentation extends ParameterBase implements Cloneable {
+import java.util.ArrayList;
 
-	/** The seach decay. */
-	private Integer seachDecay;
+import gnu.getopt.LongOpt;
 
-	/**
-	 * The Class ActionSeachDecay.
-	 */
-	private class ActionSeachDecay extends LongOptAction {
+public class ParameterAdjustSegmentation implements ParameterInterface {
+    public static int ReferenceSeachDecay = -1;
+    public static int ReferenceHalfWindowSizeForEnergie = -1;
+    private int seachDecay;
+    private int halfWindowSizeForEnergie;
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setSeachDecay(Integer.parseInt(arg));
-		}
+    public ParameterAdjustSegmentation(ArrayList<LongOpt> list, Parameter param) {
+        setSeachDecay(25);
+        setHalfWindowSizeForEnergie(5);
+        ReferenceSeachDecay = param.getNextOptionIndex();
+        ReferenceHalfWindowSizeForEnergie = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return seachDecay.toString();
-		}
-	}
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceSeachDecay) {
+            setSeachDecay(Integer.parseInt(optarg));
+            return true;
+        } else if (option == ReferenceHalfWindowSizeForEnergie) {
+            setHalfWindowSizeForEnergie(Integer.parseInt(optarg));
+            return true;
+        }
+        return false;
+    }
 
-	/** The half window size for energie. */
-	private Integer halfWindowSizeForEnergie;
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("sSeachDecay", 1, null, ReferenceSeachDecay));
+        list.add(new LongOpt("sHalfWindowSizeForEnergie", 1, null, ReferenceHalfWindowSizeForEnergie));
+    }
 
-	/**
-	 * The Class ActionHalfWindowSizeForEnergie.
-	 */
-	private class ActionHalfWindowSizeForEnergie extends LongOptAction {
+    public int getSeachDecay() {
+        return seachDecay;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setHalfWindowSizeForEnergie(Integer.parseInt(arg));
-		}
+    public void setSeachDecay(int adjSeachDecay) {
+        this.seachDecay = adjSeachDecay;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return halfWindowSizeForEnergie.toString();
-		}
-	}
+    public int getHalfWindowSizeForEnergie() {
+        return halfWindowSizeForEnergie;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterAdjustSegmentation clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return (ParameterAdjustSegmentation) super.clone();
-	}
+    public void setHalfWindowSizeForEnergie(int adjHSizeWin) {
+        this.halfWindowSizeForEnergie = adjHSizeWin;
+    }
 
-	/**
-	 * Instantiates a new parameter adjust segmentation.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterAdjustSegmentation(Parameter parameter) {
-		super(parameter);
-		setSeachDecay(25);
-		addOption(new LongOptWithAction("sSeachDecay", new ActionSeachDecay(), ""));
+    public void printSeachDecay() {
+        System.out.println("info[ParameterAdjustSegmentation] \t --sSeachDecay = " + getSeachDecay());
+    }
 
-		setHalfWindowSizeForEnergie(5);
-		addOption(new LongOptWithAction("sHalfWindowSizeForEnergie", new ActionHalfWindowSizeForEnergie(), ""));
-	}
-
-	/**
-	 * Gets the seach decay.
-	 * 
-	 * @return the seach decay
-	 */
-	public int getSeachDecay() {
-		return seachDecay;
-	}
-
-	/**
-	 * Sets the seach decay.
-	 * 
-	 * @param adjSeachDecay the new seach decay
-	 */
-	public void setSeachDecay(int adjSeachDecay) {
-		this.seachDecay = adjSeachDecay;
-	}
-
-	/**
-	 * Gets the half window size for energie.
-	 * 
-	 * @return the half window size for energie
-	 */
-	public int getHalfWindowSizeForEnergie() {
-		return halfWindowSizeForEnergie;
-	}
-
-	/**
-	 * Sets the half window size for energie.
-	 * 
-	 * @param adjHSizeWin the new half window size for energie
-	 */
-	public void setHalfWindowSizeForEnergie(int adjHSizeWin) {
-		this.halfWindowSizeForEnergie = adjHSizeWin;
-	}
-
+    public void printHalfWindowSizeForEnergie() {
+        System.out.println("info[ParameterAdjustSegmentation] \t --sHalfWindowSizeForEnergie = " + getHalfWindowSizeForEnergie());
+    }
 }

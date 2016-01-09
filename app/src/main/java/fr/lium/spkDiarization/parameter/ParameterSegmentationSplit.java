@@ -1,140 +1,81 @@
 /**
- * 
  * <p>
  * ParameterSegmentationSplit
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          not more use
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * not more use
  */
 
 package fr.lium.spkDiarization.parameter;
 
-/**
- * The Class ParameterSegmentationSplit.
- */
-public class ParameterSegmentationSplit extends ParameterBase implements Cloneable {
+import java.util.ArrayList;
 
-	/** The segment maximum length. */
-	private Integer segmentMaximumLength;
+import gnu.getopt.LongOpt;
 
-	/**
-	 * The Class ActionSegmentMaximumLength.
-	 */
-	private class ActionSegmentMaximumLength extends LongOptAction {
+public class ParameterSegmentationSplit implements ParameterInterface {
+    public static int ReferenceSegmentMaximumLength = -1;
+    public static int ReferenceSegmentMinimumLength = -1;
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setSegmentMaximumLength(Integer.parseInt(optarg));
-		}
+    private int segmentMaximumLength;
+    private int segmentMinimumLength;
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return segmentMaximumLength.toString();
-		}
-	}
+    public ParameterSegmentationSplit(ArrayList<LongOpt> list, Parameter param) {
+        setSegmentMaximumLength(2000);
+        setSegmentMinimumLength(200);
+        ReferenceSegmentMaximumLength = param.getNextOptionIndex();
+        ReferenceSegmentMinimumLength = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-	/** The segment minimum length. */
-	private Integer segmentMinimumLength;
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceSegmentMaximumLength) {
+            setSegmentMaximumLength(Integer.parseInt(optarg));
+            return true;
+        } else if (option == ReferenceSegmentMinimumLength) {
+            setSegmentMinimumLength(Integer.parseInt(optarg));
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * The Class ActionSegmentMinimumLength.
-	 */
-	private class ActionSegmentMinimumLength extends LongOptAction {
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("sSegMaxLen", 1, null, ReferenceSegmentMaximumLength));
+        list.add(new LongOpt("sSegMinLen", 1, null, ReferenceSegmentMinimumLength));
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setSegmentMinimumLength(Integer.parseInt(optarg));
-		}
+    public int getSegmentMaximumLength() {
+        return segmentMaximumLength;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return segmentMinimumLength.toString();
-		}
-	}
+    public void setSegmentMaximumLength(int segMaxLen) {
+        this.segmentMaximumLength = segMaxLen;
+    }
 
-	/**
-	 * Instantiates a new parameter segmentation split.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterSegmentationSplit(Parameter parameter) {
-		super(parameter);
-		setSegmentMaximumLength(2000);
-		setSegmentMinimumLength(200);
-		addOption(new LongOptWithAction("sSegMaxLen", new ActionSegmentMaximumLength(), ""));
-		addOption(new LongOptWithAction("sSegMinLen", new ActionSegmentMinimumLength(), ""));
-	}
+    public int getSegmentMinimumLength() {
+        return segmentMinimumLength;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterSegmentationSplit clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return (ParameterSegmentationSplit) super.clone();
-	}
+    public void setSegmentMinimumLength(int segMinLen) {
+        this.segmentMinimumLength = segMinLen;
+    }
 
-	/**
-	 * Gets the segment maximum length.
-	 * 
-	 * @return the segment maximum length
-	 */
-	public int getSegmentMaximumLength() {
-		return segmentMaximumLength;
-	}
+    public void printSegmentMaximumLength() {
+        System.out.println("info[ParameterSegmentationSplit] \t --sSegMaxLen = " + getSegmentMaximumLength());
+    }
 
-	/**
-	 * Sets the segment maximum length.
-	 * 
-	 * @param segMaxLen the new segment maximum length
-	 */
-	public void setSegmentMaximumLength(int segMaxLen) {
-		this.segmentMaximumLength = segMaxLen;
-	}
-
-	/**
-	 * Gets the segment minimum length.
-	 * 
-	 * @return the segment minimum length
-	 */
-	public int getSegmentMinimumLength() {
-		return segmentMinimumLength;
-	}
-
-	/**
-	 * Sets the segment minimum length.
-	 * 
-	 * @param segMinLen the new segment minimum length
-	 */
-	public void setSegmentMinimumLength(int segMinLen) {
-		this.segmentMinimumLength = segMinLen;
-	}
-
+    public void printSegmentMinimumLength() {
+        System.out.println("info[ParameterSegmentationSplit] \t --sSegMinLen = " + getSegmentMinimumLength());
+    }
 }

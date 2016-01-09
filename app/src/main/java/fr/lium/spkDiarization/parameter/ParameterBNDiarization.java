@@ -1,438 +1,202 @@
 package fr.lium.spkDiarization.parameter;
 
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
-/**
- * The Class ParameterBNDiarization.
- */
-public class ParameterBNDiarization extends ParameterBase implements Cloneable {
+import gnu.getopt.LongOpt;
 
-	/** The CE clustering. */
-	private Boolean CEClustering;
+public class ParameterBNDiarization implements ParameterInterface {
+    public static String[] SystemString = {"baseline", "10s"};
+    public int ReferenceDiarization = -1;
+    public int ReferenceAudioFileMask = -1;
+    public int ReferenceCEClustering = -1;
+    public int ReferenceTuning = -1;
+    public int ReferenceSaveAllStep = -1;
+    public int ReferenceLoadInputSegmentation = -1;
+    public int ReferenceThresholds = -1;
+    private boolean CEClustering;
+    private boolean tuning;
+    private boolean saveAllStep;
+    private boolean loadInputSegmentation;
+    private String system;
+    private String[] thresholdsKey = {"l", "h", "d", "c"};
+    private double[] thresholds = {2.0, 3.0, 250.0, 1.7};
+    private double[] thresholdsMax = {2.0, 3.0, 250.0, 5};
 
-	/**
-	 * The Class ActionCEClustering.
-	 */
-	private class ActionCEClustering extends LongOptAction {
+    public ParameterBNDiarization(ArrayList<LongOpt> list, Parameter param) {
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setCEClustering(true);
-		}
+        CEClustering = false;
+        saveAllStep = false;
+        loadInputSegmentation = false;
+        tuning = false;
+        system = SystemString[0];
+        ReferenceDiarization = param.getNextOptionIndex();
+        ReferenceAudioFileMask = param.getNextOptionIndex();
+        ReferenceCEClustering = param.getNextOptionIndex();
+        ReferenceTuning = param.getNextOptionIndex();
+        ReferenceSaveAllStep = param.getNextOptionIndex();
+        ReferenceLoadInputSegmentation = param.getNextOptionIndex();
+        ReferenceThresholds = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return CEClustering.toString();
-		}
-	}
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceCEClustering) {
+            setCEClustering(true);
+            return true;
+        } else if (option == ReferenceDiarization) {
+            setSystem(optarg);
+            return true;
+        } else if (option == ReferenceTuning) {
+            setTuning(true);
+            return true;
+        } else if (option == ReferenceSaveAllStep) {
+            setSaveAllStep(true);
+            return true;
+        } else if (option == ReferenceThresholds) {
+            setThresholds(optarg);
+            return true;
+        } else if (option == ReferenceLoadInputSegmentation) {
+            setLoadInputSegmentation(true);
+            return true;
+        }
+        return false;
+    }
 
-	/** The thread. */
-	private Integer thread;
+    public double getThreshold(String key) {
+        for (int i = 0; i < thresholdsKey.length; i++) {
+            if (key.equals(thresholdsKey[i])) {
+                return thresholds[i];
+            }
+        }
+        return Double.NaN;
+    }
 
-	/**
-	 * The Class ActionThread.
-	 */
-	private class ActionThread extends LongOptAction {
+    public double getMaxThreshold(String key) {
+        for (int i = 0; i < thresholdsKey.length; i++) {
+            if (key.equals(thresholdsKey[i])) {
+                return thresholdsMax[i];
+            }
+        }
+        return Double.NaN;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setThread(arg);
-		}
+    private void setThresholds(String optarg) {
+        String[] tab = optarg.split(",");
+        for (int i = 0; i < thresholds.length; i++) {
+            if (i < tab.length) {
+                double min = Double.NaN;
+                double max = Double.NaN;
+                if (tab[i].contains(":")) {
+                    String minmax[] = tab[i].split(":");
+                    min = Double.valueOf(minmax[0]);
+                    max = Double.valueOf(minmax[1]);
+                } else {
+                    min = Double.valueOf(tab[i]);
+                    max = min;
+                }
+                thresholds[i] = min;
+                thresholdsMax[i] = max;
+            }
+        }
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return thread.toString();
-		}
-	}
+    public boolean isTuning() {
+        return tuning;
+    }
 
-	/** The save all step. */
-	private Boolean saveAllStep;
+    private void setTuning(boolean value) {
+        tuning = value;
+    }
 
-	/**
-	 * The Class ActionSaveAllStep.
-	 */
-	private class ActionSaveAllStep extends LongOptAction {
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("system", 1, null, ReferenceDiarization));
+        list.add(new LongOpt("audioFile", 1, null, ReferenceAudioFileMask));
+        list.add(new LongOpt("thresholds", 1, null, ReferenceThresholds));
+        list.add(new LongOpt("doCEClustering", 0, null, ReferenceCEClustering));
+        list.add(new LongOpt("doTuning", 0, null, ReferenceTuning));
+        list.add(new LongOpt("saveAllStep", 0, null, ReferenceSaveAllStep));
+        list.add(new LongOpt("loadInputSegmentation", 0, null, ReferenceLoadInputSegmentation));
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setSaveAllStep(true);
-		}
+    public boolean isCEClustering() {
+        return CEClustering;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return saveAllStep.toString();
-		}
-	}
+    public void setCEClustering(boolean cEClustering) {
+        CEClustering = cEClustering;
+    }
 
-	/** The last step only. */
-	private Boolean lastStepOnly;
+    public boolean isLoadInputSegmentation() {
+        return loadInputSegmentation;
+    }
 
-	/**
-	 * The Class ActionLastStepOnly.
-	 */
-	private class ActionLastStepOnly extends LongOptAction {
+    private void setLoadInputSegmentation(boolean b) {
+        loadInputSegmentation = b;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setLastStepOnly(true);
-		}
+    public void printCEClustering() {
+        System.out.println("info[ParameterSystem] \t --doCEClustering = " + isCEClustering());
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return lastStepOnly.toString();
-		}
-	}
+    public void printTresholds() {
+        String ch = "";
+        int i = 0;
+        if (thresholds[i] == thresholdsMax[i]) {
+            ch = thresholdsKey[i] + "=" + Double.toString(thresholds[i]);
+        } else {
+            ch = thresholdsKey[i] + "=" + Double.toString(thresholds[i]) + ":" + Double.toString(thresholdsMax[i]);
+        }
+        for (i = 1; i < thresholds.length; i++) {
+            if (thresholds[i] == thresholdsMax[i]) {
+                ch = ch + ", " + thresholdsKey[i] + "=" + Double.toString(thresholds[i]);
+            } else {
+                ch = ch + ", " + thresholdsKey[i] + "=" + Double.toString(thresholds[i]) + ":" + Double.toString(thresholdsMax[i]);
+            }
+        }
+        System.out.println("info[ParameterSystem] \t --thresholds = " + ch);
+    }
 
-	/** The load input segmentation. */
-	private Boolean loadInputSegmentation;
+    public void printTuning() {
+        System.out.println("info[ParameterSystem] \t --doTuning = " + isTuning());
+    }
 
-	/**
-	 * The Class ActionLoadInputSegmentation.
-	 */
-	private class ActionLoadInputSegmentation extends LongOptAction {
+    public void printSystem() {
+        System.out.println("info[ParameterSystem] \t --system [" + SystemString[0] + "," + SystemString[1] + "]= " + getSystem());
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setLoadInputSegmentation(true);
-		}
+    public void printSaveAllStep() {
+        System.out.println("info[ParameterSystem] \t --saveAllStep = " + isSaveAllStep());
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return loadInputSegmentation.toString();
-		}
-	}
+    public void printLoadInputSegmentation() {
+        System.out.println("info[ParameterSystem] \t --loadInputSegmentation = " + isLoadInputSegmentation());
+    }
 
-	/** The system. */
-	private String system;
+    public void print() {
+        printSystem();
+        printCEClustering();
+        printTuning();
+        printTresholds();
+        printSaveAllStep();
+        printLoadInputSegmentation();
+    }
 
-	/**
-	 * The Class ActionSystem.
-	 */
-	private class ActionSystem extends LongOptAction {
+    public String getSystem() {
+        return system;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setSystem(arg);
-		}
+    public void setSystem(String system) {
+        this.system = SystemString[0];
+        if (system.equals(SystemString[1])) {
+            this.system = system;
+        }
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return system.toString();
-		}
-	}
+    public boolean isSaveAllStep() {
+        return saveAllStep;
+    }
 
-	/** The thresholds string. */
-	private String thresholdsString;
-
-	/**
-	 * The Class ActionThresholdsString.
-	 */
-	private class ActionThresholdsString extends LongOptAction {
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String arg) {
-			setThresholds(arg);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#log(java.util.logging.Logger, fr.lium.spkDiarization.parameter.LongOptWithAction)
-		 */
-		@Override
-		public void log(Logger logger, LongOptWithAction longOpt) {
-			String option = longOpt.getName();
-
-			String ch = "";
-			int i = 0;
-			if (thresholds[i] == thresholdsMax[i]) {
-				ch = thresholdsKey[i] + "=" + Double.toString(thresholds[i]);
-			} else {
-				ch = thresholdsKey[i] + "=" + Double.toString(thresholds[i]) + ":" + Double.toString(thresholdsMax[i]);
-			}
-			for (i = 1; i < thresholds.length; i++) {
-				if (thresholds[i] == thresholdsMax[i]) {
-					ch = ch + ", " + thresholdsKey[i] + "=" + Double.toString(thresholds[i]);
-				} else {
-					ch = ch + ", " + thresholdsKey[i] + "=" + Double.toString(thresholds[i]) + ":"
-							+ Double.toString(thresholdsMax[i]);
-				}
-			}
-			logger.config("--" + option + " \t " + ch + " [" + logger.getName() + "]");
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return null;
-		}
-	}
-
-	/** The Constant thresholdsKey. */
-	static final private String[] thresholdsKey = { "l", "h", "d", "c" };
-
-	/** The thresholds. */
-	private double[] thresholds = { 2.0, 3.0, 250.0, 1.7 };
-
-	/** The thresholds max. */
-	private double[] thresholdsMax = { 2.0, 3.0, 250.0, 1.7 };
-
-	/** The Constant SystemString. */
-	public final static String[] SystemString = { "baseline", "10s", "tv" };
-
-	/**
-	 * Instantiates a new parameter bn diarization.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterBNDiarization(Parameter parameter) {
-		super(parameter);
-		CEClustering = false;
-		saveAllStep = false;
-		lastStepOnly = false;
-		loadInputSegmentation = false;
-		thread = 1;
-		system = SystemString[0];
-
-		addOption(new LongOptWithAction("system", new ActionSystem(), "selection the diarization module"));
-		addOption(new LongOptWithAction("thresholds", new ActionThresholdsString(), "thresholds of all step"));
-		addOption(new LongOptWithAction("doCEClustering", 0, new ActionCEClustering(), "make the CLR/NCLR clustering"));
-		addOption(new LongOptWithAction("nbThread", new ActionThread(), "number of shows process in parallele"));
-		addOption(new LongOptWithAction("saveAllStep", 0, new ActionSaveAllStep(), "save all intermediate diarization"));
-		addOption(new LongOptWithAction("lastStepOnly", 0, new ActionLastStepOnly(), "need an input diarization"));
-		addOption(new LongOptWithAction("loadInputSegmentation", 0, new ActionLoadInputSegmentation(), "load an input diarization"));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterBNDiarization clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return (ParameterBNDiarization) super.clone();
-	}
-
-	/**
-	 * Gets the threshold.
-	 * 
-	 * @param key the key
-	 * @return the threshold
-	 */
-	public double getThreshold(String key) {
-		for (int i = 0; i < thresholdsKey.length; i++) {
-			if (key.equals(thresholdsKey[i])) {
-				return thresholds[i];
-			}
-		}
-		return Double.NaN;
-	}
-
-	/**
-	 * Gets the max threshold.
-	 * 
-	 * @param key the key
-	 * @return the max threshold
-	 */
-	public double getMaxThreshold(String key) {
-		for (int i = 0; i < thresholdsKey.length; i++) {
-			if (key.equals(thresholdsKey[i])) {
-				return thresholdsMax[i];
-			}
-		}
-		return Double.NaN;
-	}
-
-	/**
-	 * Sets the thresholds.
-	 * 
-	 * @param optarg the new thresholds
-	 */
-	private void setThresholds(String optarg) {
-		thresholdsString = optarg;
-		String[] tab = optarg.split(",");
-		for (int i = 0; i < thresholds.length; i++) {
-			if (i < tab.length) {
-				double min = Double.NaN;
-				double max = Double.NaN;
-				if (tab[i].contains(":")) {
-					String minmax[] = tab[i].split(":");
-					min = Double.valueOf(minmax[0]);
-					max = Double.valueOf(minmax[1]);
-				} else {
-					min = Double.valueOf(tab[i]);
-					max = min;
-				}
-				thresholds[i] = min;
-				thresholdsMax[i] = max;
-			}
-		}
-	}
-
-	/**
-	 * Sets the thread.
-	 * 
-	 * @param value the new thread
-	 */
-	private void setThread(String value) {
-		thread = Integer.parseInt(value);
-	}
-
-	/**
-	 * Gets the thread.
-	 * 
-	 * @return the thread
-	 */
-	public int getThread() {
-		return thread;
-	}
-
-	/**
-	 * Checks if is cE clustering.
-	 * 
-	 * @return true, if is cE clustering
-	 */
-	public boolean isCEClustering() {
-		return CEClustering;
-	}
-
-	/**
-	 * Checks if is load input segmentation.
-	 * 
-	 * @return true, if is load input segmentation
-	 */
-	public boolean isLoadInputSegmentation() {
-		return loadInputSegmentation;
-	}
-
-	/**
-	 * Sets the system.
-	 * 
-	 * @param system the new system
-	 */
-	public void setSystem(String system) {
-		this.system = SystemString[0];
-		if (system.equals(SystemString[1])) {
-			this.system = system;
-		}
-	}
-
-	/**
-	 * Sets the cE clustering.
-	 * 
-	 * @param cEClustering the new cE clustering
-	 */
-	public void setCEClustering(boolean cEClustering) {
-		CEClustering = cEClustering;
-	}
-
-	/**
-	 * Sets the load input segmentation.
-	 * 
-	 * @param b the new load input segmentation
-	 */
-	private void setLoadInputSegmentation(boolean b) {
-		loadInputSegmentation = b;
-	}
-
-	/**
-	 * Gets the system.
-	 * 
-	 * @return the system
-	 */
-	public String getSystem() {
-		return system;
-	}
-
-	/**
-	 * Checks if is save all step.
-	 * 
-	 * @return true, if is save all step
-	 */
-	public boolean isSaveAllStep() {
-		return saveAllStep;
-	}
-
-	/**
-	 * Sets the save all step.
-	 * 
-	 * @param saveAllStep the new save all step
-	 */
-	public void setSaveAllStep(boolean saveAllStep) {
-		this.saveAllStep = saveAllStep;
-	}
-
-	/**
-	 * Checks if is last step only.
-	 * 
-	 * @return the lastStepOnly
-	 */
-	public boolean isLastStepOnly() {
-		return lastStepOnly;
-	}
-
-	/**
-	 * Sets the last step only.
-	 * 
-	 * @param lastStepOnly the lastStepOnly to set
-	 */
-	public void setLastStepOnly(boolean lastStepOnly) {
-		this.lastStepOnly = lastStepOnly;
-	}
-
+    public void setSaveAllStep(boolean saveAllStep) {
+        this.saveAllStep = saveAllStep;
+    }
 }

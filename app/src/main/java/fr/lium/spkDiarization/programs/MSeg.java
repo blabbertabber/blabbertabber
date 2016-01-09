@@ -1,603 +1,501 @@
 /**
- * 
  * <p>
  * MSeg
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @author <a href="mailto:gael.salaun@univ-lemans.fr">Gael Salaun</a>
  * @author <a href="mailto:teva.merlin@lium.univ-lemans.fr">Teva Merlin</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          Initial segmentation program
- * 
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * Initial segmentation program
  */
 
 package fr.lium.spkDiarization.programs;
 
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import fr.lium.experimental.spkDiarization.programs.SegmentationMeeting;
 import fr.lium.spkDiarization.lib.DiarizationException;
 import fr.lium.spkDiarization.lib.MainTools;
-import fr.lium.spkDiarization.lib.SpkDiarizationLogger;
 import fr.lium.spkDiarization.libClusteringData.Cluster;
 import fr.lium.spkDiarization.libClusteringData.ClusterSet;
 import fr.lium.spkDiarization.libClusteringData.Segment;
-import fr.lium.spkDiarization.libFeature.AudioFeatureSet;
+import fr.lium.spkDiarization.libFeature.FeatureSet;
+import fr.lium.spkDiarization.libModel.DiagGaussian;
 import fr.lium.spkDiarization.libModel.Distance;
-import fr.lium.spkDiarization.libModel.gaussian.DiagGaussian;
-import fr.lium.spkDiarization.libModel.gaussian.FullGaussian;
-import fr.lium.spkDiarization.libModel.gaussian.GMMFactory;
-import fr.lium.spkDiarization.libModel.gaussian.Gaussian;
-import fr.lium.spkDiarization.libSegmentationMethod.BorderSet;
+import fr.lium.spkDiarization.libModel.FullGaussian;
+import fr.lium.spkDiarization.libModel.GMMFactory;
+import fr.lium.spkDiarization.libModel.Gaussian;
+import fr.lium.spkDiarization.libSegmentationMethod.Borders;
 import fr.lium.spkDiarization.parameter.Parameter;
 import fr.lium.spkDiarization.parameter.ParameterSegmentation;
 
-/**
- * The Class MSeg.
- */
 public class MSeg {
 
-	/** The Constant logger. */
-	private final static Logger logger = Logger.getLogger(MSeg.class.getName());
+    public static boolean checkMax(Segment segment, int max, Parameter param, FeatureSet features) throws DiarizationException {
+        int length = segment.getLength();
+        int start = segment.getStart();
+        int end = start + length;
+        Gaussian g1;
+        if (param.parameterModel.getKind() == Gaussian.FULL) {
+            g1 = new FullGaussian(features.getDim());
+        } else {
+            g1 = new DiagGaussian(features.getDim());
+        }
+        Segment leftSegment = (Segment) (segment.clone());
+        int leftResult = -1;
+        leftSegment.setLength(max - start);
+        leftResult = GMMFactory.initializeGaussian(features, g1, leftSegment.getStart(), leftSegment.getLength());
 
-	/**
-	 * Check max.
-	 * 
-	 * @param segment the segment
-	 * @param max the max
-	 * @param parameter the parameter
-	 * @param featureSet the feature set
-	 * @return true, if successful
-	 * @throws DiarizationException the diarization exception
-	 */
-	public static boolean checkMax(Segment segment, int max, Parameter parameter, AudioFeatureSet featureSet) throws DiarizationException {
-		int length = segment.getLength();
-		int start = segment.getStart();
-		int end = start + length;
-		Gaussian g1;
-		if (parameter.getParameterModel().getModelKind() == Gaussian.FULL) {
-			g1 = new FullGaussian(featureSet.getFeatureSize());
-		} else {
-			g1 = new DiagGaussian(featureSet.getFeatureSize());
-		}
-		Segment leftSegment = (segment.clone());
-		int leftResult = -1;
-		leftSegment.setLength(max - start);
-		leftResult = GMMFactory.initializeGaussian(featureSet, g1, leftSegment.getStart(), leftSegment.getLength());
+        Segment rightSegment = (Segment) (segment.clone());
+        int rightResult = -1;
+        rightSegment.setStart(max);
+        rightSegment.setLength(end - max);
+        g1.resetStatisticAccumulator();
+        rightResult = GMMFactory.initializeGaussian(features, g1, rightSegment.getStart(), rightSegment.getLength());
+        if ((rightResult >= 0) && (leftResult >= 0)) {
+            return true;
+        }
+        return false;
+    }
 
-		Segment rightSegment = (segment.clone());
-		int rightResult = -1;
-		rightSegment.setStart(max);
-		rightSegment.setLength(end - max);
-		g1.statistic_reset();
-		rightResult = GMMFactory.initializeGaussian(featureSet, g1, rightSegment.getStart(), rightSegment.getLength());
-		if ((rightResult >= 0) && (leftResult >= 0)) {
-			return true;
-		}
-		return false;
-	}
+    /**
+     * select the true border from the array of similarities
+     *
+     * @return the borders
+     */
+    public static Borders doBorders(double[] measures, Parameter param) {
+        int size = measures.length;
+        Borders borders = new Borders();
+        borders.put(0, 0.0);
+        int j = 0;
+        borders.put(measures.length - 1, 0.0);
+        double thr = param.parameterSegmentation.getThreshold();
+        if (param.parameterSegmentation.getMethod() == ParameterSegmentation.SegmentationMethod.SEG_BIC) {
+            thr = 0;
+        }
 
-	/**
-	 * select the true border from the array of similarities.
-	 * 
-	 * @param measures the measures
-	 * @param parameter the parameter
-	 * @return the borders
-	 */
-	public static BorderSet doBorders(double[] measures, Parameter parameter) {
-		int size = measures.length;
-		BorderSet borders = new BorderSet();
-		borders.put(0, 0.0);
-		int j = 0;
-		borders.put(measures.length - 1, 0.0);
-		double thr = parameter.getParameterSegmentation().getThreshold();
-		if (parameter.getParameterSegmentation().getMethod() == ParameterSegmentation.SegmentationMethod.SEG_BIC) {
-			thr = 0;
-		}
+        int i = param.parameterSegmentation.getMinimimWindowSize() - 1;
 
-		int i = parameter.getParameterSegmentation().getMinimimWindowSize() - 1;
+        while (i < size) {
+            double curr = measures[i];
+            int start = Math.max(0, i - param.parameterSegmentation.getMinimimWindowSize());
+            int end = Math.min(size, i + param.parameterSegmentation.getMinimimWindowSize());
+            double max = measures[start];
+            for (int m = start + 1; m < end; m++) {
+                double v = measures[m];
+                if ((i != m) && (v > max)) {
+                    max = v;
+                }
+            }
+            if ((curr > max) && (curr > thr)) {
+                if (param.trace) {
+                    System.out.println("trace[mSeg] \t nb=" + j + " i=" + i + " " + curr);
+                }
+                borders.put(i, curr);
+                i += param.parameterSegmentation.getMinimimWindowSize();
+                j++;
+            } else {
+                i++;
+            }
+        }
+        return borders;
+    }
 
-		while (i < size) {
-			double curr = measures[i];
-			int start = Math.max(0, i - parameter.getParameterSegmentation().getMinimimWindowSize());
-			int end = Math.min(size, i + parameter.getParameterSegmentation().getMinimimWindowSize());
-			double max = measures[start];
-			for (int m = start + 1; m < end; m++) {
-				double v = measures[m];
-				if ((i != m) && (v > max)) {
-					max = v;
-				}
-			}
-			if ((curr > max) && (curr > thr)) {
-				//logger.finest(" nb=" + j + " i=" + i + " " + curr);
+    /**
+     * add Borders to Clusters
+     */
+    public static int doClusters(int idx, Borders borders, Segment inputSegment, ClusterSet clusters, Parameter param) {
+        Iterator<Integer> it = borders.getSortedKeys();
 
-				borders.put(i, curr);
-				i += parameter.getParameterSegmentation().getMinimimWindowSize();
-				j++;
-			} else {
-				i++;
-			}
-		}
-		return borders;
-	}
+        if (param.trace) {
+            System.out.println("trace[mSeg] \t maxIdxName=" + idx);
+        }
+        String show = inputSegment.getShowName();
+        // clusters.addShowAndGetIndex(show);
+        int start = inputSegment.getStart();
+        // int idxShow = clusters.getShowIndex(show);
+        int clePrev = 0;
+        it.next();
+        while (it.hasNext()) {
+            int cleCur = it.next();
+            StringBuffer name = new StringBuffer();
+            name.append("S" + idx);
+            Cluster cluster = clusters.createANewCluster(name.toString());
+            idx++;
+            int st = start + clePrev;
+            int ln = cleCur - clePrev;
+            Segment segment = new Segment(show, st, ln, cluster);
+            cluster.addSegment(segment);
+            if (param.trace) {
+                System.out.println("trace[mSeg] \t name=" + name.toString() + " start=" + st + " len=" + ln);
+            }
+            clePrev = cleCur;
+        }
+        return idx;
+    }
 
-	/**
-	 * add Borders to Clusters.
-	 * 
-	 * @param idx the idx
-	 * @param borderSet the border set
-	 * @param inputSegment the input segment
-	 * @param clusterSet the cluster set
-	 * @param parameter the parameter
-	 * @return the int
-	 */
-	public static int doClusters(int idx, BorderSet borderSet, Segment inputSegment, ClusterSet clusterSet, Parameter parameter) {
-		Iterator<Integer> it = borderSet.getSortedKeys();
-		//logger.finer("maxIdxName=" + idx);
+    /**
+     * Compute all the similarity
+     *
+     * @return a array of similarity
+     * @throws DiarizationException
+     * @throws IOException
+     */
+    public static double[] doMeasures(FeatureSet features, Segment seg, Parameter param) throws DiarizationException, IOException {
+        features.setCurrentShow(seg.getShowName());
+        int start = seg.getStart();
+        int nb = Math.min(seg.getLength(), features.getNumberOfFeatures());
 
-		String show = inputSegment.getShowName();
-		int start = inputSegment.getStart();
-		int previousBorder = 0;
-		float rate = parameter.getParameterSegmentationInputFile().getRate();
-		it.next();
-		while (it.hasNext()) {
-			int currentBorder = it.next();
-			StringBuffer name = new StringBuffer();
-			name.append("S" + idx);
-			Cluster cluster = clusterSet.createANewCluster(name.toString());
-			idx++;
-			int segmentStart = start + previousBorder;
-			int segmentLength = currentBorder - previousBorder;
-			Segment segment = new Segment(show, segmentStart, segmentLength, cluster, rate);
-			cluster.addSegment(segment);
-			//logger.finer("name=" + name.toString() + " start=" + segmentStart + " len=" + segmentLength);
+        double[] measures = new double[nb];
+        int idxMeasures = 0;
+        if (param.trace) {
+            System.out.println("trace[mSeg] \t start=" + start + " len=" + nb);
+        }
 
-			previousBorder = currentBorder;
-		}
-		return idx;
-	}
+        if (nb < (2 * param.parameterSegmentation.getModelWindowSize())) {
+            for (long i = 0; i < nb; i++) {
+                measures[idxMeasures++] = Double.MIN_VALUE;
+            }
+        } else {
 
-	/**
-	 * Compute all the similarity.
-	 * 
-	 * @param featureSet the feature set
-	 * @param segment the segment
-	 * @param parameter the parameter
-	 * @return a array of similarity
-	 * @throws DiarizationException the diarization exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	public static double[] doMeasures(AudioFeatureSet featureSet, Segment segment, Parameter parameter) throws DiarizationException, IOException {
-		featureSet.setCurrentShow(segment.getShowName());
-		int start = segment.getStart();
-		int nbOfFeatures = Math.min(segment.getLength(), featureSet.getNumberOfFeatures());
+            int dim = features.getDim();
+            Gaussian g1;
+            Gaussian g2;
+            if (param.parameterModel.getKind() == Gaussian.FULL) {
+                g1 = new FullGaussian(dim);
+                g2 = new FullGaussian(dim);
+            } else {
+                g1 = new DiagGaussian(dim);
+                g2 = new DiagGaussian(dim);
+            }
+            GMMFactory.initializeGaussian(features, g1, start + 0, param.parameterSegmentation.getModelWindowSize());
+            GMMFactory.initializeGaussian(features, g2, start + param.parameterSegmentation.getModelWindowSize(), param.parameterSegmentation.getModelWindowSize());
+            // start
+            double cst = Distance.BICConstant(param.parameterModel.getKind(), dim, param.parameterSegmentation.getThreshold());
+            double s = MSeg.getSimilarity(g1, g2, param, cst);
+            for (int i = 0; i < param.parameterSegmentation.getModelWindowSize(); i++) {
+                measures[idxMeasures++] = s;
+            }
+            // compute borders
+            for (int i = param.parameterSegmentation.getModelWindowSize(); i < nb - param.parameterSegmentation.getModelWindowSize(); i++) {
+                g1.removeFeatureFromAccumulator(features, start + i - param.parameterSegmentation.getModelWindowSize());
+                g1.addFeature(features, start + i);
+                g2.removeFeatureFromAccumulator(features, start + i);
+                g2.addFeature(features, start + i + param.parameterSegmentation.getModelWindowSize());
 
-		double[] measures = new double[nbOfFeatures];
-		int idxMeasures = 0;
-		//logger.finer("start=" + start + " len=" + nbOfFeatures);
+                g1.setModelFromAccululator();
+                g2.setModelFromAccululator();
+                s = MSeg.getSimilarity(g1, g2, param, cst);
+                measures[idxMeasures++] = s;
+            }
+            // end
+            for (int i = nb - param.parameterSegmentation.getModelWindowSize(); i < nb; i++) {
+                measures[idxMeasures++] = s;
+            }
+        }
+        return measures;
+    }
 
-		if (nbOfFeatures < (2 * parameter.getParameterSegmentation().getModelWindowSize())) {
-			for (long i = 0; i < nbOfFeatures; i++) {
-				measures[idxMeasures++] = Double.MIN_VALUE;
-			}
-		} else {
-			int dim = featureSet.getFeatureSize();
-			Gaussian leftGaussian;
-			Gaussian rightGaussian;
-			if (parameter.getParameterModel().getModelKind() == Gaussian.FULL) {
-				leftGaussian = new FullGaussian(dim);
-				rightGaussian = new FullGaussian(dim);
-			} else {
-				leftGaussian = new DiagGaussian(dim);
-				rightGaussian = new DiagGaussian(dim);
-			}
-			GMMFactory.initializeGaussian(featureSet, leftGaussian, start + 0, parameter.getParameterSegmentation().getModelWindowSize());
-			GMMFactory.initializeGaussian(featureSet, rightGaussian, start
-					+ parameter.getParameterSegmentation().getModelWindowSize(), parameter.getParameterSegmentation().getModelWindowSize());
-			// start
-			double cst = Distance.BICGaussianConstant(parameter.getParameterModel().getModelKind(), dim, parameter.getParameterSegmentation().getThreshold());
-			double score = MSeg.getSimilarity(leftGaussian, rightGaussian, parameter, cst);
-			for (int i = 0; i < parameter.getParameterSegmentation().getModelWindowSize(); i++) {
-				measures[idxMeasures++] = score;
-			}
-			// compute borders
-			for (int i = parameter.getParameterSegmentation().getModelWindowSize(); i < (nbOfFeatures - parameter.getParameterSegmentation().getModelWindowSize()); i++) {
-				leftGaussian.statistic_removeFeature(featureSet, (start + i)
-						- parameter.getParameterSegmentation().getModelWindowSize());
-				leftGaussian.statistic_addFeature(featureSet, start + i);
-				rightGaussian.statistic_removeFeature(featureSet, start + i);
-				rightGaussian.statistic_addFeature(featureSet, start + i
-						+ parameter.getParameterSegmentation().getModelWindowSize());
+    public static void doSplit(double[] measures, Segment segment, int startMeasures, int minLen, ArrayList<Segment> arraySegment) {
+        int length = segment.getLength();
+        if (length > (minLen + minLen + 1)) {
+            int start = segment.getStart();
+            int end = start + length;
+            int max = -1;
+            double maxValue = Double.MIN_VALUE;
 
-				leftGaussian.setModel();
-				rightGaussian.setModel();
-				score = MSeg.getSimilarity(leftGaussian, rightGaussian, parameter, cst);
-				//logger.finer("idx=" + i + " score=" + score);
+            for (int i = start + minLen; i < end - minLen; i++) {
+                double value = measures[i];
+                if (value > maxValue) {
+                    maxValue = value;
+                    max = i;
+                }
+            }
+            System.out.println("trace[mSeg] \t split max=" + max + " start=" + start + " lenght=" + length);
 
-				measures[idxMeasures++] = score;
-			}
-			// end
-			for (int i = nbOfFeatures - parameter.getParameterSegmentation().getModelWindowSize(); i < nbOfFeatures; i++) {
-				measures[idxMeasures++] = score;
-			}
-		}
-		return measures;
-	}
+            Segment leftSegment = (Segment) (segment.clone());
+            leftSegment.setLength(max - start);
 
-	/**
-	 * Do split.
-	 * 
-	 * @param measureVector the measure vector
-	 * @param segment the segment
-	 * @param startMeasures the start measures
-	 * @param minLength the min length
-	 * @param segmentList the segment list
-	 */
-	public static void doSplit(double[] measureVector, Segment segment, int startMeasures, int minLength, ArrayList<Segment> segmentList) {
-		int length = segment.getLength();
-		if (length > (minLength + minLength + 1)) {
-			int start = segment.getStart();
-			int end = start + length;
-			int max = -1;
-			double maxValue = Double.MIN_VALUE;
+            System.out.println("trace[mSeg] \t left =" + leftSegment.getStart() + " len=" + leftSegment.getLength());
 
-			for (int i = start + minLength; i < (end - minLength); i++) {
-				double value = measureVector[i];
-				if (value > maxValue) {
-					maxValue = value;
-					max = i;
-				}
-			}
-			//logger.finer("split max=" + max + " start=" + start + " lenght=" + length);
+            doSplit(measures, leftSegment, startMeasures, minLen, arraySegment);
 
-			Segment leftSegment = (segment.clone());
-			leftSegment.setLength(max - start);
+            Segment rightSegment = (Segment) (segment.clone());
+            rightSegment.setStart(max);
+            rightSegment.setLength(end - max);
+            System.out.println("trace[mSeg] \t right =" + rightSegment.getStart() + " len=" + rightSegment.getLength());
+            doSplit(measures, rightSegment, startMeasures, minLen, arraySegment);
+        } else {
+            System.out.println("trace[mSeg] \t add =" + segment.getStart() + " len=" + segment.getLength());
+            System.out.println("trace[mSeg] \t *****************************");
 
-			//logger.finer("left =" + leftSegment.getStart() + " len=" + leftSegment.getLength());
+            arraySegment.add(segment);
+        }
+    }
 
-			doSplit(measureVector, leftSegment, startMeasures, minLength, segmentList);
+    public static boolean doSplit2(double[] measures, Segment segment, int startMeasures, int minLen, ArrayList<Segment> arraySegment, Parameter param,
+                                   FeatureSet features) throws DiarizationException {
+        int length = segment.getLength();
+        int start = segment.getStart();
+        int end = start + length;
+        int max = -1;
+        double maxValue = Double.MIN_VALUE;
 
-			Segment rightSegment = (segment.clone());
-			rightSegment.setStart(max);
-			rightSegment.setLength(end - max);
-			//logger.finer("right =" + rightSegment.getStart() + " len=" + rightSegment.getLength());
-			doSplit(measureVector, rightSegment, startMeasures, minLength, segmentList);
-		} else {
-			//logger.finer(" add =" + segment.getStart() + " len=" + segment.getLength());
+        for (int i = start + minLen; i < end - minLen; i++) {
+            double value = measures[i];
+            if (value > maxValue) {
+                if (checkMax(segment, i, param, features)) {
+                    maxValue = value;
+                    max = i;
+                    // System.err.println("trace[mSeg] \t  max=" + i+
+                    // " **** OK");
+                } else {
+                    System.err.println("trace[mSeg] \t  max=" + i + " reject");
+                }
+            }
+        }
+        if (max == -1) {
+            return false;
+        }
+        System.err.println("trace[mSeg] \t split max=" + max + " start=" + start + " lenght=" + length);
 
-			segmentList.add(segment);
-		}
-	}
+        Segment leftSegment = (Segment) (segment.clone());
+        leftSegment.setLength(max - start);
+        System.err.println("trace[mSeg] \t left =" + leftSegment.getStart() + " len=" + leftSegment.getLength());
+        if (doSplit2(measures, leftSegment, startMeasures, minLen, arraySegment, param, features) == false) {
+            arraySegment.add(leftSegment);
+        }
 
-	/**
-	 * Do split2.
-	 * 
-	 * @param measureVector the measure vector
-	 * @param segment the segment
-	 * @param startMeasures the start measures
-	 * @param minLength the min length
-	 * @param segmentList the segment list
-	 * @param parameter the parameter
-	 * @param featureSet the feature set
-	 * @return true, if successful
-	 * @throws DiarizationException the diarization exception
-	 */
-	public static boolean doSplit2(double[] measureVector, Segment segment, int startMeasures, int minLength, ArrayList<Segment> segmentList, Parameter parameter, AudioFeatureSet featureSet) throws DiarizationException {
-		int length = segment.getLength();
-		int start = segment.getStart();
-		int end = start + length;
-		int max = -1;
-		double maxValue = Double.MIN_VALUE;
+        Segment rightSegment = (Segment) (segment.clone());
+        rightSegment.setStart(max);
+        rightSegment.setLength(end - max);
+        System.err.println("trace[mSeg] \t right =" + rightSegment.getStart() + " len=" + rightSegment.getLength());
+        if (doSplit2(measures, rightSegment, startMeasures, minLen, arraySegment, param, features) == false) {
+            arraySegment.add(rightSegment);
+        }
 
-		for (int i = start + minLength; i < (end - minLength); i++) {
-			double value = measureVector[i];
-			if (value > maxValue) {
-				if (checkMax(segment, i, parameter, featureSet)) {
-					maxValue = value;
-					max = i;
-				//} else {
-				//	logger.finer("max=" + i + " reject");
-				}
-			}
-		}
-		if (max == -1) {
-			return false;
-		}
-		//logger.finer("split max=" + max + " start=" + start + " lenght=" + length);
+        return true;
+    }
 
-		Segment leftSegment = (segment.clone());
-		leftSegment.setLength(max - start);
-		//logger.finer("left =" + leftSegment.getStart() + " len=" + leftSegment.getLength());
-		if (doSplit2(measureVector, leftSegment, startMeasures, minLength, segmentList, parameter, featureSet) == false) {
-			segmentList.add(leftSegment);
-		}
+    /**
+     * select and compute the similarity method
+     *
+     * @param g1 the first Gaussien
+     * @param g2 the second Gaussien
+     * @param param the parameter structure
+     * @param BICCst the constant need in BIC similarity
+     * @return the similarity
+     * @throws DiarizationException
+     */
+    public static double getSimilarity(Gaussian g1, Gaussian g2, Parameter param, double BICCst) throws DiarizationException {
+        if (param.parameterSegmentation.getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_GLR)) {
+            return Distance.GLR(g1, g2);
+        } else {
+            if (param.parameterSegmentation.getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_BIC)) {
+                int len = g1.getCount() + g2.getCount();
+                // double cst = Distance.BICConstant(param.kind, dim,
+                // param.segThr);
+                return Distance.BIC(g1, g2, BICCst, len);
+            } else {
+                if (param.parameterSegmentation.getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_KL2)) {
+                    return Distance.KL2(g1, g2);
+                } else {
+                    if (param.parameterSegmentation.getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_GD)) {
+                        return Distance.GD(g1, g2);
+                    } else {
+                        if (param.parameterSegmentation.getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_H2)) {
+                            return Distance.H2(g1, g2);
+                        } else {
+                            throw new DiarizationException("mSeg unknown similarity " + param.parameterSegmentation.getMethod());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-		Segment rightSegment = (segment.clone());
-		rightSegment.setStart(max);
-		rightSegment.setLength(end - max);
-		//logger.finer("right =" + rightSegment.getStart() + " len=" + rightSegment.getLength());
-		if (doSplit2(measureVector, rightSegment, startMeasures, minLength, segmentList, parameter, featureSet) == false) {
-			segmentList.add(rightSegment);
-		}
+    static public ClusterSet valide(FeatureSet features, ClusterSet clusters, Parameter param) throws DiarizationException {
+        ClusterSet result = new ClusterSet();
 
-		return true;
-	}
+        Iterator<Segment> itSegment = clusters.getSegments().iterator();
+        Segment previous = itSegment.next();
+        Segment current = itSegment.next();
 
-	/**
-	 * select and compute the similarity method.
-	 * 
-	 * @param leftGaussian the first Gaussien
-	 * @param rightGaussian the second Gaussien
-	 * @param parameter the parameter structure
-	 * @param BICCst the constant need in BIC similarity
-	 * @return the similarity
-	 * @throws DiarizationException the diarization exception
-	 */
-	public static double getSimilarity(Gaussian leftGaussian, Gaussian rightGaussian, Parameter parameter, double BICCst) throws DiarizationException {
-		if (parameter.getParameterSegmentation().getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_GLR)) {
-			return Distance.GLR(leftGaussian, rightGaussian);
-		} else {
-			if (parameter.getParameterSegmentation().getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_BIC)) {
-				int len = leftGaussian.getCount() + rightGaussian.getCount();
-				// double cst = Distance.BICConstant(param.kind, dim,
-				// param.segThr);
-				return Distance.BIC(leftGaussian, rightGaussian, BICCst, len);
-			} else {
-				if (parameter.getParameterSegmentation().getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_KL2)) {
-					return Distance.KL2(leftGaussian, rightGaussian);
-				} else {
-					if (parameter.getParameterSegmentation().getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_GD)) {
-						return Distance.GD(leftGaussian, rightGaussian);
-					} else {
-						if (parameter.getParameterSegmentation().getMethod().equals(ParameterSegmentation.SegmentationMethod.SEG_H2)) {
-							return Distance.H2(leftGaussian, rightGaussian);
-						} else {
-							throw new DiarizationException("mSeg unknown similarity "
-									+ parameter.getParameterSegmentation().getMethod());
-						}
-					}
-				}
-			}
-		}
-	}
+        Gaussian gPrevious, gCurrent, gNext = null;
+        int dim = features.getDim();
+        if (param.parameterModel.getKind() == Gaussian.FULL) {
+            gPrevious = new FullGaussian(dim);
+            gCurrent = new FullGaussian(dim);
+        } else {
+            gPrevious = new DiagGaussian(dim);
+            gCurrent = new DiagGaussian(dim);
+        }
+        GMMFactory.initializeGaussian(features, gPrevious, previous.getStart(), previous.getLength());
+        GMMFactory.initializeGaussian(features, gCurrent, current.getStart(), current.getLength());
+        double cst = Distance.BICConstant(param.parameterModel.getKind(), dim, 1);
 
-	/**
-	 * Resegment.
-	 * 
-	 * @param featureSet the feature set
-	 * @param borderSet the border set
-	 * @param parameter the parameter
-	 * @return the border set
-	 * @throws DiarizationException the diarization exception
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 */
-	static public BorderSet resegment(AudioFeatureSet featureSet, BorderSet borderSet, Parameter parameter) throws DiarizationException, IOException {
-		BorderSet result = new BorderSet();
-		Cluster empty = new Cluster("empty");
-		float rate = parameter.getParameterSegmentationInputFile().getRate();
-		ArrayList<Integer> borderList = new ArrayList<Integer>();
-		Iterator<Integer> iterator = borderSet.getSortedKeys();
-		while (iterator.hasNext()) {
-			borderList.add(iterator.next());
-		}
-		int i = 0;
-		int left = 0;
-		int middle = 0;
-		int right = borderList.get(i);
-		i++;
-		while (i < borderList.size()) {
-			left = middle;
-			middle = right;
-			right = borderList.get(i);
-			Segment segment = new Segment(featureSet.getCurrentShowName(), left, (right - left) + 1, empty, rate);
-			double[] measures = doMeasures(featureSet, segment, parameter);
-			double max = -Double.MAX_VALUE;
-			int index = 0;
-			for (int j = 0; j < measures.length; j++) {
-				if (measures[j] > max) {
-					max = measures[j];
-					index = j;
-				}
-			}
-			index += left;
-			//logger.info("left=" + left + " middle=" + middle + "/" + index + " right=" + right);
-			borderList.set(i - 1, index);
-			i++;
-		}
+        while (itSegment.hasNext()) {
+            Segment next = itSegment.next();
 
-		// borderList.add(featureSet.getNumberOfFeatures());
-		for (i = 0; i < borderList.size(); i++) {
-			result.put(borderList.get(i), 0.0);
-		}
+            if (param.parameterModel.getKind() == Gaussian.FULL) {
+                gNext = new FullGaussian(dim);
+            } else {
+                gNext = new DiagGaussian(dim);
+            }
+            GMMFactory.initializeGaussian(features, gNext, next.getStart(), next.getLength());
 
-		return result;
-	}
+            double dpc = Distance.BICLocal(gPrevious, gCurrent, cst);
+            double dcn = Distance.BICLocal(gCurrent, gNext, cst);
+            double dpn = Distance.BICLocal(gPrevious, gNext, cst);
 
-	/**
-	 * Valide.
-	 * 
-	 * @param featureSet the feature set
-	 * @param clusterSet the cluster set
-	 * @param parameter the parameter
-	 * @return the cluster set
-	 * @throws DiarizationException the diarization exception
-	 */
-	static public ClusterSet valide(AudioFeatureSet featureSet, ClusterSet clusterSet, Parameter parameter) throws DiarizationException {
-		ClusterSet result = new ClusterSet();
+            current.setInformation("Prev/Cur", dpc);
+            current.setInformation("Cur/Next", dcn);
+            current.setInformation("Prev/Next", dpn);
 
-		Iterator<Segment> itSegment = clusterSet.getSegments().iterator();
-		Segment previous = itSegment.next();
-		Segment current = itSegment.next();
+            if ((dpn > 0) && (dpc < 0) && (dcn < 0)) {
+                System.err.println("sup distance: Prev/Cur=" + dpc + " Cur/Next=" + dcn + " Prev/Next=" + dpn + " prev=" + previous.getStart() + " cur="
+                        + current.getStart() + " next=" + next.getStart());
+                current.setInformation("sup", "0");
+            }
 
-		Gaussian gPrevious, gCurrent, gNext = null;
-		int dim = featureSet.getFeatureSize();
-		if (parameter.getParameterModel().getModelKind() == Gaussian.FULL) {
-			gPrevious = new FullGaussian(dim);
-			gCurrent = new FullGaussian(dim);
-		} else {
-			gPrevious = new DiagGaussian(dim);
-			gCurrent = new DiagGaussian(dim);
-		}
-		GMMFactory.initializeGaussian(featureSet, gPrevious, previous.getStart(), previous.getLength());
-		GMMFactory.initializeGaussian(featureSet, gCurrent, current.getStart(), current.getLength());
-		double cst = Distance.BICGaussianConstant(parameter.getParameterModel().getModelKind(), dim, 1);
+            // move
+            previous = current;
+            gPrevious = gCurrent;
+            current = next;
+            gCurrent = gNext;
+        }
 
-		while (itSegment.hasNext()) {
-			Segment next = itSegment.next();
+        return result;
+    }
 
-			if (parameter.getParameterModel().getModelKind() == Gaussian.FULL) {
-				gNext = new FullGaussian(dim);
-			} else {
-				gNext = new DiagGaussian(dim);
-			}
-			GMMFactory.initializeGaussian(featureSet, gNext, next.getStart(), next.getLength());
+    public static void make(FeatureSet features, ClusterSet clusters, ClusterSet clustersRes, Parameter param) throws Exception {
+        if (param.parameterSegmentation.isRecursion()) {
+            ArrayList<Segment> arraySegment = new ArrayList<Segment>();
+            for (String cle : clusters) {
+                for (Segment seg : clusters.getCluster(cle)) {
+                    if (param.trace) {
+                        System.out.println("trace[mSeg] \t doMeasures");
+                    }
+                    double[] m = MSeg.doMeasures(features, seg, param);
+                    if (doSplit2(m, seg, seg.getStart(), param.parameterSegmentation.getMinimimWindowSize(), arraySegment, param, features) == false) {
+                        arraySegment.add(seg);
+                    }
+                }
+            }
+            for (int i = 0; i < arraySegment.size(); i++) {
+                String name = new String("S" + Integer.toString(i));
+                Cluster c = clustersRes.createANewCluster(name);
+                c.addSegment(arraySegment.get(i));
+            }
+        } else {
+            int idx = 0;
 
-			double dpc = Distance.BICLocal(gPrevious, gCurrent, cst);
-			double dcn = Distance.BICLocal(gCurrent, gNext, cst);
-			double dpn = Distance.BICLocal(gPrevious, gNext, cst);
+            for (String cle : clusters) {
+                for (Segment seg : clusters.getCluster(cle)) {
 
-			current.setInformation("Prev/Cur", dpc);
-			current.setInformation("Cur/Next", dcn);
-			current.setInformation("Prev/Next", dpn);
+                    if (param.trace) {
+                        System.out.println("trace[mSeg] \t doMeasures");
+                    }
+                    double[] m = MSeg.doMeasures(features, seg, param);
+                    dumpMeasures(m);
+                    if (param.trace) {
+                        System.out.println("trace[mSeg] \t doBorders");
+                    }
+                    Borders b = MSeg.doBorders(m, param);
+                    if (param.trace) {
+                        System.out.println("trace[mSeg] \t doClusters");
+                    }
+                    idx = MSeg.doClusters(idx, b, seg, clustersRes, param);
+                }
+            }
 
-			if ((dpn > 0) && (dpc < 0) && (dcn < 0)) {
-				//logger.finer("sup distance: Prev/Cur=" + dpc + " Cur/Next=" + dcn + " Prev/Next=" + dpn + " prev="
-				//		+ previous.getStart() + " cur=" + current.getStart() + " next=" + next.getStart());
-				current.setInformation("sup", "0");
-			}
+        }
+    }
 
-			// move
-			previous = current;
-			gPrevious = gCurrent;
-			current = next;
-			gCurrent = gNext;
-		}
+    public static void main(String[] args) throws Exception {
 
-		return result;
-	}
+        try {
+            Parameter param = MainTools.getParameters(args);
+            info(param, "MSeg");
+            if (param.nbShow > 0) {
+                // clusters
+                ClusterSet clusters = MainTools.readClusterSet(param);
+                clusters.collapse();
+                // Features
+                FeatureSet features = MainTools.readFeatureSet(param, clusters);
+                ClusterSet clustersRes = new ClusterSet();
+                make(features, clusters, clustersRes, param);
+                MainTools.writeClusterSet(param, clustersRes, false);
+            }
+        } catch (DiarizationException e) {
+            System.out.print("error \t exception " + e.getMessage());
+        }
 
-	/**
-	 * Make.
-	 * 
-	 * @param featureSet the feature set
-	 * @param clusterSet the cluster set
-	 * @param clusterSetResult the cluster set result
-	 * @param parameter the parameter
-	 * @throws Exception the exception
-	 */
-	public static void make(AudioFeatureSet featureSet, ClusterSet clusterSet, ClusterSet clusterSetResult, Parameter parameter) throws Exception {
-		logger.info("Segmentation");
-		if (parameter.getParameterSegmentation().isRecursion()) {
-			ArrayList<Segment> segmentList = new ArrayList<Segment>();
-			for (Cluster cluster : clusterSet.clusterSetValue()) {
-				for (Segment segment : cluster) {
-					logger.finer("\t do Measures");
-					double[] m = MSeg.doMeasures(featureSet, segment, parameter);
-					// doSplit(m, seg, seg.getStartFrameIndex(),
-					// param.segMinWSize, arraySegment);
-					if (doSplit2(m, segment, segment.getStart(), parameter.getParameterSegmentation().getMinimimWindowSize(), segmentList, parameter, featureSet) == false) {
-						segmentList.add(segment);
-					}
-				}
-			}
-			for (int i = 0; i < segmentList.size(); i++) {
-				String name = new String("S" + Integer.toString(i));
-				Cluster cluster = clusterSetResult.createANewCluster(name);
-				cluster.addSegment(segmentList.get(i));
-			}
-		} else {
-			if (parameter.getParameterSegmentation().getMethod() == ParameterSegmentation.SegmentationMethod.SEG_GLR_IT) {
-				logger.info("--> segmentation method -- GLR_IT");
-				SegmentationMeeting.make(clusterSet, clusterSetResult, featureSet, parameter);
-				// clusterSetResult.debug(10);
-				logger.info("<-- segmentation method -- GLR_IT");
-			} else {
-				int idx = 0;
-				for (Cluster cluster : clusterSet.clusterSetValue()) {
-					for (Segment segment : cluster) {
-						logger.fine("\t do Measures");
-						double[] measureVector = doMeasures(featureSet, segment, parameter);
-						logger.fine("\t do Borders");
-						BorderSet borderSet = doBorders(measureVector, parameter);
-						logger.fine("\t do Clusters");
-						// BorderSet borderSet2 = resegment(featureSet, borderSet, parameter);
-						idx = doClusters(idx, borderSet, segment, clusterSetResult, parameter);
-						// test segmentation validationn
-						// MSeg.valide(features, clustersRes, param);
-					}
-				}
-			}
-		}
-	}
+    }
 
-	/**
-	 * The main method.
-	 * 
-	 * @param args the arguments
-	 * @throws Exception the exception
-	 */
-	public static void main(String[] args) throws Exception {
+    public static void info(Parameter param, String prog) {
+        if (param.help) {
+            param.printSeparator2();
+            System.out.println("info[program] \t name = " + prog);
+            param.printSeparator();
+            param.printShow();
 
-		try {
-			SpkDiarizationLogger.setup();
-			Parameter parameter = MainTools.getParameters(args);
-			info(parameter, "MSeg");
-			if (parameter.show.isEmpty() == false) {
-				// clusters
-				ClusterSet clusterSet = MainTools.readClusterSet(parameter);
-				clusterSet.collapse();
-				// Features
-				AudioFeatureSet featureSet = MainTools.readFeatureSet(parameter, clusterSet);
-				ClusterSet clusterSetResult = new ClusterSet();
-				make(featureSet, clusterSet, clusterSetResult, parameter);
-				MainTools.writeClusterSet(parameter, clusterSetResult, false);
-			}
-		} catch (DiarizationException e) {
-			logger.log(Level.SEVERE, "error \t exception ", e);
-			e.printStackTrace();
-		}
+            param.parameterInputFeature.printMask(); // fInMask
+            param.parameterInputFeature.printDescription(); // fDesc
+            param.printSeparator();
+            param.parameterSegmentationInputFile.printMask(); // sInMask
+            param.parameterSegmentationInputFile.printEncodingFormat();
+            param.parameterSegmentationOutputFile.printMask(); // sOutMask
+            param.parameterSegmentationOutputFile.printEncodingFormat();
+            param.printSeparator();
+            param.parameterModel.printKind(); // kind
+            param.printSeparator();
+            param.parameterSegmentation.printMethod(); // sMethod
+            param.parameterSegmentation.printThreshold(); // sThr
+            param.parameterSegmentation.printModelWindowSize(); // sWSize
+            param.parameterSegmentation.printMinimimWindowSize(); // sMinWSize
+            param.parameterSegmentation.printRecursion(); // sMinWSize
+        }
+    }
 
-	}
 
-	/**
-	 * Info.
-	 * 
-	 * @param parameter the parameter
-	 * @param program the program
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws IllegalAccessException the illegal access exception
-	 * @throws InvocationTargetException the invocation target exception
-	 */
-	public static void info(Parameter parameter, String program) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		if (parameter.help) {
-			logger.config(parameter.getSeparator2());
-			logger.config("program name = " + program);
-			logger.config(parameter.getSeparator());
-			parameter.logShow();
+    /**
+     * Dumps the linear segmentation measures to a binary file.
+     */
+    public static void dumpMeasures(double[] measures) {
 
-			parameter.getParameterInputFeature().logAll(); // fInMask
-			parameter.getSeparator();
-			parameter.getParameterSegmentationInputFile().logAll(); // sInMask
-			parameter.getParameterSegmentationOutputFile().logAll(); // sOutMask
-			parameter.getSeparator();
-			parameter.getParameterModel().logAll(); // kind
-			parameter.getSeparator();
-			parameter.getParameterSegmentation().logAll(); // sMethod
-		}
-	}
+        DataOutputStream outStream = null;
+
+        try {
+            outStream = new DataOutputStream(new FileOutputStream("/sdcard/linSegMeasures"));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        for (double val : measures) {
+            try {
+                outStream.writeDouble(val);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

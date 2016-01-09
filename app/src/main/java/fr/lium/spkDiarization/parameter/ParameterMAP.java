@@ -1,284 +1,185 @@
 /**
- * 
  * <p>
  * ParameterMAP
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          not more use
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * not more use
  */
 
 package fr.lium.spkDiarization.parameter;
 
+import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
-/**
- * The Class ParameterMAP.
- */
-public class ParameterMAP extends ParameterBase implements Cloneable {
-	// Type of MAP training method of GMM.
-	/**
-	 * The Enum MAPMethod.
-	 */
-	public enum MAPMethod {
+import gnu.getopt.LongOpt;
 
-		/** The map std. */
-		MAP_STD,
-		/** The map lin. */
-		MAP_LIN,
-		/** The vpmap. */
-		VPMAP
-	};
+public class ParameterMAP implements ParameterInterface {
+    public static int ReferenceMAPControl = -1;
+    public static String[] MAPMethodString = {"std", "linear", "vpmap"};
 
-	/** The Constant MAPMethodString. */
-	public final static String[] MAPMethodString = { "std", "linear", "vpmap" };
+    ;
+    private MAPMethod method; // type of MAP method.
+    private double prior; // Prior parameter of MAP.
+    private boolean weightAdaptation; // MAP: adaptation of the weights.
+    private boolean meanAdaptatation; // MAP: adaptation of the means.
+    private boolean covarianceAdaptation; // MAP: adaptation of the covariances.
+    private String mapControl; // input MAP control parameters
+    public ParameterMAP(ArrayList<LongOpt> list, Parameter param) {
+        setMAPControl(MAPMethodString[MAPMethod.MAP_STD.ordinal()] + ",15,0:1:0");
+        ReferenceMAPControl = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-	/** The method. */
-	private MAPMethod method; // type of MAP method.
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceMAPControl) {
+            setMAPControl(optarg);
+            return true;
+        }
+        return false;
+    }
 
-	/** The prior. */
-	private double prior; // Prior parameter of MAP.
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("mapCtrl", 1, null, ReferenceMAPControl));
+    }
 
-	/** The weight adaptation. */
-	private boolean weightAdaptation; // MAP: adaptation of the weights.
+    public MAPMethod getMethod() {
+        return method;
+    }
 
-	/** The mean adaptatation. */
-	private boolean meanAdaptatation; // MAP: adaptation of the means.
+    protected void setMethod(MAPMethod method) {
+// System.err.println("info[ParameterMAP] \t method:" + method);
+        this.method = method;
+    }
 
-	/** The covariance adaptation. */
-	private boolean covarianceAdaptation; // MAP: adaptation of the covariances.
+    public double getPrior() {
+        return prior;
+    }
 
-	/** The map control. */
-	private String mapControl; // input MAP control parameters
+    protected void setPrior(double prior) {
+        this.prior = prior;
+    }
 
-	/**
-	 * The Class ActionMAPControl.
-	 */
-	private class ActionMAPControl extends LongOptAction {
+    public boolean isWeightAdaptation() {
+        return weightAdaptation;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setMAPControl(optarg);
-		}
+    protected void setWeightAdaptation(boolean weightAdaptation) {
+        this.weightAdaptation = weightAdaptation;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#log(java.util.logging.Logger, fr.lium.spkDiarization.parameter.LongOptWithAction)
-		 */
-		@Override
-		public void log(Logger logger, LongOptWithAction longOpt) {
-			logger.config("--" + longOpt.getName() + " \t MAP control (method,prior,w:m:c) = " + getMAPControl() + " ["
-					+ logger.getName() + "]");
-			logger.config("\t Method " + formatStrigArray(MAPMethodString) + " = " + getMethod().ordinal());
-			logger.config("\t prior = " + getPrior());
-			logger.config("\t weight adaptation [0,1] = " + isWeightAdaptation());
-			logger.config("\t mean adaptation [0,1] = " + isMeanAdaptatation());
-			logger.config("\t covariance adaptation [0,1] = " + isCovarianceAdaptation());
-		}
-	}
+    public boolean isMeanAdaptatation() {
+        return meanAdaptatation;
+    }
 
-	/**
-	 * Instantiates a new parameter map.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterMAP(Parameter parameter) {
-		super(parameter);
-		setMAPControl(MAPMethodString[MAPMethod.MAP_STD.ordinal()] + ",15,0:1:0");
-		addOption(new LongOptWithAction("mapCtrl", new ActionMAPControl(), ""));
-	}
+    protected void setMeanAdaptatation(boolean meanAdaptatation) {
+        this.meanAdaptatation = meanAdaptatation;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterMAP clone() throws CloneNotSupportedException {
-		return (ParameterMAP) super.clone();
-	}
+    public boolean isCovarianceAdaptation() {
+        return covarianceAdaptation;
+    }
 
-	/**
-	 * Gets the method.
-	 * 
-	 * @return the method
-	 */
-	public MAPMethod getMethod() {
-		return method;
-	}
+    protected void setCovarianceAdaptation(boolean covarianceAdaptation) {
+        this.covarianceAdaptation = covarianceAdaptation;
+    }
 
-	/**
-	 * Sets the method.
-	 * 
-	 * @param method the new method
-	 */
-	protected void setMethod(MAPMethod method) {
-		logger.finest("info[ParameterMAP] \t method:" + method);
-		this.method = method;
-	}
+    public String getMAPControl() {
+        return mapControl;
+    }
 
-	/**
-	 * Gets the prior.
-	 * 
-	 * @return the prior
-	 */
-	public double getPrior() {
-		return prior;
-	}
+    public void setMAPControl(String mapControl) {
+        this.mapControl = mapControl;
+        String ch = "";
+        int mW;
+        int mM;
+        int mC;
+        mW = mM = mC = 0;
+        double p;
+        p = 15.0;
+        StringTokenizer stok350 = new StringTokenizer(mapControl, ",");
+        int cpt350 = 0;
+        int nb = 0;
+        while (stok350.hasMoreTokens()) {
+            String token = stok350.nextToken();
+            if (cpt350 == 0) {
+                ch = token;
+                nb++;
+            } else if (cpt350 == 1) {
+                p = Double.parseDouble(token);
+                nb++;
+            } else if (cpt350 == 2) {
+                StringTokenizer stok2 = new StringTokenizer(token, ":");
+                int cpt2 = 0;
+                while (stok2.hasMoreTokens()) {
+                    if (cpt2 == 0) {
+                        mW = Integer.parseInt(stok2.nextToken());
+                        nb++;
+                    } else if (cpt2 == 1) {
+                        mM = Integer.parseInt(stok2.nextToken());
+                        nb++;
+                    } else if (cpt2 == 2) {
+                        mC = Integer.parseInt(stok2.nextToken());
+                        nb++;
+                    }
+                    cpt2++;
+                }
+            }
+            cpt350++;
+        }
+        if (nb > 0) {
+            if (ch.equals(MAPMethodString[ParameterMAP.MAPMethod.MAP_STD.ordinal()])) {
+                setMethod(ParameterMAP.MAPMethod.MAP_STD);
+            } else if (ch.equals(MAPMethodString[ParameterMAP.MAPMethod.MAP_LIN.ordinal()])) {
+                setMethod(ParameterMAP.MAPMethod.MAP_LIN);
+            } else if (ch.equals(MAPMethodString[ParameterMAP.MAPMethod.VPMAP.ordinal()])) {
+                setMethod(ParameterMAP.MAPMethod.VPMAP);
+            } else {
+                System.err.println("info[ParameterMAP] \t unknown method=" + ch);
+            }
+            if (nb > 1) {
+                setPrior(p);
+                if (nb > 2) {
+                    setWeightAdaptation(false);
+                    setCovarianceAdaptation(false);
+                    setMeanAdaptatation(false);
+                    if (mW != 0) {
+                        setWeightAdaptation(true);
+                    }
+                    if (mM != 0) {
+                        setMeanAdaptatation(true);
+                    }
+                    if (mC != 0) {
+                        setCovarianceAdaptation(true);
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * Sets the prior.
-	 * 
-	 * @param prior the new prior
-	 */
-	protected void setPrior(double prior) {
-		this.prior = prior;
-	}
+    public void print() {
+        System.out.print("info[ParameterMAP] \t --mapCtrl \t MAP control (method,prior,w:m:c) = ");
+        System.out.println(getMAPControl());
+        System.out.println("info[ParameterMAP] \t \t Method = " + getMethod().ordinal());
+        System.out.println("info[ParameterMAP] \t \t prior = " + getPrior());
+        System.out.println("info[ParameterMAP] \t \t weight adaptation [0,1] = " + isWeightAdaptation());
+        System.out.println("info[ParameterMAP] \t \t mean adaptation [0,1] = " + isMeanAdaptatation());
+        System.out.println("info[ParameterMAP] \t \t covariance adaptation [0,1] = " + isCovarianceAdaptation());
+    }
 
-	/**
-	 * Checks if is weight adaptation.
-	 * 
-	 * @return true, if is weight adaptation
-	 */
-	public boolean isWeightAdaptation() {
-		return weightAdaptation;
-	}
-
-	/**
-	 * Sets the weight adaptation.
-	 * 
-	 * @param weightAdaptation the new weight adaptation
-	 */
-	protected void setWeightAdaptation(boolean weightAdaptation) {
-		this.weightAdaptation = weightAdaptation;
-	}
-
-	/**
-	 * Checks if is mean adaptatation.
-	 * 
-	 * @return true, if is mean adaptatation
-	 */
-	public boolean isMeanAdaptatation() {
-		return meanAdaptatation;
-	}
-
-	/**
-	 * Sets the mean adaptatation.
-	 * 
-	 * @param meanAdaptatation the new mean adaptatation
-	 */
-	protected void setMeanAdaptatation(boolean meanAdaptatation) {
-		this.meanAdaptatation = meanAdaptatation;
-	}
-
-	/**
-	 * Checks if is covariance adaptation.
-	 * 
-	 * @return true, if is covariance adaptation
-	 */
-	public boolean isCovarianceAdaptation() {
-		return covarianceAdaptation;
-	}
-
-	/**
-	 * Sets the covariance adaptation.
-	 * 
-	 * @param covarianceAdaptation the new covariance adaptation
-	 */
-	protected void setCovarianceAdaptation(boolean covarianceAdaptation) {
-		this.covarianceAdaptation = covarianceAdaptation;
-	}
-
-	/**
-	 * Sets the mAP control.
-	 * 
-	 * @param mapControl the new mAP control
-	 */
-	public void setMAPControl(String mapControl) {
-		this.mapControl = mapControl;
-		String ch = "";
-		int mW;
-		int mM;
-		int mC;
-		mW = mM = mC = 0;
-		double p;
-		p = 15.0;
-		StringTokenizer stok350 = new StringTokenizer(mapControl, ",");
-		int cpt350 = 0;
-		int nb = 0;
-		while (stok350.hasMoreTokens()) {
-			String token = stok350.nextToken();
-			if (cpt350 == 0) {
-				ch = token;
-				nb++;
-			} else if (cpt350 == 1) {
-				p = Double.parseDouble(token);
-				nb++;
-			} else if (cpt350 == 2) {
-				StringTokenizer stok2 = new StringTokenizer(token, ":");
-				int cpt2 = 0;
-				while (stok2.hasMoreTokens()) {
-					if (cpt2 == 0) {
-						mW = Integer.parseInt(stok2.nextToken());
-						nb++;
-					} else if (cpt2 == 1) {
-						mM = Integer.parseInt(stok2.nextToken());
-						nb++;
-					} else if (cpt2 == 2) {
-						mC = Integer.parseInt(stok2.nextToken());
-						nb++;
-					}
-					cpt2++;
-				}
-			}
-			cpt350++;
-		}
-		if (nb > 0) {
-			for (MAPMethod num : MAPMethod.values()) {
-				if (ch.equals(MAPMethodString[num.ordinal()])) {
-					setMethod(num);
-				}
-			}
-			if (nb > 1) {
-				setPrior(p);
-				if (nb > 2) {
-					setWeightAdaptation(false);
-					setCovarianceAdaptation(false);
-					setMeanAdaptatation(false);
-					if (mW != 0) {
-						setWeightAdaptation(true);
-					}
-					if (mM != 0) {
-						setMeanAdaptatation(true);
-					}
-					if (mC != 0) {
-						setCovarianceAdaptation(true);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Gets the mAP control.
-	 * 
-	 * @return the mAP control
-	 */
-	public String getMAPControl() {
-		return mapControl;
-	}
-
+    // Type of MAP training method of GMM.
+    public enum MAPMethod {
+        MAP_STD, MAP_LIN, VPMAP
+    }
 }
