@@ -24,7 +24,8 @@ import java.io.IOException;
  */
 public class AudioRecordWrapper {
     ////private static final String BLABBERTABBER_DIRECTORY = Environment.getExternalStorageDirectory() + "/BlabberTabber/";
-    public static final String RECORDER_RAW_FILENAME = "meeting.raw";
+    public static final String RECORDER_FILENAME_NO_EXTENSION = "meeting";
+    public static final String RECORDER_RAW_FILENAME = RECORDER_FILENAME_NO_EXTENSION + ".raw";
     ////public static final String RECORDER_RAW_PATHNAME = "meeting.raw";
     private static final String TAG = "AudioRecordWrapper";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
