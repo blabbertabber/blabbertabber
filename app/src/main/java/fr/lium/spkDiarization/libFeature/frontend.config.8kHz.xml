@@ -4,9 +4,7 @@
    Sphinx-4 Configuration file
 -->
 
-<!-- ******************************************************** -->
-<!--  spectrogram config file                                 -->
-<!-- ******************************************************** -->
+<!-- ******************************************************** --><!--  spectrogram config file                                 --><!-- ******************************************************** -->
 
 <config>
 
@@ -47,49 +45,45 @@
     </component>
 
     <component name="premphasizer" type="edu.cmu.sphinx.frontend.filter.Preemphasizer">
-               factor
-		<property name="factor" value="0.95"/>
+        factor
+        <property name="factor" value="0.95" />
     </component>
 
-    <component name="windower"
-               type="edu.cmu.sphinx.frontend.window.RaisedCosineWindower">
-		<property name="windowSizeInMs" value="20.0"/>
-		<property name="windowShiftInMs" value="10.0"/>
-		<property name="alpha" value="0.46"/>
+    <component name="windower" type="edu.cmu.sphinx.frontend.window.RaisedCosineWindower">
+        <property name="windowSizeInMs" value="20.0" />
+        <property name="windowShiftInMs" value="10.0" />
+        <property name="alpha" value="0.46" />
     </component>
 
     <component name="fft"
-               type="edu.cmu.sphinx.frontend.transform.DiscreteFourierTransform">
-    </component>
+        type="edu.cmu.sphinx.frontend.transform.DiscreteFourierTransform"></component>
 
     <component name="melFilterBank"
-               type="edu.cmu.sphinx.frontend.frequencywarp.MelFrequencyFilterBank">
-		<property name="minimumFrequency" value="0.0"/>
-		<property name="maximumFrequency" value="4000.0"/>
-		<property name="numberFilters" value="24"/>
+        type="edu.cmu.sphinx.frontend.frequencywarp.MelFrequencyFilterBank">
+        <property name="minimumFrequency" value="0.0" />
+        <property name="maximumFrequency" value="4000.0" />
+        <property name="numberFilters" value="24" />
     </component>
 
-    <component name="dct"
-               type="edu.cmu.sphinx.frontend.transform.DiscreteCosineTransform"/>
+    <component name="dct" type="edu.cmu.sphinx.frontend.transform.DiscreteCosineTransform" />
 
-    <component name="cmn" type="edu.cmu.sphinx.frontend.feature.BatchCMN"/>
+    <component name="cmn" type="edu.cmu.sphinx.frontend.feature.BatchCMN" />
 
     <component name="featureExtraction"
-               type="edu.cmu.sphinx.frontend.feature.DeltasFeatureExtractor"/>
+        type="edu.cmu.sphinx.frontend.feature.DeltasFeatureExtractor" />
 
-    <component name="streamDataSource"
-               type="edu.cmu.sphinx.frontend.util.StreamDataSource">
-        <property name="sampleRate" value="8000"/>
+    <component name="streamDataSource" type="edu.cmu.sphinx.frontend.util.StreamDataSource">
+        <property name="sampleRate" value="8000" />
     </component>
 
 
     <component name="plpFrequencyFilterBank"
-               type="edu.cmu.sphinx.frontend.frequencywarp.PLPFrequencyFilterBank">
- 		<property name="minimumFrequency" value="0"/>
-		<property name="maximumFrequency" value="4000"/>
-		<property name="numberFilters" value="31"/>
-     </component>
+        type="edu.cmu.sphinx.frontend.frequencywarp.PLPFrequencyFilterBank">
+        <property name="minimumFrequency" value="0" />
+        <property name="maximumFrequency" value="4000" />
+        <property name="numberFilters" value="31" />
+    </component>
 
     <component name="plpCepstrumProducer"
-               type="edu.cmu.sphinx.frontend.frequencywarp.PLPCepstrumProducer"/>
+        type="edu.cmu.sphinx.frontend.frequencywarp.PLPCepstrumProducer" />
 </config>

@@ -1,408 +1,230 @@
 /**
- * 
  * <p>
  * ParameterDecoder
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
  */
 
 package fr.lium.spkDiarization.parameter;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
-/**
- * The Class ParameterDecoder.
- */
-public class ParameterDecoder extends ParameterBase implements Cloneable {
+import gnu.getopt.LongOpt;
 
-	/** The Constant ViterbiDurationConstraintString. */
-	public final static String[] ViterbiDurationConstraintString = { "none", "minimal", "periodic", "fixed", "jump" };
+public class ParameterDecoder implements ParameterInterface {
+    public static String[] ViterbiDurationConstraintString = {"none", "minimal", "periodic", "fixed"};
+    public static int ReferencePenality = -1;
 
-	// Type of duration constraint for Viterbi.
-	/**
-	 * The Enum ViterbiDurationConstraint.
-	 */
-	static public enum ViterbiDurationConstraint {
+    ;
+    public static int ReferenceDurationConstraints = -1;
+    public static int ReferenceComputeLLhR = -1;
+    public static int ReferenceShift = -1;
+    private ArrayList<Double> exitDecoderPenalty;
+    private ArrayList<Double> loopDecoderPenalty;
+    private ArrayList<ViterbiDurationConstraint> viterbiDurationConstraints;
+    private ArrayList<Integer> viterbiDurationConstraintValues;
+    private boolean computeLLhR;
+    private int shift;
+    public ParameterDecoder(ArrayList<LongOpt> list, Parameter param) {
+        setComputeLLhR(false);
+        shift = 1;
+        ReferenceComputeLLhR = param.getNextOptionIndex();
+        ReferenceShift = param.getNextOptionIndex();
+        exitDecoderPenalty = new ArrayList<Double>();
+        loopDecoderPenalty = new ArrayList<Double>();
+        getExitDecoderPenalty().add(0.0);
+        viterbiDurationConstraints = new ArrayList<ViterbiDurationConstraint>();
+        viterbiDurationConstraints.add(ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT);
+        viterbiDurationConstraintValues = new ArrayList<Integer>();
+        getViterbiDurationConstraintValues().add(1);
+        ReferencePenality = param.getNextOptionIndex();
+        ReferenceDurationConstraints = param.getNextOptionIndex();
+        addOptions(list);
+    }
 
-		/** The viterbi no constraint. */
-		VITERBI_NO_CONSTRAINT,
-		/** The viterbi minimal duration. */
-		VITERBI_MINIMAL_DURATION,
-		/** The viterbi periodic duration. */
-		VITERBI_PERIODIC_DURATION,
-		/** The viterbi fixed duration. */
-		VITERBI_FIXED_DURATION,
-		/** The viterbi jump duration. */
-		VITERBI_JUMP_DURATION
-	};
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferencePenality) {
+            setDecoderPenalty(optarg);
+            return true;
+        } else if (option == ReferenceDurationConstraints) {
+            setViterbiDurationConstraints(optarg);
+            return true;
+        } else if (option == ReferenceComputeLLhR) {
+            setComputeLLhR(true);
+            return true;
+        } else if (option == ReferenceShift) {
+            setShift(Integer.parseInt(optarg));
+            return true;
+        }
+        return false;
+    }
 
-	/** The decoder penality. */
-	private String decoderPenality = "";
+    public int getShift() {
+        return shift;
+    }
 
-	/** The exit decoder penalty. */
-	private ArrayList<Double> exitDecoderPenalty;
+    public void setShift(int parseInt) {
+        // TODO Auto-generated method stub
+        shift = parseInt;
+    }
 
-	/** The loop decoder penalty. */
-	private ArrayList<Double> loopDecoderPenalty;
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("dPenality", 1, null, ReferencePenality));
+        list.add(new LongOpt("dDurationConstraints", 1, null, ReferenceDurationConstraints));
+        list.add(new LongOpt("dComputeLLhR", 0, null, ReferenceComputeLLhR));
+        list.add(new LongOpt("dShift", 1, null, ReferenceShift));
+    }
 
-	/** The viterbi duration constraints. */
-	private ArrayList<ViterbiDurationConstraint> viterbiDurationConstraints;
+    public ArrayList<Double> getExitDecoderPenalty() {
+        return exitDecoderPenalty;
+    }
 
-	/**
-	 * The Class ActionDecoderPenality.
-	 */
-	private class ActionDecoderPenality extends LongOptAction {
+    public ArrayList<Double> getLoopDecoderPenalty() {
+        return loopDecoderPenalty;
+    }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setDecoderPenalty(optarg);
-		}
+    public void setDecoderPenalty(String ch) {
+        //System.err.println("*** setDecoderPenalty:"+ch);
+        exitDecoderPenalty.clear();
+        loopDecoderPenalty.clear();
+        String[] listKey = ch.split(",");
+        for (String key : listKey) {
+            //System.err.println("*** setDecoderPenalty: key="+key);
+            String[] listKey2 = key.split(":");
+            getExitDecoderPenalty().add(Double.parseDouble(listKey2[0]));
+            //System.err.println("*** setDecoderPenalty: key[0]="+listKey2[0]);
+            if (listKey2.length > 1) {
+                getLoopDecoderPenalty().add(Double.parseDouble(listKey2[1]));
+                //System.err.println("*** setDecoderPenalty: key[1]="+listKey2[1]);
+            } else {
+                getLoopDecoderPenalty().add(0.0);
+            }
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#log(java.util.logging.Logger, fr.lium.spkDiarization.parameter.LongOptWithAction)
-		 */
-		@Override
-		public void log(Logger logger, LongOptWithAction longOpt) {
-
-			String message = "--" + longOpt.getName() + " \t model penalties = ";
-
-			for (int i = 0; i < getExitDecoderPenalty().size(); i++) {
-				message += getExitDecoderPenalty().get(i) + ":";
-				message += getLoopDecoderPenalty().get(i) + ", ";
-			}
-			logger.config(message + " [" + logger.getName() + "]");
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return null;
-		}
-	}
-
-	/** The viterbi duration constraint values string. */
-	private String viterbiDurationConstraintValuesString = "";
-
-	/** The viterbi duration constraint values. */
-	private ArrayList<Integer> viterbiDurationConstraintValues;
-
-	/**
-	 * The Class ActionViterbiDurationConstraintValues.
-	 */
-	private class ActionViterbiDurationConstraintValues extends LongOptAction {
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setViterbiDurationConstraints(optarg);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#log(java.util.logging.Logger, fr.lium.spkDiarization.parameter.LongOptWithAction)
-		 */
-		@Override
-		public void log(Logger logger, LongOptWithAction longOpt) {
-			String message = "--" + longOpt.getName() + " \t duration constraints during decoding";
-			message += formatStrigArray(ViterbiDurationConstraintString) + " = ";
-			for (int i = 0; i < (getViterbiDurationConstraints().size() - 1); i++) {
-				message += ViterbiDurationConstraintString[getViterbiDurationConstraints().get(i).ordinal()] + ",";
-				if (getViterbiDurationConstraints().get(i) != ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT) {
-					message += getViterbiDurationConstraintValues().get(i) + ",";
-				}
-			}
-			message += ViterbiDurationConstraintString[getViterbiDurationConstraints().get(getViterbiDurationConstraints().size() - 1).ordinal()];
-			if (getViterbiDurationConstraints().get(getViterbiDurationConstraints().size() - 1) != ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT) {
-				message += "," + getViterbiDurationConstraintValues().get(getViterbiDurationConstraints().size() - 1);
-			}
-			logger.config(message + " [" + logger.getName() + "]");
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return null;
-		}
-	}
-
-	/** The compute l lh r. */
-	private Boolean computeLLhR;
-
-	/**
-	 * The Class ActionComputeLLhR.
-	 */
-	private class ActionComputeLLhR extends LongOptAction {
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setComputeLLhR(true);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return computeLLhR.toString();
-		}
-	}
-
-	/** The shift. */
-	private Integer shift;
-
-	/**
-	 * The Class ActionShift.
-	 */
-	private class ActionShift extends LongOptAction {
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#execute(java.lang.String)
-		 */
-		@Override
-		public void execute(String optarg) {
-			setShift(Integer.parseInt(optarg));
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see fr.lium.spkDiarization.parameter.LongOptAction#getValue()
-		 */
-		@Override
-		public String getValue() {
-			return shift.toString();
-		}
-	}
-
-	/**
-	 * Instantiates a new parameter decoder.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterDecoder(Parameter parameter) {
-		super(parameter);
-		setComputeLLhR(false);
-		shift = 1;
-		exitDecoderPenalty = new ArrayList<Double>();
-		loopDecoderPenalty = new ArrayList<Double>();
-		getExitDecoderPenalty().add(0.0);
-		getLoopDecoderPenalty().add(0.0);
-		viterbiDurationConstraints = new ArrayList<ViterbiDurationConstraint>();
-		viterbiDurationConstraints.add(ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT);
-		viterbiDurationConstraintValues = new ArrayList<Integer>();
-		getViterbiDurationConstraintValues().add(1);
-		addOption(new LongOptWithAction("dPenality", new ActionDecoderPenality(), ""));
-		addOption(new LongOptWithAction("dDurationConstraints", new ActionViterbiDurationConstraintValues(), ""));
-		addOption(new LongOptWithAction("dComputeLLhR", 0, new ActionComputeLLhR(), "score is Log Likelihood Ratio"));
-		addOption(new LongOptWithAction("dShift", new ActionShift(), "number of features for a jump between 2 states"));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected ParameterDecoder clone() throws CloneNotSupportedException {
-		ParameterDecoder result = (ParameterDecoder) super.clone();
-		result.exitDecoderPenalty = new ArrayList<Double>();
-		result.exitDecoderPenalty.addAll(exitDecoderPenalty);
-		result.loopDecoderPenalty = new ArrayList<Double>();
-		result.loopDecoderPenalty.addAll(loopDecoderPenalty);
-		result.viterbiDurationConstraints = new ArrayList<ViterbiDurationConstraint>();
-		result.viterbiDurationConstraints.addAll(viterbiDurationConstraints);
-		result.viterbiDurationConstraintValues = new ArrayList<Integer>();
-		result.viterbiDurationConstraintValues.addAll(viterbiDurationConstraintValues);
-		result.computeLLhR = computeLLhR;
-		result.shift = shift;
-		return (ParameterDecoder) super.clone();
-	}
-
-	/**
-	 * Sets the shift.
-	 * 
-	 * @param parseInt the new shift
-	 */
-	public void setShift(int parseInt) {
-		shift = parseInt;
-	}
-
-	/**
-	 * Gets the shift.
-	 * 
-	 * @return the shift
-	 */
-	public int getShift() {
-		return shift;
-	}
-
-	/**
-	 * Gets the exit decoder penalty.
-	 * 
-	 * @return the exit decoder penalty
-	 */
-	public ArrayList<Double> getExitDecoderPenalty() {
-		return exitDecoderPenalty;
-	}
-
-	/**
-	 * Gets the loop decoder penalty.
-	 * 
-	 * @return the loop decoder penalty
-	 */
-	public ArrayList<Double> getLoopDecoderPenalty() {
-		return loopDecoderPenalty;
-	}
-
-	/**
-	 * Sets the decoder penalty.
-	 * 
-	 * @param ch the new decoder penalty
-	 */
-	public void setDecoderPenalty(String ch) {
-		decoderPenality = ch;
-		exitDecoderPenalty.clear();
-		loopDecoderPenalty.clear();
-		String[] listKey = ch.split(",");
-		for (String key : listKey) {
-			String[] listKey2 = key.split(":");
-			getExitDecoderPenalty().add(Double.parseDouble(listKey2[0]));
-			if (listKey2.length > 1) {
-				getLoopDecoderPenalty().add(Double.parseDouble(listKey2[1]));
-			} else {
-				getLoopDecoderPenalty().add(0.0);
-			}
-		}
-	}
-
-	/**
-	 * Gets the decoder penalty as string.
-	 * 
-	 * @return the decoder penalty as string
-	 */
-	public String getDecoderPenaltyAsString() {
-		String ch = "";
-		int i = 0;
-		for (; i < (getExitDecoderPenalty().size() - 1); i++) {
-			ch += getExitDecoderPenalty().get(i) + ":" + getLoopDecoderPenalty().get(i) + ",";
-		}
-		ch += getExitDecoderPenalty().get(i) + ":" + getLoopDecoderPenalty().get(i);
-		return ch;
-	}
-
-	/**
-	 * Gets the viterbi duration constraints.
-	 * 
-	 * @return the viterbi duration constraints
-	 */
-	public ArrayList<ViterbiDurationConstraint> getViterbiDurationConstraints() {
-		return viterbiDurationConstraints;
-	}
-
-	/**
-	 * Sets the viterbi duration constraints.
-	 * 
-	 * @param ch the new viterbi duration constraints
-	 */
-	public void setViterbiDurationConstraints(String ch) {
-		viterbiDurationConstraintValuesString = ch;
-		ArrayList<String> tmpCh = new ArrayList<String>();
+/*		ArrayList<String> tmpCh = new ArrayList<String>();
 		String limite = ",";
 		StringTokenizer stok = new StringTokenizer(ch, limite);
 		while (stok.hasMoreTokens()) {
 			tmpCh.add(stok.nextToken());
 		}
 		if (tmpCh.size() > 0) {
-			viterbiDurationConstraints.clear();
-			setViterbiDurationConstraintValues(new ArrayList<Integer>());
-			int durValue;
+			getDecodePenalty().clear();
 			for (int i = 0; i < tmpCh.size(); i++) {
-				if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_MINIMAL_DURATION.ordinal()])) {
-					getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_MINIMAL_DURATION);
-					durValue = Integer.parseInt(tmpCh.get(++i));
-				} else if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_PERIODIC_DURATION.ordinal()])) {
-					getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_PERIODIC_DURATION);
-					durValue = Integer.parseInt(tmpCh.get(++i));
-				} else if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_FIXED_DURATION.ordinal()])) {
-					getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_FIXED_DURATION);
-					durValue = Integer.parseInt(tmpCh.get(++i));
-				} else if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_JUMP_DURATION.ordinal()])) {
-					getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_JUMP_DURATION);
-					durValue = 1;
-				} else {
-					getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT);
-					durValue = 1;
-				}
-				getViterbiDurationConstraintValues().add(durValue);
+				getDecodePenalty().add(Double.parseDouble((tmpCh.get(i))));
 			}
 		}
-	}
+*/
+    }
 
-	/**
-	 * Gets the viterbi duration constraint values.
-	 * 
-	 * @return the viterbi duration constraint values
-	 */
-	public ArrayList<Integer> getViterbiDurationConstraintValues() {
-		return viterbiDurationConstraintValues;
-	}
+    public ArrayList<ViterbiDurationConstraint> getViterbiDurationConstraints() {
+        return viterbiDurationConstraints;
+    }
 
-	/**
-	 * Sets the viterbi duration constraint values.
-	 * 
-	 * @param viterbiDurationConstraintValues the new viterbi duration constraint values
-	 */
-	public void setViterbiDurationConstraintValues(ArrayList<Integer> viterbiDurationConstraintValues) {
-		this.viterbiDurationConstraintValues = viterbiDurationConstraintValues;
-	}
+    public void setViterbiDurationConstraints(String ch) {
+        ArrayList<String> tmpCh = new ArrayList<String>();
+        String limite = ",";
+        StringTokenizer stok = new StringTokenizer(ch, limite);
+        while (stok.hasMoreTokens()) {
+            tmpCh.add(stok.nextToken());
+        }
+        if (tmpCh.size() > 0) {
+            viterbiDurationConstraints.clear();
+            setViterbiDurationConstraintValues(new ArrayList<Integer>());
+            int durValue;
+            for (int i = 0; i < tmpCh.size(); i++) {
+                if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_MINIMAL_DURATION.ordinal()])) {
+                    getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_MINIMAL_DURATION);
+                    durValue = Integer.parseInt(tmpCh.get(++i));
+                } else if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_PERIODIC_DURATION.ordinal()])) {
+                    getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_PERIODIC_DURATION);
+                    durValue = Integer.parseInt(tmpCh.get(++i));
+                } else if (tmpCh.get(i).equals(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_FIXED_DURATION.ordinal()])) {
+                    getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_FIXED_DURATION);
+                    durValue = Integer.parseInt(tmpCh.get(++i));
+                } else {
+                    getViterbiDurationConstraints().add(ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT);
+                    durValue = 1;
+                }
+                getViterbiDurationConstraintValues().add(durValue);
+            }
+        }
+    }
 
-	/**
-	 * Sets the compute l lh r.
-	 * 
-	 * @param computeLLhR the new compute l lh r
-	 */
-	public void setComputeLLhR(boolean computeLLhR) {
-		this.computeLLhR = computeLLhR;
-	}
+    public ArrayList<Integer> getViterbiDurationConstraintValues() {
+        return viterbiDurationConstraintValues;
+    }
 
-	/**
-	 * Checks if is compute l lh r.
-	 * 
-	 * @return true, if is compute l lh r
-	 */
-	public boolean isComputeLLhR() {
-		return computeLLhR;
-	}
+    public void setViterbiDurationConstraintValues(ArrayList<Integer> viterbiDurationConstraintValues) {
+        this.viterbiDurationConstraintValues = viterbiDurationConstraintValues;
+    }
+
+    public void printPenality() {
+        System.out.print("info[ParameterDecoder] \t --dPenalty \t model penalties = ");
+        for (int i = 0; i < getExitDecoderPenalty().size() - 1; i++) {
+            System.out.print(getExitDecoderPenalty().get(i) + ":");
+            System.out.print(getLoopDecoderPenalty().get(i) + ", ");
+        }
+        System.out.println(getExitDecoderPenalty().get(getExitDecoderPenalty().size() - 1));
+
+    }
+
+    public void printDurationConstraints() {
+        System.out.print("info[ParameterDecoder] \t --dDurationConstraints \t duration constraints during decoding");
+        System.out.print(" [" + ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT.ordinal()] + "|");
+        System.out.print("(" + ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_MINIMAL_DURATION.ordinal()] + "|");
+        System.out.print(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_PERIODIC_DURATION.ordinal()] + "|");
+        System.out.print(ViterbiDurationConstraintString[ViterbiDurationConstraint.VITERBI_FIXED_DURATION.ordinal()] + ",value)] = ");
+        for (int i = 0; i < getViterbiDurationConstraints().size() - 1; i++) {
+            System.out.print(ViterbiDurationConstraintString[getViterbiDurationConstraints().get(i).ordinal()] + ",");
+            if (getViterbiDurationConstraints().get(i) != ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT) {
+                System.out.print(getViterbiDurationConstraintValues().get(i) + ",");
+            }
+        }
+        System.out.print(ViterbiDurationConstraintString[getViterbiDurationConstraints().get(getViterbiDurationConstraints().size() - 1).ordinal()]);
+        if (getViterbiDurationConstraints().get(getViterbiDurationConstraints().size() - 1) != ViterbiDurationConstraint.VITERBI_NO_CONSTRAINT) {
+            System.out.print("," + getViterbiDurationConstraintValues().get(getViterbiDurationConstraints().size() - 1));
+        }
+        System.out.println();
+
+    }
+
+    public void printComputeLLhR() {
+        System.out.println("info[ParameterDecoder] \t --dComputeLLhR \t score is Log Likelihood Ratio = " + isComputeLLhR());
+    }
+
+    public void printShift() {
+        System.out.println("info[ParameterDecoder] \t --dShift \t size of a step = " + getShift());
+    }
+
+    public void print() {
+        printPenality();
+        printDurationConstraints();
+        printComputeLLhR();
+        printShift();
+    }
+
+    public boolean isComputeLLhR() {
+        return computeLLhR;
+    }
+
+    public void setComputeLLhR(boolean computeLLhR) {
+        this.computeLLhR = computeLLhR;
+    }
+
+    // Type of duration constraint for Viterbi.
+    public enum ViterbiDurationConstraint {
+        VITERBI_NO_CONSTRAINT, VITERBI_MINIMAL_DURATION, VITERBI_PERIODIC_DURATION, VITERBI_FIXED_DURATION
+    }
 }

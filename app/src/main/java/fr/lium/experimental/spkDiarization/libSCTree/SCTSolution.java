@@ -1,220 +1,137 @@
 /**
- * 
  * <p>
  * SCTSolution
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @author <a href="mailto:vincent.jousse@lium.univ-lemans.fr">Vincent Jousse</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
  */
 
 package fr.lium.experimental.spkDiarization.libSCTree;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/**
- * The Class SCTSolution.
- */
 public class SCTSolution implements Cloneable {
+    boolean[] used;
+    int current;
+    SCTProbabilities probabilities;
+    boolean[] gapBefore;
+    boolean[] gapAfter;
+    int size;
 
-	/** The Constant logger. */
-	private final static Logger logger = Logger.getLogger(SCTSolution.class.getName());
+    public SCTSolution(int size) {
+        this.size = size;
+        used = new boolean[size];
+        gapBefore = new boolean[size];
+        gapAfter = new boolean[size];
+        for (int i = 0; i < size; i++) {
+            used[i] = false;
+            gapBefore[i] = false;
+            gapAfter[i] = false;
+        }
+        current = -1;
+        probabilities = null;
+    }
 
-	/** The used. */
-	boolean[] used;
+    /**
+     * @return the size
+     */
+    public int getSize() {
+        return size;
+    }
 
-	/** The current. */
-	int current;
+    public boolean isUsed(int key) {
+        return (used[key]);
+    }
 
-	/** The probabilities. */
-	SCTProbabilities probabilities;
+    public SCTProbabilities getProbabilities() {
+        return probabilities;
+    }
 
-	/** The gap before. */
-	boolean[] gapBefore;
+    public void setProbabilities(SCTProbabilities probabilities) {
+        this.probabilities = probabilities;
+    }
 
-	/** The gap after. */
-	boolean[] gapAfter;
+    public boolean isClosed() {
+        return (probabilities != null);
+    }
 
-	/** The size. */
-	int size;
+    protected int getCurrent() {
+        return current;
+    }
 
-	/**
-	 * Instantiates a new sCT solution.
-	 * 
-	 * @param size the size
-	 */
-	public SCTSolution(int size) {
-		this.size = size;
-		used = new boolean[size];
-		gapBefore = new boolean[size];
-		gapAfter = new boolean[size];
-		for (int i = 0; i < size; i++) {
-			used[i] = false;
-			gapBefore[i] = false;
-			gapAfter[i] = false;
-		}
-		current = -1;
-		probabilities = null;
-	}
+    protected void setCurrent(int index, boolean usage, boolean gapBefore, boolean gapAfter) {
+        current = index;
+        used[current] = usage;
+        this.gapAfter[current] = gapAfter;
+        this.gapBefore[current] = gapBefore;
+    }
 
-	/**
-	 * Gets the size.
-	 * 
-	 * @return the size
-	 */
-	public int getSize() {
-		return size;
-	}
+    @Override
+    protected Object clone() {
+        SCTSolution result = null;
+        try {
+            result = (SCTSolution) (super.clone());
+        } catch (CloneNotSupportedException e) {
+        }
+        result.used = new boolean[size];
+        result.gapAfter = new boolean[size];
+        result.gapBefore = new boolean[size];
+        for (int i = 0; i < used.length; i++) {
+            result.used[i] = used[i];
+            result.gapAfter[i] = gapAfter[i];
+            result.gapBefore[i] = gapBefore[i];
+        }
 
-	/**
-	 * Checks if is used.
-	 * 
-	 * @param key the key
-	 * @return true, if is used
-	 */
-	public boolean isUsed(int key) {
-		return (used[key]);
-	}
+        return result;
+    }
 
-	/**
-	 * Gets the probabilities.
-	 * 
-	 * @return the probabilities
-	 */
-	public SCTProbabilities getProbabilities() {
-		return probabilities;
-	}
+    public void debug() {
+        System.err.println("[debug] SCTSolution current:" + current);
+        System.err.print("[debug] SCTSolution solution: ");
+        for (int i = 0; i < used.length; i++) {
+            System.err.print(" " + i + "=" + used[i]);
+        }
+        System.err.println();
+        System.err.println(probabilities.toString());
+        System.err.println("[debug] SCTSolution -------------------");
 
-	/**
-	 * Sets the probabilities.
-	 * 
-	 * @param probabilities the new probabilities
-	 */
-	public void setProbabilities(SCTProbabilities probabilities) {
-		this.probabilities = probabilities;
-	}
+    }
 
-	/**
-	 * Checks if is closed.
-	 * 
-	 * @return true, if is closed
-	 */
-	public boolean isClosed() {
-		return (probabilities != null);
-	}
+    /**
+     * @return the beforeGap
+     */
+    public boolean isBeforeGap(int i) {
+        return gapBefore[i];
+    }
 
-	/**
-	 * Gets the current.
-	 * 
-	 * @return the current
-	 */
-	protected int getCurrent() {
-		return current;
-	}
+    /**
+     * @param beforeGap the beforeGap to set
+     */
+    public void setBeforeGap(int i, boolean beforeGap) {
+        this.gapBefore[i] = beforeGap;
+    }
 
-	/**
-	 * Sets the current.
-	 * 
-	 * @param index the index
-	 * @param usage the usage
-	 * @param gapBefore the gap before
-	 * @param gapAfter the gap after
-	 */
-	protected void setCurrent(int index, boolean usage, boolean gapBefore, boolean gapAfter) {
-		current = index;
-		used[current] = usage;
-		this.gapAfter[current] = gapAfter;
-		this.gapBefore[current] = gapBefore;
-	}
+    /**
+     * @return the afterGap
+     */
+    public boolean isAfterGap(int i) {
+        return gapAfter[i];
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	protected Object clone() {
-		SCTSolution result = null;
-		try {
-			result = (SCTSolution) (super.clone());
-		} catch (CloneNotSupportedException e) {
-			logger.log(Level.SEVERE, "", e);
-			e.printStackTrace();
-			return null;
-		}
-		result.used = new boolean[size];
-		result.gapAfter = new boolean[size];
-		result.gapBefore = new boolean[size];
-		for (int i = 0; i < used.length; i++) {
-			result.used[i] = used[i];
-			result.gapAfter[i] = gapAfter[i];
-			result.gapBefore[i] = gapBefore[i];
-		}
-
-		return result;
-	}
-
-	/**
-	 * Debug.
-	 */
-	public void debug() {
-		logger.finer("SCTSolution current:" + current);
-		logger.finer("SCTSolution solution: ");
-		for (int i = 0; i < used.length; i++) {
-			logger.finer(" " + i + "=" + used[i]);
-		}
-		logger.finer(probabilities.toString());
-		logger.finer("SCTSolution -------------------");
-
-	}
-
-	/**
-	 * Checks if is before gap.
-	 * 
-	 * @param i the i
-	 * @return the beforeGap
-	 */
-	public boolean isBeforeGap(int i) {
-		return gapBefore[i];
-	}
-
-	/**
-	 * Sets the before gap.
-	 * 
-	 * @param i the i
-	 * @param beforeGap the beforeGap to set
-	 */
-	public void setBeforeGap(int i, boolean beforeGap) {
-		this.gapBefore[i] = beforeGap;
-	}
-
-	/**
-	 * Checks if is after gap.
-	 * 
-	 * @param i the i
-	 * @return the afterGap
-	 */
-	public boolean isAfterGap(int i) {
-		return gapAfter[i];
-	}
-
-	/**
-	 * Sets the after gap.
-	 * 
-	 * @param i the i
-	 * @param afterGap the afterGap to set
-	 */
-	public void setAfterGap(int i, boolean afterGap) {
-		this.gapAfter[i] = afterGap;
-	}
+    /**
+     * @param afterGap the afterGap to set
+     */
+    public void setAfterGap(int i, boolean afterGap) {
+        this.gapAfter[i] = afterGap;
+    }
 
 }

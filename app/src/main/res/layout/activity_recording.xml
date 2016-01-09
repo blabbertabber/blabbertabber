@@ -61,9 +61,9 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="invisible"
                 android:onClick="togglePauseRecord"
-                android:src="@drawable/ic_hearing_black" />
+                android:src="@drawable/ic_hearing_black"
+                android:visibility="invisible" />
 
             <ImageButton
                 android:id="@+id/button_pause"

@@ -31,7 +31,7 @@ ext {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     // App's dependencies, including test
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:support-annotations:${supportLibVersion}"
@@ -55,7 +55,13 @@ dependencies {
     // http://stackoverflow.com/questions/29290795/attempt-to-mockito-mock-any-class-generates-exceptionininitializererror
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    compile files('/Users/cunnie/workspace/blabbertabber/libs/lium_spkdiarization-8.4.1.jar')
+    ///compile files('/Users/cunnie/workspace/blabbertabber/libs/lium_spkdiarization-8.4.1.jar')
     //    compile files('libs/lium_spkdiarization-8.4.1-blabbertabber.jar')
-    compile files('libs/lium_spkdiarization-8.4.1-bt5.jar')
+    ///compile files('libs/lium_spkdiarization-8.4.1-bt5.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/gnu-getopt-1.0.13.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/repackagedXML.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/lapack.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/f2jutil.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/repackagedSound.jar')
+    compile files('/Users/brendancunnie/AndroidStudioProjects/BlabberTabber/libs/sphinx4.jar')
 }

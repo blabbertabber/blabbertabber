@@ -1,198 +1,162 @@
 package fr.lium.spkDiarization.tools;
 
 /**
- * 
  * <p>
  * SIterativeSegmentation
  * </p>
- * 
+ *
  * @author <a href="mailto:sylvain.meignier@lium.univ-lemans.fr">Sylvain Meignier</a>
  * @version v2.0
- * 
- *          Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
- * 
- *          THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *          DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *          USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *          ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *          Iterative train speakers and segmentation the signal by Viterbi decoding
- * 
+ * <p/>
+ * Copyright (c) 2007-2009 Universite du Maine. All Rights Reserved. Use is subject to license terms.
+ * <p/>
+ * THIS SOFTWARE IS PROVIDED BY THE "UNIVERSITE DU MAINE" AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ * OF SUCH DAMAGE.
+ * <p/>
+ * Iterative train speakers and segmentation the signal by Viterbi decoding
  */
-import java.lang.reflect.InvocationTargetException;
+
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import fr.lium.spkDiarization.lib.DiarizationException;
 import fr.lium.spkDiarization.lib.MainTools;
-import fr.lium.spkDiarization.lib.SpkDiarizationLogger;
 import fr.lium.spkDiarization.libClusteringData.Cluster;
 import fr.lium.spkDiarization.libClusteringData.ClusterSet;
-import fr.lium.spkDiarization.libFeature.AudioFeatureSet;
-import fr.lium.spkDiarization.libModel.gaussian.GMM;
-import fr.lium.spkDiarization.libModel.gaussian.GMMArrayList;
+import fr.lium.spkDiarization.libFeature.FeatureSet;
+import fr.lium.spkDiarization.libModel.GMM;
 import fr.lium.spkDiarization.parameter.Parameter;
 import fr.lium.spkDiarization.parameter.ParameterInitializationEM;
 import fr.lium.spkDiarization.programs.MDecode;
 import fr.lium.spkDiarization.programs.MTrainInit;
 import fr.lium.spkDiarization.programs.MTrainMAP;
 
-/**
- * The Class SIterativeSegmentation.
- */
 public class SIterativeSegmentation {
+    public static ClusterSet make(FeatureSet features, ClusterSet clusters, ClusterSet fltClusters, ArrayList<GMM> ubm, Parameter param) throws Exception {
+        ClusterSet currentClusters = clusters;
+        ClusterSet oldClusters = null;
+        ArrayList<GMM> speakers = new ArrayList<GMM>(currentClusters.clusterGetSize());
+        ArrayList<GMM> oldSpeakers = new ArrayList<GMM>(currentClusters.clusterGetSize());
 
-	/** The Constant logger. */
-	private final static Logger logger = Logger.getLogger(SIterativeSegmentation.class.getName());
+        param.parameterModel.setKind("DIAG");
+        param.parameterInitializationEM.setModelInitMethod(ParameterInitializationEM.TrainInitMethodString[3]);
 
-	/**
-	 * Make.
-	 * 
-	 * @param featureSet the feature set
-	 * @param clusterSet the cluster set
-	 * @param filterClusterSEt the filter cluster s et
-	 * @param ubmList the ubm list
-	 * @param parameter the parameter
-	 * @return the cluster set
-	 * @throws Exception the exception
-	 */
-	public static ClusterSet make(AudioFeatureSet featureSet, ClusterSet clusterSet, ClusterSet filterClusterSEt, GMMArrayList ubmList, Parameter parameter) throws Exception {
-		logger.info("Iteratice Segmentation");
-		ClusterSet currentClusterSet = clusterSet;
-		ClusterSet oldClusterSet = null;
-		GMMArrayList speakerList = new GMMArrayList(currentClusterSet.clusterGetSize());
-		GMMArrayList oldSpeakerList = new GMMArrayList(currentClusterSet.clusterGetSize());
+        int i = 0;
+        while ((oldClusters == null) || (oldClusters.equals(currentClusters) == false)) {
+            if (param.trace) {
+                System.err.println("-----------------------------------------------");
+                System.err.println("iteration idx=" + i);
+                System.err.println("-----------------------------------------------");
 
-		parameter.getParameterModel().setModelKind("DIAG");
-		parameter.getParameterInitializationEM().setModelInitMethod(ParameterInitializationEM.TrainInitMethodString[3]);
+            }
+            for (String name : currentClusters) {
+                boolean compute = true;
+                Cluster cluster = currentClusters.getCluster(name);
+                if (cluster.getLength() > 50) {
+                    if (oldClusters != null) {
+                        Cluster oldCluster = oldClusters.getCluster(name);
+                        if (oldCluster != null) {
+                            if (oldCluster.equals(cluster)) {
+                                compute = false;
+                            }
+                        }
+                    }
+                    if (compute == false) {
+                        System.err.println("-----------------------------------------------");
+                        System.err.println(" copy gmm :" + name);
+                        for (GMM gmm : oldSpeakers) {
+                            if (gmm.getName() == name) {
+                                speakers.add(gmm);
+                                break;
+                            }
+                        }
+                    } else {
+                        ArrayList<GMM> gmmInitVect = new ArrayList<GMM>(1);
+                        ArrayList<GMM> speaker = new ArrayList<GMM>(1);
+                        ClusterSet local = new ClusterSet();
+                        local.putCluster(name, cluster);
+                        MTrainInit.make(features, local, gmmInitVect, param);
+                        MTrainMAP.make(features, local, gmmInitVect, speaker, param);
+                        speakers.add(speaker.get(0));
+                    }
+                }
+            }
 
-		int i = 0;
-		while ((oldClusterSet == null) || (oldClusterSet.equals(currentClusterSet) == false)) {
+            ClusterSet newClusters = MDecode.make(features, fltClusters, speakers, param);
 
-			logger.info("iteration idx=" + i);
+            oldClusters = currentClusters;
+            oldSpeakers = speakers;
+            currentClusters = newClusters;
+            i++;
+        }
 
-			for (String name : currentClusterSet) {
-				boolean compute = true;
-				Cluster cluster = currentClusterSet.getCluster(name);
-				if (cluster.getLength() > 50) {
-					if (oldClusterSet != null) {
-						Cluster oldCluster = oldClusterSet.getCluster(name);
-						if (oldCluster != null) {
-							if (oldCluster.equals(cluster)) {
-								compute = false;
-							}
-						}
-					}
-					if (compute == false) {
-						logger.fine(" copy gmm :" + name);
-						for (GMM gmm : oldSpeakerList) {
-							if (gmm.getName() == name) {
-								speakerList.add(gmm);
-								break;
-							}
-						}
-					} else {
-						GMMArrayList gmmInitializationList = new GMMArrayList(1);
-						GMMArrayList gmmList = new GMMArrayList(1);
-						ClusterSet clusterSetLocal = new ClusterSet();
-						clusterSetLocal.putCluster(name, cluster);
-						MTrainInit.make(featureSet, clusterSetLocal, gmmInitializationList, parameter);
-						MTrainMAP.make(featureSet, clusterSetLocal, gmmInitializationList, gmmList, parameter, true);
-						speakerList.add(gmmList.get(0));
-					}
-				}
-			}
+        return currentClusters;
+    }
 
-			ClusterSet newClusters = MDecode.make(featureSet, filterClusterSEt, speakerList, parameter);
-
-			oldClusterSet = currentClusterSet;
-			oldSpeakerList = speakerList;
-			currentClusterSet = newClusters;
-			i++;
-		}
-
-		return currentClusterSet;
-	}
-
-	/**
-	 * The main method.
-	 * 
-	 * @param args the arguments
-	 * @throws Exception the exception
-	 */
-	public static void main(String[] args) throws Exception {
-		try {
-			SpkDiarizationLogger.setup();
-			Parameter parameter = MainTools.getParameters(args);
-			info(parameter, "SIterativeSegmentation");
-			if (parameter.show.isEmpty() == false) {
-				// Clusters
-				ClusterSet clusterSet = MainTools.readClusterSet(parameter);
+    public static void main(String[] args) throws Exception {
+        try {
+            Parameter param = MainTools.getParameters(args);
+            info(param, "SIterativeSegmentation");
+            if (param.nbShow > 0) {
+                // Clusters
+                ClusterSet clusters = MainTools.readClusterSet(param);
 // clusters.debug();
-				ArrayList<String> toRemove = new ArrayList<String>();
+                ArrayList<String> toRemove = new ArrayList<String>();
 
-				for (String name : clusterSet) {
-					Cluster cluster = clusterSet.getCluster(name);
-					int length = cluster.getLength();
-					if (length < 50) {
-						logger.fine("\tremove cluster : " + name + " len = " + length);
-						toRemove.add(name);
-					}
-				}
-				for (String name : toRemove) {
-					clusterSet.removeCluster(name);
-				}
+                for (String name : clusters) {
+                    Cluster cluster = clusters.getCluster(name);
+                    int len = cluster.getLength();
+                    if (len < 50) {
+                        System.err.println("remove cluster : " + name + " len = " + len);
+                        toRemove.add(name);
+                    }
+                }
+                for (String name : toRemove) {
+                    clusters.removeCluster(name);
+                }
 
-				ClusterSet filterClusterSet = new ClusterSet();
-				filterClusterSet.read(parameter.show, parameter.getParameterSegmentationFilterFile());
+                ClusterSet fltClusters = new ClusterSet();
+                fltClusters.read(param.showLst, param.parameterSegmentationFilterFile);
 
-				// Features
-				AudioFeatureSet featureSet = MainTools.readFeatureSet(parameter, clusterSet);
+                // Features
+                FeatureSet features = MainTools.readFeatureSet(param, clusters);
 
-				// Models
-				GMMArrayList gmmList = MainTools.readGMMContainer(parameter);
+                // Models
+                ArrayList<GMM> gmmVect = MainTools.readGMMContainer(param);
 
-				ClusterSet clusterSetResult = make(featureSet, clusterSet, filterClusterSet, gmmList, parameter);
-				// Seg outPut
-				MainTools.writeClusterSet(parameter, clusterSetResult, false);
-			}
-		} catch (DiarizationException e) {
-			logger.log(Level.SEVERE, "", e);
-			e.printStackTrace();
-		}
-	}
+                ClusterSet clustersRes = make(features, clusters, fltClusters, gmmVect, param);
+                // Seg outPut
+                MainTools.writeClusterSet(param, clustersRes, false);
+            }
+        } catch (DiarizationException e) {
+            System.out.println("error \t exception " + e.getMessage());
+        }
+    }
 
-	/**
-	 * Info.
-	 * 
-	 * @param parameter the parameter
-	 * @param program the program
-	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws IllegalAccessException the illegal access exception
-	 * @throws InvocationTargetException the invocation target exception
-	 */
-	public static void info(Parameter parameter, String program) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-		if (parameter.help) {
-			logger.config(parameter.getSeparator2());
-			logger.config("Program name = " + program);
-			logger.config(parameter.getSeparator());
-			parameter.logShow();
+    public static void info(Parameter param, String prog) {
+        if (param.help) {
+            param.printSeparator2();
+            System.out.println("info[program] \t name = " + prog);
+            param.printSeparator();
+            param.printShow();
 
-			parameter.getParameterInputFeature().logAll();
-			logger.config(parameter.getSeparator());
-			parameter.getParameterSegmentationInputFile().logAll();
-			parameter.getParameterSegmentationFilterFile().logAll(); // sInFltMask
-			parameter.getParameterSegmentationOutputFile().logAll();
-			logger.config(parameter.getSeparator());
-			parameter.getParameterModelSetInputFile().logAll(); // tInMask
-			parameter.getParameterTopGaussian().logTopGaussian(); // sTop
-			logger.config(parameter.getSeparator());
-			parameter.getParameterEM().logAll(); // emCtl
-			parameter.getParameterMAP().logAll(); // mapCtrl
-			parameter.getParameterVarianceControl().logAll(); // varCtrl
-			logger.config(parameter.getSeparator());
-			parameter.getParameterDecoder().logAll();
-		}
-	}
+            param.parameterInputFeature.print();
+            param.printSeparator();
+            param.parameterSegmentationInputFile.print();
+            param.parameterSegmentationFilterFile.print(); // sInFltMask
+            param.parameterSegmentationOutputFile.print();
+            param.printSeparator();
+            param.parameterModelSetInputFile.printMask(); // tInMask
+            param.parameterTopGaussian.printTopGaussian(); // sTop
+            param.printSeparator();
+            param.parameterEM.print(); // emCtl
+            param.parameterMAP.print(); // mapCtrl
+            param.parameterVarianceControl.printVarianceControl(); // varCtrl
+            param.printSeparator();
+            param.parameterDecoder.print();
+        }
+    }
 }

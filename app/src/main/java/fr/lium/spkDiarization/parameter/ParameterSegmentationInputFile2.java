@@ -1,30 +1,35 @@
 package fr.lium.spkDiarization.parameter;
 
-/**
- * The Class ParameterSegmentationInputFile2.
- */
-public class ParameterSegmentationInputFile2 extends ParameterSegmentationFile implements Cloneable {
+import java.util.ArrayList;
 
-	/**
-	 * Instantiates a new parameter segmentation input file2.
-	 * 
-	 * @param parameter the parameter
-	 */
-	public ParameterSegmentationInputFile2(Parameter parameter) {
-		super(parameter);
-		type = "Input2";
-		addOption(new LongOptWithAction("s" + type + "Mask", new ActionMask(), ""));
-		addOption(new LongOptWithAction("s" + type + "Format", new ActionFormatEncoding(), ""));
-		addOption(new LongOptWithAction("s" + type + "Rate", new ActionRate(), ""));
-	}
+import gnu.getopt.LongOpt;
 
-	/*
-	 * (non-Javadoc)
-	 * @see fr.lium.spkDiarization.parameter.ParameterSegmentationFile#clone()
-	 */
-	@Override
-	protected ParameterSegmentationInputFile2 clone() throws CloneNotSupportedException {
-		return (ParameterSegmentationInputFile2) super.clone();
-	}
+public class ParameterSegmentationInputFile2 extends ParameterSegmentationFile {
+    public static int ReferenceMask = -1;
+    public static int ReferenceEncodingFormat = -1;
+
+    public ParameterSegmentationInputFile2(ArrayList<LongOpt> list, Parameter param) {
+        super();
+        type = "Input2";
+        ReferenceMask = param.getNextOptionIndex();
+        ReferenceEncodingFormat = param.getNextOptionIndex();
+        addOptions(list);
+    }
+
+    public boolean readParam(int option, String optarg) {
+        if (option == ReferenceMask) {
+            setMask(optarg);
+            return true;
+        } else if (option == ReferenceEncodingFormat) {
+            setFormatEncoding(optarg);
+            return true;
+        }
+        return false;
+    }
+
+    public void addOptions(ArrayList<LongOpt> list) {
+        list.add(new LongOpt("s" + type + "Mask", 1, null, ReferenceMask));
+        list.add(new LongOpt("s" + type + "Format", 1, null, ReferenceEncodingFormat));
+    }
 
 }
