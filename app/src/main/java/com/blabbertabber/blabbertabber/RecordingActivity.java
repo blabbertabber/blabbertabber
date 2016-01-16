@@ -16,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -88,27 +87,27 @@ public class RecordingActivity extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.v(TAG, "onReceive():  received Intent: " + intent);
-                if (intent.getAction().equals(Recorder.RECORD_RESULT)) {
+                if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
                     /// TODO: remove speaker id, and change data passed to just an int.  No array needed.
-                    int[] speakerinfo = intent.getIntArrayExtra(Recorder.RECORD_MESSAGE);
+                    int[] speakerinfo = intent.getIntArrayExtra(AudioEventProcessor.RECORD_MESSAGE);
                     int speaker = speakerinfo[0], volume = speakerinfo[1];
                     // do something here.
                     Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
                     updateSpeakerVolumeView(speaker, volume);
-                } else if (Objects.equals(intent.getAction(), Recorder.RECORD_STATUS)) {
+                } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
-                    int status = intent.getIntExtra(Recorder.RECORD_STATUS_MESSAGE, Recorder.UNKNOWN_STATUS);
+                    int status = intent.getIntExtra(AudioEventProcessor.RECORD_STATUS_MESSAGE, AudioEventProcessor.UNKNOWN_STATUS);
                     String statusMsg = "onReceive():  The microphone has a status of " + status;
                     Log.wtf(TAG, statusMsg);
                     String toastMessage;
                     switch (status) {
-                        case Recorder.MICROPHONE_UNAVAILABLE:
+                        case AudioEventProcessor.MICROPHONE_UNAVAILABLE:
                             toastMessage = "Problem accessing microphone. Terminate app using microphone (e.g. Phone, Hangouts) and try again.";
                             break;
-                        case Recorder.CANT_WRITE_MEETING_FILE:
+                        case AudioEventProcessor.CANT_WRITE_MEETING_FILE:
                             toastMessage = "Error recording the meeting to disk; make sure you've closed all BlabberTabber instances and try again.";
                             break;
-                        case Recorder.UNKNOWN_STATUS:
+                        case AudioEventProcessor.UNKNOWN_STATUS:
                         default:
                             toastMessage = "I have no idea what went wrong; restart BlabberTabber and see if that fixes it";
                     }
@@ -189,10 +188,10 @@ public class RecordingActivity extends Activity {
             Log.wtf(TAG, "bindService() failed, mBound: " + mBound);
         }
         LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
-                new IntentFilter(Recorder.RECORD_RESULT)
+                new IntentFilter(AudioEventProcessor.RECORD_RESULT)
         );
         LocalBroadcastManager.getInstance(this).registerReceiver((mReceiver),
-                new IntentFilter(Recorder.RECORD_STATUS)
+                new IntentFilter(AudioEventProcessor.RECORD_STATUS)
         );
     }
 

@@ -24,7 +24,8 @@ public class RecordingService extends Service {
     private final IBinder mBinder = new RecordingBinder();
     private Thread mThreadRecorder;
     // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-    private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
+    ////private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
+    private AudioEventProcessor mAudioEventProcessor = new AudioEventProcessor(this);
 
     public RecordingService() {
     }
@@ -35,7 +36,7 @@ public class RecordingService extends Service {
         // make sure we're not spawning another thread if we already have one. We're being
         // overly cautious; in spite of frequent testing, this if-block always succeeds.
         if (mThreadRecorder == null || !mThreadRecorder.isAlive()) {
-            mThreadRecorder = new Thread(mRecorder);
+            mThreadRecorder = new Thread(mAudioEventProcessor);
             mThreadRecorder.start();
         }
     }
