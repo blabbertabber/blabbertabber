@@ -53,6 +53,10 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         short buffer[] = new short[NUM_FRAMES];
         int readSize = recorder.read(buffer, 0, NUM_FRAMES);
         short maxAmplitude = 0;
+
+        if (!RecordingService.recording) {
+            return;
+        }
         // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
         if (readSize > 0) {
             byte[] rawAudio = new byte[readSize * 2];
