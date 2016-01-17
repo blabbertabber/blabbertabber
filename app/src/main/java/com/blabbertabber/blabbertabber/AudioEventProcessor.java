@@ -17,13 +17,15 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by brendancunnie on 1/16/16.
  */
 public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositionUpdateListener {
-    static final public String RECORD_STATUS = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS";
-    static final public String RECORD_RESULT = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_RESULT";
-    static final public String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS_MESSAGE";
-    static final public String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_MESSAGE";
-    static final public int UNKNOWN_STATUS = -1;
-    static final public int MICROPHONE_UNAVAILABLE = -2;
-    static final public int CANT_WRITE_MEETING_FILE = -3;
+    public static final String RECORD_STATUS = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS";
+    public static final String RECORD_RESULT = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_RESULT";
+    public static final String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS_MESSAGE";
+    public static final String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_MESSAGE";
+    public static final int UNKNOWN_STATUS = -1;
+    public static final int MICROPHONE_UNAVAILABLE = -2;
+    public static final int CANT_WRITE_MEETING_FILE = -3;
+    public static final String RECORDER_FILENAME_NO_EXTENSION = "meeting";
+    public static final String RECORDER_RAW_FILENAME = RECORDER_FILENAME_NO_EXTENSION + ".raw";
     private static final String TAG = "AudioEventProcessor";
     private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     // http://developer.android.com/reference/android/media/AudioRecord.html
@@ -32,10 +34,10 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     private static final int RECORDER_SAMPLE_RATE_IN_HZ = 16_000;
     private static final int RECORDER_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
-    private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5; // five periods/sec
-    // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
-    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
     private static final int NUM_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5;  // 5 updates/second
+    // size of the buffer array needs to be NUM_FRAMES * 2;
+    // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
+    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
     private static String rawFilePathName;
     public int numSpeakers;
     private Context context;
@@ -82,9 +84,6 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)   readSize: " + readSize);
         short maxAmplitude = 0;
 
-        if (!RecordingService.recording) {
-            return;
-        }
         // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
         if (readSize > 0) {
             byte[] rawAudio = new byte[readSize * 2];
@@ -111,6 +110,12 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
             }
         } else {
             Log.i(TAG, "onPeriodicNotification() NEGATIVE readsize: " + readSize);
+            switch (readSize) {
+                case AudioRecord.ERROR_BAD_VALUE:
+                    Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_BAD_VALUE.  Denotes a failure due to the use of an invalid value.");
+                    break;
+            }
+
         }
         // send max volume to RecordingActivity
         /// Refactor speakerId
@@ -176,7 +181,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
 
         audioRecord.setRecordPositionUpdateListener(this);
-        int rc = audioRecord.setPositionNotificationPeriod(3200);
+        int rc = audioRecord.setPositionNotificationPeriod(NUM_FRAMES);
         Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
         if (rc != AudioRecord.SUCCESS) {
             Log.wtf(TAG, "run()   audioRecord.setPositionNotificationPeriod(..) failed!  It returned " + rc);
@@ -184,7 +189,19 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
 
         audioRecord.startRecording();
 
+        boolean oldRecordingServiceRecording = RecordingService.recording;
+        Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
         while (true) {
+            if (RecordingService.recording != oldRecordingServiceRecording) {
+                Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
+                if (!RecordingService.recording) {
+                    // We're not recording, stop
+                    audioRecord.stop();
+                } else {
+                    audioRecord.startRecording();
+                }
+                oldRecordingServiceRecording = RecordingService.recording;
+            }
 
             try {
                 Thread.currentThread().sleep(200);
