@@ -352,13 +352,13 @@ public class RecordingActivity extends Activity {
     private class diarize extends AsyncTask<Void, Integer, Void> {
         int DONE_LINEARSEG = 50;
         int DONE_LINEARCLUST = 100;
-        String basePathName = getApplicationContext().getFilesDir() + AudioRecordWrapper.RECORDER_FILENAME_NO_EXTENSION;
+        String basePathName = getApplicationContext().getFilesDir() + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
 
         String[] linearSegParams =
                 {
-                        "--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".uem.seg", "--sOutputMask=" + basePathName + ".s.seg", AudioRecordWrapper.RECORDER_RAW_FILENAME
+                        "--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".uem.seg", "--sOutputMask=" + basePathName + ".s.seg", AudioEventProcessor.RECORDER_RAW_FILENAME
                 };
-        String[] linearClustParams = {"--trace", "--help", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".s.seg", "--sOutputMask=" + basePathName + ".l.seg", "--cMethod=l", "--cThr=2", AudioRecordWrapper.RECORDER_RAW_FILENAME};
+        String[] linearClustParams = {"--trace", "--help", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".s.seg", "--sOutputMask=" + basePathName + ".l.seg", "--cMethod=l", "--cThr=2", AudioEventProcessor.RECORDER_RAW_FILENAME};
 
         @Override
         protected void onPreExecute() {
