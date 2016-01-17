@@ -81,23 +81,25 @@ public class AudioRecordWrapper {
         return audioRecord;
     }
 
+/*
     public static String getRawFilePathName() {
         Log.i(TAG, "getRawFilePathName(): '" + rawFilePathName + "'");
         return rawFilePathName;
     }
+*/
 
     public synchronized static void startRecording(Context context) {
         getAudioRecord(context).startRecording();
         Log.i(TAG, "startRecording()");
     }
 
-    public synchronized static void newMeetingFile() {
-        Log.i(TAG, "newMeetingFile()");
-        File rawFile = new File(getRawFilePathName());
-        if (rawFile.exists()) {
-            rawFile.delete();
-        }
-    }
+//    public synchronized static void newMeetingFile() {
+//        Log.i(TAG, "newMeetingFile()");
+//        File rawFile = new File(getRawFilePathName());
+//        if (rawFile.exists()) {
+//            rawFile.delete();
+//        }
+//    }
 
     /**
      * We stop the recording, but we do NOT close the file in the event that the user

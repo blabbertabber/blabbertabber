@@ -268,9 +268,10 @@ public class RecordingActivity extends Activity {
         // Transform the raw file into a .wav file
         WavFile wavFile = null;
         try {
-            wavFile = WavFile.of(this, new File(AudioRecordWrapper.getRawFilePathName()));
+            Log.i(TAG, "summary()   AudioRecordWrapper.getRawFilePathName(): " + AudioEventProcessor.getRawFilePathName());
+            wavFile = WavFile.of(this, new File(AudioEventProcessor.getRawFilePathName()));
         } catch (IOException e) {
-            String errorTxt = "Whoops! couldn't convert " + AudioRecordWrapper.getRawFilePathName()
+            String errorTxt = "Whoops! couldn't convert " + AudioEventProcessor.getRawFilePathName()
                     + ": " + e.getMessage();
             Log.wtf(TAG, errorTxt);
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
@@ -280,60 +281,6 @@ public class RecordingActivity extends Activity {
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
     }
-
-
-    private class diarize extends AsyncTask<Void, Integer, Void> {
-        int DONE_LINEARSEG = 50;
-        int DONE_LINEARCLUST = 100;
-        String basePathName = getApplicationContext().getFilesDir() + AudioRecordWrapper.RECORDER_FILENAME_NO_EXTENSION;
-
-        String[] linearSegParams =
-                {
-                        "--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".uem.seg", "--sOutputMask=" + basePathName + ".s.seg", AudioRecordWrapper.RECORDER_RAW_FILENAME
-                };
-        String[] linearClustParams = {"--trace", "--help", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".s.seg", "--sOutputMask=" + basePathName + ".l.seg", "--cMethod=l", "--cThr=2", AudioRecordWrapper.RECORDER_RAW_FILENAME};
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-//            showDialog(DRZ_DIALOG);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                MSeg.main(linearSegParams);
-            } catch (DiarizationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            setProgress(DONE_LINEARSEG);
-
-            try {
-                MClust.main(linearClustParams);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            setProgress(DONE_LINEARCLUST);
-
-            return null;
-        }
-
-//        @Override
-//        protected void onPostExecute(Void unused) {
-//            dismissDialog(DRZ_DIALOG);
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Integer... value) {
-//            dProgressDialog.setProgress(value[0]);
-//        }
-    }
-
 
     private void stopPreviousSpeaker() {
         Log.i(TAG, "stopPreviousSpeaker()");
@@ -400,6 +347,58 @@ public class RecordingActivity extends Activity {
             }
         }
         Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
+    }
+
+    private class diarize extends AsyncTask<Void, Integer, Void> {
+        int DONE_LINEARSEG = 50;
+        int DONE_LINEARCLUST = 100;
+        String basePathName = getApplicationContext().getFilesDir() + AudioRecordWrapper.RECORDER_FILENAME_NO_EXTENSION;
+
+        String[] linearSegParams =
+                {
+                        "--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".uem.seg", "--sOutputMask=" + basePathName + ".s.seg", AudioRecordWrapper.RECORDER_RAW_FILENAME
+                };
+        String[] linearClustParams = {"--trace", "--help", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".s.seg", "--sOutputMask=" + basePathName + ".l.seg", "--cMethod=l", "--cThr=2", AudioRecordWrapper.RECORDER_RAW_FILENAME};
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+//            showDialog(DRZ_DIALOG);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                MSeg.main(linearSegParams);
+            } catch (DiarizationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            setProgress(DONE_LINEARSEG);
+
+            try {
+                MClust.main(linearClustParams);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            setProgress(DONE_LINEARCLUST);
+
+            return null;
+        }
+
+//        @Override
+//        protected void onPostExecute(Void unused) {
+//            dismissDialog(DRZ_DIALOG);
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... value) {
+//            dProgressDialog.setProgress(value[0]);
+//        }
     }
 
 /*    private class diarize extends AsyncTask<Void, Integer, Void> {

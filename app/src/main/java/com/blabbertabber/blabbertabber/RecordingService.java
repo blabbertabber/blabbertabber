@@ -3,7 +3,6 @@ package com.blabbertabber.blabbertabber;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -25,14 +24,16 @@ public class RecordingService extends Service {
     private Thread mThreadRecorder;
     // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
     ////private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
-    private AudioEventProcessor mAudioEventProcessor = new AudioEventProcessor(this);
+    private AudioEventProcessor mAudioEventProcessor;
 
     public RecordingService() {
+        Log.i(TAG, "RecordingService()   this: " + this);
     }
 
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
+        mAudioEventProcessor = new AudioEventProcessor(this);
         // make sure we're not spawning another thread if we already have one. We're being
         // overly cautious; in spite of frequent testing, this if-block always succeeds.
         if (mThreadRecorder == null || !mThreadRecorder.isAlive()) {
