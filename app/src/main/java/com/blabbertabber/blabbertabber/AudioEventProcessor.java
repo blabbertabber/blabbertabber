@@ -2,6 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -24,22 +25,35 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     static final public int MICROPHONE_UNAVAILABLE = -2;
     static final public int CANT_WRITE_MEETING_FILE = -3;
     private static final String TAG = "AudioEventProcessor";
-    private static final int NUM_FRAMES = 16000 / 10;  // 10 updates/second
+    private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
+    // http://developer.android.com/reference/android/media/AudioRecord.html
+    // "44100Hz is currently the only rate that is guaranteed to work on all devices"
+    // 16k samples/sec * 2 bytes/sample = 32kB/sec == 115.2 MB/hour
+    private static final int RECORDER_SAMPLE_RATE_IN_HZ = 16_000;
+    private static final int RECORDER_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
+    private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int PERIOD_IN_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5; // five periods/sec
+    // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
+    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = PERIOD_IN_FRAMES * 1 * 2;
+    private static final int NUM_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5;  // 5 updates/second
+    private static String rawFilePathName;
+    public int numSpeakers;
     private Context context;
     private OutputStream rawFileOutputStream;
     private LocalBroadcastManager mBroadcastManager;
     /// TODO remove these variables.
     private int speaker;
     private long nextSpeakerChange;
-    public int numSpeakers;
 
     public AudioEventProcessor(Context context) {
+        Log.i(TAG, "AudioEventProcessor(Context context)   context: " + context);
         this.context = context;
         File sharedDir = context.getFilesDir();
+        rawFilePathName = sharedDir.getAbsolutePath() + "/" + "meeting.raw";
         try {
-            rawFileOutputStream = context.openFileOutput(sharedDir.getAbsolutePath() + "/meeting.raw", Context.MODE_WORLD_WRITEABLE);
+            rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_WORLD_WRITEABLE);
         } catch (FileNotFoundException e) {
-            Log.wtf(TAG, "FileNotFoundException thrown on file " + sharedDir.getAbsolutePath() + "/meeting.raw");
+            Log.wtf(TAG, "AudioEventProcessor()   context.openFileOutput(\"meeting.raw\", Context.MODE_WORLD_WRITEABLE) threw FileNotFoundException.");
             e.printStackTrace();
         }
         mBroadcastManager = LocalBroadcastManager.getInstance(context);
@@ -48,10 +62,24 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         numSpeakers = 1;
     }
 
+    public static String getRawFilePathName() {
+        return rawFilePathName;
+    }
+
+    public synchronized static void newMeetingFile() {
+        Log.i(TAG, "newMeetingFile()");
+        File rawFile = new File(getRawFilePathName());
+        if (rawFile.exists()) {
+            rawFile.delete();
+        }
+    }
+
     @Override
     public void onPeriodicNotification(AudioRecord recorder) {
+        Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)");
         short buffer[] = new short[NUM_FRAMES];
         int readSize = recorder.read(buffer, 0, NUM_FRAMES);
+        Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)   readSize: " + readSize);
         short maxAmplitude = 0;
 
         if (!RecordingService.recording) {
@@ -107,7 +135,6 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         mBroadcastManager.sendBroadcast(intent);
     }
 
-
     // Who is currently speaking?
     /// TODO: Remove this method.
     public int getSpeakerId() {
@@ -144,10 +171,27 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     @Override
     public void run() {
         Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
-        AudioRecord ar = new AudioRecord();
-        ar.setRecordPositionUpdateListener(audioEventProcessor);
-        ar.setPositionNotificationPeriod(MARKER_IN_FRAMES);
 
+        AudioRecord audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
 
+        audioRecord.setRecordPositionUpdateListener(this);
+        int rc = audioRecord.setPositionNotificationPeriod(3200);
+        Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
+        if (rc != AudioRecord.SUCCESS) {
+            Log.wtf(TAG, "run()   audioRecord.setPositionNotificationPeriod(..) failed!  It returned " + rc);
+        }
+
+        audioRecord.startRecording();
+
+        while (true) {
+
+            try {
+                Thread.currentThread().sleep(200);
+            } catch (InterruptedException e) {
+                Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
+                e.printStackTrace();
+            }
+        }
     }
 }

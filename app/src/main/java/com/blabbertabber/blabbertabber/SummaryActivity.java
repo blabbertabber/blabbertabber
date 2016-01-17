@@ -106,7 +106,7 @@ public class SummaryActivity extends Activity {
      */
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
-        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioRecordWrapper.getRawFilePathName());
+        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioEventProcessor.getRawFilePathName());
         File wavFile = new File(wavFilePath);
         Uri wavFileURI = Uri.fromFile(wavFile);
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -121,7 +121,7 @@ public class SummaryActivity extends Activity {
             }
         } else {
             Log.e(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
-            Log.wtf(TAG, "The raw file's path name is " + AudioRecordWrapper.getRawFilePathName());
+            Log.wtf(TAG, "The raw file's path name is " + AudioEventProcessor.getRawFilePathName());
             Toast.makeText(getApplicationContext(), "Can't play meeting file " + wavFilePath + "; it doesn't exist.", Toast.LENGTH_LONG).show();
         }
     }
@@ -137,7 +137,7 @@ public class SummaryActivity extends Activity {
     public void newMeeting(View v) {
         TheSpeakers.getInstance().reset();
         // clear out the old, raw-PCM file
-        AudioRecordWrapper.newMeetingFile();
+        AudioEventProcessor.newMeetingFile();
         Intent i = new Intent(this, RecordingActivity.class);
         startActivity(i);
     }
