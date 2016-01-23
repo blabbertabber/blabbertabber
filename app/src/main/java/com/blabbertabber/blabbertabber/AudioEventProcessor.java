@@ -38,6 +38,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     // size of the buffer array needs to be NUM_FRAMES * 2;
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
+    private static AudioRecord audioRecord;
     private static String rawFilePathName;
     public int numSpeakers;
     private Context context;
@@ -76,6 +77,19 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         }
     }
 
+    private OutputStream getRawFileOutputStream() {
+        if (rawFileOutputStream == null) {
+            // open rawFileOutputStream
+            try {
+                rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_WORLD_WRITEABLE);
+            } catch (FileNotFoundException e) {
+                Log.wtf(TAG, "AudioEventProcessor()   context.openFileOutput(\"meeting.raw\", Context.MODE_WORLD_WRITEABLE) threw FileNotFoundException.");
+                e.printStackTrace();
+            }
+        }
+        return rawFileOutputStream;
+    }
+
     @Override
     public void onPeriodicNotification(AudioRecord recorder) {
         Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)");
@@ -104,7 +118,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
             Log.v(TAG, "onPeriodicNotification() readsize: " + readSize + " maxAmplitude " + maxAmplitude);
             // write data out to raw file
             try {
-                rawFileOutputStream.write(rawAudio, 0, readSize * 2);
+                getRawFileOutputStream().write(rawAudio, 0, readSize * 2);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -177,9 +191,14 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     public void run() {
         Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
 
-        AudioRecord audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
-                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
+        if (audioRecord != null) {
+            audioRecord.stop();
+            audioRecord.release();
+            audioRecord = null;
+        }
 
+        audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
         audioRecord.setRecordPositionUpdateListener(this);
         int rc = audioRecord.setPositionNotificationPeriod(NUM_FRAMES);
         Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
@@ -192,12 +211,23 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         boolean oldRecordingServiceRecording = RecordingService.recording;
         Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
         while (true) {
+            if (RecordingService.reset) {
+                // close and delete the meeting.wav file.
+                try {
+                    getRawFileOutputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                rawFileOutputStream = null;
+                RecordingService.reset = false;
+            }
             if (RecordingService.recording != oldRecordingServiceRecording) {
                 Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
                 if (!RecordingService.recording) {
                     // We're not recording, stop
                     audioRecord.stop();
                 } else {
+                    Log.i(TAG, "run()   About to call audioRecord.startRecording()");
                     audioRecord.startRecording();
                 }
                 oldRecordingServiceRecording = RecordingService.recording;
