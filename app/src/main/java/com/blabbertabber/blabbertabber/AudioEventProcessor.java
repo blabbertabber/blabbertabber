@@ -38,7 +38,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     // size of the buffer array needs to be NUM_FRAMES * 2;
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
-    private static AudioRecord audioRecord;
+    private static AudioRecordAbstract audioRecord;
     private static String rawFilePathName;
     public int numSpeakers;
     private Context context;
@@ -187,6 +187,9 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         return p > ThreadLocalRandom.current().nextDouble();
     }
 
+    private AudioRecordAbstract createAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
+    }
+
     @Override
     public void run() {
         Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
@@ -197,9 +200,11 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
             audioRecord = null;
         }
 
-        audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+//        audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+//                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
+        audioRecord = createAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
-        audioRecord.setRecordPositionUpdateListener(this);
+                audioRecord.setRecordPositionUpdateListener(this);
         int rc = audioRecord.setPositionNotificationPeriod(NUM_FRAMES);
         Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
         if (rc != AudioRecord.SUCCESS) {
