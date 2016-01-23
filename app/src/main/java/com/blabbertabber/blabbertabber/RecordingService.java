@@ -23,7 +23,7 @@ public class RecordingService extends Service {
     private final IBinder mBinder = new RecordingBinder();
     private Thread mThreadRecorder;
     // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-    ////private Recorder mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
+    ////private AudioRecordAbstract mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
     private AudioEventProcessor mAudioEventProcessor;
 
     public RecordingService() {
