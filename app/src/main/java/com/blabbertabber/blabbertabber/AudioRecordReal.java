@@ -13,10 +13,7 @@ public class AudioRecordReal extends AudioRecordAbstract {
     private static int recorderAudioFormat;
     private static int recorderBufferSizeInBytes;
 
-    private AudioRecordReal() {}
-
-    private synchronized AudioRecord buildAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
-        return new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+    private AudioRecordReal() {
     }
 
     public AudioRecordReal(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
@@ -26,6 +23,10 @@ public class AudioRecordReal extends AudioRecordAbstract {
         this.recorderAudioFormat = recorderAudioFormat;
         this.recorderBufferSizeInBytes = recorderBufferSizeInBytes;
         audioRecord = buildAudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+    }
+
+    private synchronized AudioRecord buildAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
+        return new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
     }
 
     @Override
