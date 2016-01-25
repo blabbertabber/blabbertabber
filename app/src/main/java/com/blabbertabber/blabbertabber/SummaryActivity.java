@@ -163,4 +163,10 @@ public class SummaryActivity extends Activity {
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
+
+    public void launchAcknowledgementsActivity(MenuItem menuItem) {
+        Log.i(TAG, "launchAcknowledgementsActivity()");
+        Intent intent = new Intent(this, AcknowledgementsActivity.class);
+        startActivity(intent);
+    }
 }
