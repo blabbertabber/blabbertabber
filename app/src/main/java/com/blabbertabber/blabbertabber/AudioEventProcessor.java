@@ -141,7 +141,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         Log.i(TAG, "onPeriodicNotificationEmulator()");
         // send max volume to RecordingActivity
         /// Refactor speakerId
-        sendVolume(getSpeakerId(), ThreadLocalRandom.current().nextInt(0,32768));
+        sendVolume(getSpeakerId(), ThreadLocalRandom.current().nextInt(0, 32768));
     }
 
     @Override

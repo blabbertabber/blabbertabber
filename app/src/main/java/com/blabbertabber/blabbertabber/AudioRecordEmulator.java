@@ -7,8 +7,8 @@ import android.util.Log;
  */
 public class AudioRecordEmulator extends AudioRecordAbstract {
     static final String TAG = "AudioRecordEmulator";
+    private Thread notifier;
     private AudioEventProcessor audioEventProcessor;
-    Thread notifier;
 
     public AudioRecordEmulator(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
 
