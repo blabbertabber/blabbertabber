@@ -31,8 +31,22 @@
     <string name="speaker_duration_title">Duration</string>
     <string name="play_meeting_wav">Replay Meeting</string>
     <string name="launch_main_activity">Show Splash Screen</string>
+    <string name="launch_acknowledgements_activity">Acknowledgements</string>
     <string name="drawer_open">Open Sesame!</string>
     <string name="drawer_close">Close Sesame!</string>
     <string name="drawer_description">Beautiful Drawers!</string>
     <string name="drawer_title">Advanced</string>
+    <string name="title_activity_acknowledgements">AcknowledgementsActivity</string>
+
+    <string name="acknowledgements_text" formatted="false">BlabberTabber was written
+        by Brendan Cunnie and Brian Cunnie.\n
+        \nCharlotte Cunningham designed the UI and created the graphics.\n
+        \nDaniel Di Matteo wrote the first android diarization program. His code
+        helped us tremendously, and uses LIUM.\n
+        \nLIUM is a Java-based open source toolkit for diarization, written by
+        Sylvain Meignier, Gregor Dupuy, Paul Gay, and others. It uses Sphinx.\n
+        \nCMU Sphinx is open source toolkit for speech recognition.\n
+        \nGerald Friedland, Ph.D. and Ekaterina Gonina, Ph.D. advised us and
+        published the research papers which inspired us to write BlabberTabber.
+        </string>
 </resources>
