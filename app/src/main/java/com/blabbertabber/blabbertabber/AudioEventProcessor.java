@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -136,6 +137,13 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         sendVolume(getSpeakerId(), maxAmplitude);
     }
 
+    public void onPeriodicNotificationEmulator() {
+        Log.i(TAG, "onPeriodicNotificationEmulator()");
+        // send max volume to RecordingActivity
+        /// Refactor speakerId
+        sendVolume(getSpeakerId(), ThreadLocalRandom.current().nextInt(0,32768));
+    }
+
     @Override
     public void onMarkerReached(AudioRecord recorder) {
     }
@@ -188,6 +196,10 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     }
 
     private AudioRecordAbstract createAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
+        // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
+        return "goldfish".equals(Build.HARDWARE) ?
+                new AudioRecordEmulator(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes) :
+                new AudioRecordReal(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
     }
 
     @Override
@@ -204,7 +216,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
 //                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
         audioRecord = createAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
-                audioRecord.setRecordPositionUpdateListener(this);
+        audioRecord.setRecordPositionUpdateListener(this);
         int rc = audioRecord.setPositionNotificationPeriod(NUM_FRAMES);
         Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
         if (rc != AudioRecord.SUCCESS) {
