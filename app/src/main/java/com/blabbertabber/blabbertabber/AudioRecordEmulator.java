@@ -36,6 +36,8 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
 
     @Override
     public void startRecording() {
+        Log.i(TAG, "startRecording()   About to creat and start thread.");
+
         /// start new thread
         notifier = new Thread() {
             public void run() {
@@ -51,5 +53,6 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
                 }
             }
         };
+        notifier.start();
     }
 }
