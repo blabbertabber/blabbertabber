@@ -10,6 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/BlabberTabberTheme">
+
         <!-- http://stackoverflow.com/questions/1898886/removing-an-activity-from-the-history-stack -->
         <activity
             android:name=".MainActivity"
@@ -27,6 +28,10 @@
             android:name=".RecordingService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name=".AcknowledgementsActivity"
+            android:label="@string/title_activity_acknowledgements" />
     </application>
 
 </manifest>
