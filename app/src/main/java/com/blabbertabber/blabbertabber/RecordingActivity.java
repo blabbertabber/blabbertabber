@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 import fr.lium.spkDiarization.lib.DiarizationException;
@@ -38,6 +40,7 @@ import fr.lium.spkDiarization.programs.MSeg;
  * TODO: reflect volume in animation somehow.
  */
 public class RecordingActivity extends Activity {
+    public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final AnimatorSet NULL_ANIMATOR_SET = new AnimatorSet();
@@ -277,6 +280,8 @@ public class RecordingActivity extends Activity {
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+        // Copy Sphinx's config file into place
+        copySphinxConfigFileIntoPlace();
 
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
@@ -317,6 +322,18 @@ public class RecordingActivity extends Activity {
         AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
         ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
         ephemeralAnimatorSet.start();
+    }
+
+    private void copySphinxConfigFileIntoPlace() {
+        String outputFilePathname = getFilesDir() + "/" + SPHINX_CONFIG;
+        try {
+            InputStream inputStream = getAssets().open(SPHINX_CONFIG, AssetManager.ACCESS_BUFFER);
+            Helper.copyInputFileStreamToFilesystem(inputStream, outputFilePathname);
+        } catch (IOException e) {
+            Log.wtf(TAG, "copySphinxConfigFileIntoPlace() couldn't copy file");
+            Toast.makeText(this, "Configuration didn't succeed, expect no results", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
