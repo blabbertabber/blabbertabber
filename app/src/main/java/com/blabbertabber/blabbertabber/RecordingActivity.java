@@ -24,11 +24,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.Objects;
 
+import edu.cmu.sphinx.frontend.Data;
+import edu.cmu.sphinx.frontend.DataEndSignal;
+import edu.cmu.sphinx.frontend.DoubleData;
+import edu.cmu.sphinx.frontend.FloatData;
+import edu.cmu.sphinx.frontend.FrontEnd;
+import edu.cmu.sphinx.frontend.util.StreamDataSource;
+import edu.cmu.sphinx.util.props.ConfigurationManager;
 import fr.lium.spkDiarization.lib.DiarizationException;
 import fr.lium.spkDiarization.programs.MClust;
 import fr.lium.spkDiarization.programs.MSeg;
@@ -282,6 +295,98 @@ public class RecordingActivity extends Activity {
         }
         // Copy Sphinx's config file into place
         copySphinxConfigFileIntoPlace();
+
+        // Create config manager
+        ConfigurationManager cm = new ConfigurationManager(getFilesDir() + "/" + SPHINX_CONFIG);
+
+        FrontEnd frontEnd = (FrontEnd) cm.lookup("mfcFrontEnd");
+        StreamDataSource audioSource = (StreamDataSource) cm.lookup("streamDataSource");
+
+        String inputAudioFile = getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME;
+
+        try {
+            audioSource.setInputStream(new FileInputStream(inputAudioFile), "audio");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        LinkedList<float[]> allFeatures = new LinkedList<float[]>();
+        int featureLength = -1;
+
+        //get features from audio
+        try {
+            assert (allFeatures != null);
+            Data feature = frontEnd.getData();
+            while (!(feature instanceof DataEndSignal)) {
+                if (feature instanceof DoubleData) {
+                    double[] featureData = ((DoubleData) feature).getValues();
+                    if (featureLength < 0) {
+                        featureLength = featureData.length;
+                        //logger.info("Feature length: " + featureLength);
+                    }
+                    float[] convertedData = new float[featureData.length];
+                    for (int i = 0; i < featureData.length; i++) {
+                        convertedData[i] = (float) featureData[i];
+                    }
+                    allFeatures.add(convertedData);
+                } else if (feature instanceof FloatData) {
+                    float[] featureData = ((FloatData) feature).getValues();
+                    if (featureLength < 0) {
+                        featureLength = featureData.length;
+                        //logger.info("Feature length: " + featureLength);
+                    }
+                    allFeatures.add(featureData);
+                }
+                feature = frontEnd.getData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //write the MFCC features to binary file
+        DataOutputStream outStream = null;
+        try {
+            outStream = new DataOutputStream(new FileOutputStream(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc"));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try {
+            outStream.writeInt(allFeatures.size() * featureLength);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        for (float[] feature : allFeatures) {
+            for (float val : feature) {
+                try {
+                    outStream.writeFloat(val);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        try {
+            outStream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        //write initial segmentation file for LIUM_SpkDiarization
+        String uemSegment = String.format("test 1 0 %d U U U S0", allFeatures.size());
+        try {
+            FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc");
+            uemWriter.write(uemSegment);
+            uemWriter.flush();
+            uemWriter.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);
