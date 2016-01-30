@@ -2,6 +2,12 @@ package com.blabbertabber.blabbertabber;
 
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * Useful helper functions
  */
@@ -61,5 +67,22 @@ public class Helper {
             hms = String.format("%d", seconds);
         }
         return hms;
+    }
+
+    /**
+     * Copies a file from res/raw to destination (typically context.getFilesDir())
+     *
+     * @return boolean
+     */
+    public static void copyInputFileStreamToFilesystem(InputStream in, String outputFilePathName) throws IOException {
+        Log.i(TAG, "copyInputFileStreamToFilesystem() outputFilePathName: " + outputFilePathName);
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFilePathName));
+        byte[] buffer = new byte[4096];
+        int len = in.read(buffer);
+        while (len != -1) {
+            out.write(buffer, 0, len);
+            len = in.read(buffer);
+        }
+        out.close();
     }
 }
