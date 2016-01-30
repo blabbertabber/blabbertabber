@@ -282,7 +282,7 @@ public class RecordingActivity extends Activity {
     public void summary(View v) {
         Log.i(TAG, "summary()");
         // Transform the raw file into a .wav file
-        WavFile wavFile = null;
+        WavFile wavFile;
         try {
             Log.i(TAG, "summary()   AudioRecordWrapper.getRawFilePathName(): " + AudioEventProcessor.getRawFilePathName());
             wavFile = WavFile.of(this, new File(AudioEventProcessor.getRawFilePathName()));
@@ -384,6 +384,50 @@ public class RecordingActivity extends Activity {
             uemWriter.flush();
             uemWriter.close();
         } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String basePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
+        int DONE_LINEARSEG = 50;
+        int DONE_LINEARCLUST = 100;
+        String[] linearSegParams =
+                {
+                        "--trace",
+                        "--help",
+                        "--kind=FULL",
+                        "--sMethod=GLR",
+                        "--fInputMask=" + basePathName + ".mfc",
+                        "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
+                        "--sInputMask=" + basePathName + ".uem.seg",
+                        "--sOutputMask=" + basePathName + ".s.seg",
+                        AudioEventProcessor.RECORDER_RAW_FILENAME
+                };
+        String[] linearClustParams = {
+                "--trace",
+                "--help",
+                "--fInputMask=" + basePathName + ".mfc",
+                "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
+                "--sInputMask=" + basePathName + ".s.seg",
+                "--sOutputMask=" + basePathName + ".l.seg",
+                "--cMethod=l",
+                "--cThr=2",
+                AudioEventProcessor.RECORDER_RAW_FILENAME
+        };
+
+        try {
+            MSeg.main(linearSegParams);
+        } catch (DiarizationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        try {
+            MClust.main(linearClustParams);
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
