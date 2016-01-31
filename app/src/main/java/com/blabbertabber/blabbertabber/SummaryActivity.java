@@ -164,9 +164,35 @@ public class SummaryActivity extends Activity {
         startActivity(sendIntent);
     }
 
-    public void launchSpeakerStatsActivity(MenuItem menuItem) {
+    public void showMfcFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void showSegFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".seg";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void showUemSegFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void showSSegFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".s.seg";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void showLSegFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void launchSpeakerStatsActivity(String path) {
         Log.i(TAG, "launchSpeakerStatsActivity()");
         Intent intent = new Intent(this, SpeakerStatsActivity.class);
+        intent.putExtra("path", path);
         startActivity(intent);
     }
 
