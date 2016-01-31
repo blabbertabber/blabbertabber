@@ -32,6 +32,11 @@
     <string name="play_meeting_wav">Replay Meeting</string>
     <string name="launch_main_activity">Show Splash Screen</string>
     <string name="launch_speakerstats_activity">Speaker Statistics</string>
+    <string name="show_mfc_file">Show .mfc File</string>
+    <string name="show_seg_file">Show .seg File</string>
+    <string name="show_uem_seg_file">Show .uem.seg File</string>
+    <string name="show_s_seg_file">Show .s.seg File</string>
+    <string name="show_l_seg_file">Show .l.seg File</string>
     <string name="launch_acknowledgements_activity">Acknowledgements</string>
     <string name="drawer_open">Open Sesame!</string>
     <string name="drawer_close">Close Sesame!</string>
