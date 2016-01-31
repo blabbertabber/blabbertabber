@@ -10,9 +10,25 @@
             android:onClick="launchMainActivity"
             android:title="@string/launch_main_activity" />
         <item
+            android:id="@+id/show_mfc_file"
+            android:onClick="showMfcFile"
+            android:title="@string/show_mfc_file" />
+        <item
+            android:id="@+id/show_seg_file"
+            android:onClick="showSegFile"
+            android:title="@string/show_seg_file" />
+        <item
+            android:id="@+id/show_uem_seg_file"
+            android:onClick="showUemSegFile"
+            android:title="@string/show_uem_seg_file" />
+        <item
+            android:id="@+id/show_s_seg_file"
+            android:onClick="showSSegFile"
+            android:title="@string/show_s_seg_file" />
+        <item
             android:id="@+id/show_l_seg_file"
-            android:onClick="launchSpeakerStatsActivity"
-            android:title="@string/launch_speakerstats_activity" />
+            android:onClick="showLSegFile"
+            android:title="@string/show_l_seg_file" />
         <item
             android:id="@+id/acknowledgements"
             android:onClick="launchAcknowledgementsActivity"
