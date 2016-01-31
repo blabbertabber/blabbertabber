@@ -45,7 +45,7 @@ dependencies {
     // Set this dependency to use JUnit 4 rules
     androidTestCompile 'com.android.support.test:rules:0.4.1'
     // Set this dependency to build and run Espresso tests
-    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.1') {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.1') {
         exclude module: 'support-annotations'
     }
     // Set this dependency to build and run UI Automator tests
@@ -56,7 +56,7 @@ dependencies {
     androidTestCompile 'org.mockito:mockito-core:1.+'
     // needed for NavigationDrawer tests http://developer.android.com/reference/android/support/test/espresso/contrib/DrawerActions.html
     // http://stackoverflow.com/questions/33566501/incompatibleclasschangeerror-android-support-design-internal-navigationmenuview/34645356
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.1') {
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.1') {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
         exclude module: 'recyclerview-v7'
@@ -73,4 +73,5 @@ dependencies {
     compile files('libs/f2jutil.jar')
     compile files('libs/repackagedSound.jar')
     compile files('libs/sphinx4.jar')
+    compile files('libs/blas.jar')
 }

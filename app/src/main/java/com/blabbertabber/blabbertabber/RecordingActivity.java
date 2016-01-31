@@ -379,7 +379,7 @@ public class RecordingActivity extends Activity {
         //write initial segmentation file for LIUM_SpkDiarization
         String uemSegment = String.format("test 1 0 %d U U U S0", allFeatures.size());
         try {
-            FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".seg");
+            FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg");
             uemWriter.write(uemSegment);
             uemWriter.flush();
             uemWriter.close();
