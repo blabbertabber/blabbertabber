@@ -14,10 +14,6 @@
             android:onClick="showMfcFile"
             android:title="@string/show_mfc_file" />
         <item
-            android:id="@+id/show_seg_file"
-            android:onClick="showSegFile"
-            android:title="@string/show_seg_file" />
-        <item
             android:id="@+id/show_uem_seg_file"
             android:onClick="showUemSegFile"
             android:title="@string/show_uem_seg_file" />
