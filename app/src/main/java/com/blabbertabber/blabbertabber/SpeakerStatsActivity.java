@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
@@ -11,14 +11,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SpeakerStatsActivity extends AppCompatActivity {
+public class SpeakerStatsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speaker_stats);
         TextView tv = (TextView) findViewById(R.id.speakerStatView);
-        String filePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc";
+        String filePathName = getIntent().getExtras().getString("path");
+//        String filePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc";
         try {
             File file = new File(filePathName);
             int size = (int) file.length();
@@ -29,7 +30,7 @@ public class SpeakerStatsActivity extends AppCompatActivity {
             tv.setText(fileContents);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            tv.setText("Shit.  FileNotFoundException: " + e.getMessage());
+            tv.setText("FileNotFoundException: " + e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
             tv.setText("IOException: " + e.getMessage());
