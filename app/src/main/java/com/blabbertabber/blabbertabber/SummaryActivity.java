@@ -164,6 +164,12 @@ public class SummaryActivity extends Activity {
         startActivity(sendIntent);
     }
 
+    public void launchSpeakerStatsActivity(MenuItem menuItem) {
+        Log.i(TAG, "launchSpeakerStatsActivity()");
+        Intent intent = new Intent(this, SpeakerStatsActivity.class);
+        startActivity(intent);
+    }
+
     public void launchAcknowledgementsActivity(MenuItem menuItem) {
         Log.i(TAG, "launchAcknowledgementsActivity()");
         Intent intent = new Intent(this, AcknowledgementsActivity.class);
