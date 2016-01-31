@@ -391,18 +391,17 @@ public class RecordingActivity extends Activity {
         String basePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
         int DONE_LINEARSEG = 50;
         int DONE_LINEARCLUST = 100;
-        String[] linearSegParams =
-                {
-                        "--trace",
-                        "--help",
-                        "--kind=FULL",
-                        "--sMethod=GLR",
-                        "--fInputMask=" + basePathName + ".mfc",
-                        "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
-                        "--sInputMask=" + basePathName + ".uem.seg",
-                        "--sOutputMask=" + basePathName + ".s.seg",
-                        AudioEventProcessor.RECORDER_RAW_FILENAME
-                };
+        String[] linearSegParams = {
+                "--trace",
+                "--help",
+                "--kind=FULL",
+                "--sMethod=GLR",
+                "--fInputMask=" + basePathName + ".mfc",
+                "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
+                "--sInputMask=" + basePathName + ".uem.seg",
+                "--sOutputMask=" + basePathName + ".s.seg",
+                AudioEventProcessor.RECORDER_RAW_FILENAME
+        };
         String[] linearClustParams = {
                 "--trace",
                 "--help",
@@ -431,6 +430,8 @@ public class RecordingActivity extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+
 
         Intent intent = new Intent(this, SummaryActivity.class);
         startActivity(intent);

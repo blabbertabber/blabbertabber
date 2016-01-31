@@ -10,6 +10,10 @@
             android:onClick="launchMainActivity"
             android:title="@string/launch_main_activity" />
         <item
+            android:id="@+id/show_l_seg_file"
+            android:onClick="launchSpeakerStatsActivity"
+            android:title="@string/launch_speakerstats_activity" />
+        <item
             android:id="@+id/acknowledgements"
             android:onClick="launchAcknowledgementsActivity"
             android:title="@string/launch_acknowledgements_activity" />
