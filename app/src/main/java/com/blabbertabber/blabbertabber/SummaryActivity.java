@@ -169,11 +169,6 @@ public class SummaryActivity extends Activity {
         launchSpeakerStatsActivity(path);
     }
 
-    public void showSegFile(MenuItem menuItem) {
-        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".seg";
-        launchSpeakerStatsActivity(path);
-    }
-
     public void showUemSegFile(MenuItem menuItem) {
         String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg";
         launchSpeakerStatsActivity(path);
