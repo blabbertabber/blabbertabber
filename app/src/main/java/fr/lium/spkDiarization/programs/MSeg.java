@@ -412,7 +412,7 @@ public class MSeg {
                         System.out.println("trace[mSeg] \t doMeasures");
                     }
                     double[] m = MSeg.doMeasures(features, seg, param);
-                    dumpMeasures(m);
+                    //// dumpMeasures(m);
                     if (param.trace) {
                         System.out.println("trace[mSeg] \t doBorders");
                     }
