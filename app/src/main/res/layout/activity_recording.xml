@@ -39,6 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
+            android:onClick="togglePauseRecord"
             android:src="@drawable/big_speaker_circle" />
 
     </RelativeLayout>
@@ -56,41 +57,45 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <ImageButton
+            <Button
                 android:id="@+id/button_record"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:onClick="togglePauseRecord"
-                android:src="@drawable/ic_hearing_black"
+                android:drawableTop="@drawable/ic_play_arrow_24dp"
+                android:text="@string/button_record"
                 android:visibility="invisible" />
 
-            <ImageButton
+            <Button
                 android:id="@+id/button_pause"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:onClick="togglePauseRecord"
-                android:src="@drawable/ic_pause_circle_outline_black" />
+                android:text="@string/button_pause"
+                android:drawableTop="@drawable/ic_pause_24dp" />
         </FrameLayout>
 
-        <ImageButton
+        <Button
             android:id="@+id/button_reset"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="reset"
-            android:src="@drawable/ic_settings_backup_restore" />
+            android:text="@string/button_reset"
+            android:drawableTop="@drawable/ic_fast_rewind_24dp" />
 
-        <ImageButton
+        <Button
             android:id="@+id/button_finish"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:onClick="summary"
-            android:src="@drawable/ic_publish" />
+            android:text="@string/button_finish"
+            android:drawableTop="@drawable/ic_stop_24dp" />
 
     </LinearLayout>
 
