@@ -85,4 +85,64 @@ public class Helper {
         }
         out.close();
     }
+
+    /**
+     * Calculates how fast a processor is. Result is the ratio of speech diarization to
+     * to length of meeting, e.g. a Snapdragon 808 1.8 GHz hexa core 64-bit ARMv8-A takes
+     * 36s to process a 300s meeting, which means its ratio is 8.33333 (i.e. 8.333 x faster
+     * than real time).
+     * <p/>
+     * This number is fuzzy at best. For example, many processors are heterogenous (e.g
+     * Snapdragon 808 has powerful ARM Cortex-A57 and weak ARM Cortex-A53 cores), so if
+     * this benchmark is run on the fast core but later the processing is done on the slow
+     * core, the progress bar will linger at 99% while the slow core trudges along. Throw
+     * frequency-scaling into the mix, and you have a real crapshoot.
+     * <p/>
+     * (the value returned is used to display a progress bar)
+     *
+     * @return double
+     */
+    public static double howFastIsMyProcessor() {
+        double goldenRatio = 65.0; // this has nothing to do with the Golden Ratio
+        double junk = 1.0;
+
+        // This test takes 533 - 555 ms to run on a Snapdragon 808
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 16_384; i++) {
+            for (int j = 0; j < 1_024; j++) {
+                junk = junk * 1.1;
+            }
+            for (int j = 0; j < 1_024; j++) {
+                junk = junk / 1.1;
+            }
+        }
+        long endTime = System.currentTimeMillis();
+
+        long totalTime = endTime - startTime;
+        return (double) totalTime / goldenRatio;
+    }
+
+    /**
+     * Calculates the duration of a meeting based on the file's size in bytes
+     *
+     * @param fileSizeInBytes, typically File(getFilesDir() + "/meeting.raw").size()
+     * @return double
+     */
+    public static double howLongWasMeetingInSeconds(long fileSizeInBytes) {
+        double samplesPerSecond = AudioEventProcessor.RECORDER_SAMPLE_RATE_IN_HZ;
+        double bytesPerSample = 2;
+        return (double) fileSizeInBytes / (samplesPerSecond * bytesPerSample);
+    }
+
+    /**
+     * Calculates how long diarization will take, in seconds. processorSpeed should be the ratio
+     * of diarization speed to recording speed, typically set from howFastIsMyProcessor()
+     *
+     * @param meetingLengthInSeconds
+     * @param processorSpeed
+     * @return double, length in seconds
+     */
+    public static double howLongWillDiarizationTake(double meetingLengthInSeconds, double processorSpeed) {
+        return meetingLengthInSeconds / processorSpeed;
+    }
 }
