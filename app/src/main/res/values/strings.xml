@@ -17,6 +17,7 @@
     <string name="button_pause">pause</string>
     <string name="button_record">record</string>
     <string name="button_reset">reset</string>
+    <string name="performing_diarization">Performing Diarization</string>
 
     <string name="button_new_meeting">New Meeting</string>
     <string name="button_share">Share</string>
