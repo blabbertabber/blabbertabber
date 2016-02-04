@@ -389,8 +389,6 @@ public class RecordingActivity extends Activity {
         }
 
         String basePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
-        int DONE_LINEARSEG = 50;
-        int DONE_LINEARCLUST = 100;
         String[] linearSegParams = {
                 "--trace",
                 "--help",
@@ -418,9 +416,11 @@ public class RecordingActivity extends Activity {
             MSeg.main(linearSegParams);
         } catch (DiarizationException e) {
             // TODO Auto-generated catch block
+            Toast.makeText(this, "DiarizationException: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         } catch (Exception e) {
             // TODO Auto-generated catch block
+            Toast.makeText(this, "Exception "+e.getClass().getName()+": " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
