@@ -70,7 +70,7 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, +/- 40% " + time, time > 30 && time < 70);
+        assertTrue("Started, time elapsed should return should return '50' milliseconds, < +800% " + time, time > 50 && time < 400);
     }
 
     @Test
@@ -88,7 +88,8 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, +/- 40% " + time, time > 30 && time < 70);
+        // emulator
+        assertTrue("Started, time elapsed should return should return '50' milliseconds, < +800%", time > 50 && time < 400);
     }
 
     @Test
