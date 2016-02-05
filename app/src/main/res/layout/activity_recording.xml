@@ -98,5 +98,4 @@
             android:drawableTop="@drawable/ic_stop_24dp" />
 
     </LinearLayout>
-
 </LinearLayout>

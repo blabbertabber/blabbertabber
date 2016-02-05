@@ -15,7 +15,10 @@ import android.view.View;
  */
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
+    private static final String PREF_FIRST_TIME = "com.blabbertabber.blabbertabber.first_time";
+    private static final String PREF_PROCESSORSPEED = "com.blabbertabber.blabbertabber.processing";
     public static boolean resetFirstTime = false;
+    public static double processorSpeed = 1.0;
     private boolean mFirstTime = true;
     private int rushLimbaughIsWrongCount = 0;
 
@@ -32,10 +35,17 @@ public class MainActivity extends Activity {
         Log.i(TAG, "onResume()");
         // http://developer.android.com/training/basics/data-storage/shared-preferences.html
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        mFirstTime = sharedPref.getBoolean(getString(R.string.first_time), mFirstTime);
+        mFirstTime = sharedPref.getBoolean(PREF_FIRST_TIME, mFirstTime);
+        processorSpeed = (double) sharedPref.getFloat(PREF_PROCESSORSPEED, (float) processorSpeed);
+        Log.i(TAG, "onResume() FirstTime: " + mFirstTime + "; Speed: " + processorSpeed);
 
         if (!mFirstTime && !resetFirstTime) {
             launchRecordingActivity();
+        } else {
+            // calculating processor speed takes 1/2 second, so we only want to incur this penalty
+            // once, ever, and store it as a preference
+            processorSpeed = Helper.howFastIsMyProcessor();
+            Log.i(TAG, "onResume() Speed, first time calculation: " + processorSpeed);
         }
     }
 
@@ -46,7 +56,8 @@ public class MainActivity extends Activity {
 
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(getString(R.string.first_time), mFirstTime);
+        editor.putBoolean(PREF_FIRST_TIME, mFirstTime);
+        editor.putFloat(PREF_PROCESSORSPEED, (float) processorSpeed);
         editor.apply();
     }
 

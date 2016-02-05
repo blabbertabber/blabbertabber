@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by cunnie on 11/11/15.
@@ -153,7 +154,7 @@ public class HelperTest {
     // we can write to "/data/user/0/com.blabbertabber.blabbertabber/files/sphinx"
     @Test
     public void testCopyRawToFilesystem00() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(new String("blah").getBytes(StandardCharsets.UTF_8));
+        InputStream inputStream = new ByteArrayInputStream("blah".getBytes(StandardCharsets.UTF_8));
         File file = new File("/some/nonexistent/directory/sphinx");
 
         exception.expect(IOException.class);
@@ -163,23 +164,48 @@ public class HelperTest {
 
     @Test
     public void testCopyRawToFilesystem01() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(new String("blah").getBytes(StandardCharsets.UTF_8));
+        InputStream inputStream = new ByteArrayInputStream("blah".getBytes(StandardCharsets.UTF_8));
         File file = new File("sphinx");
 
         exception.expect(IOException.class);
         exception.expectMessage(StringContains.containsString("open failed: EROFS (Read-only file system)"));
         Helper.copyInputFileStreamToFilesystem(inputStream, file.getAbsolutePath());
-        assertEquals("the file is created", file.exists(), true);
+        assertEquals("the file is created", true, file.exists());
     }
 
     @Test
     public void testCopyRawToFilesystem02() throws Exception {
-        InputStream inputStream = new ByteArrayInputStream(new String("blah").getBytes(StandardCharsets.UTF_8));
+        InputStream inputStream = new ByteArrayInputStream("blah".getBytes(StandardCharsets.UTF_8));
         File file = new File("/data/local/tmp/sphinx");
 
         exception.expect(IOException.class);
         exception.expectMessage(StringContains.containsString("open failed: EACCES (Permission denied)"));
         Helper.copyInputFileStreamToFilesystem(inputStream, file.getAbsolutePath());
-        assertEquals("the file is created", file.exists(), true);
+        assertEquals("the file is created", true, file.exists());
+    }
+
+    @Test
+    public void testHowFastIsMyProcessor() {
+        assertTrue("My processor is fast enough", Helper.howFastIsMyProcessor() > 2.0);
+    }
+
+    @Test
+    public void testhowLongWasMeetingInSeconds00() {
+        assertEquals("A 1-second meeting", 1.0, Helper.howLongWasMeetingInSeconds(32_000), 0.001);
+    }
+
+    @Test
+    public void testhowLongWasMeetingInSeconds01() {
+        assertEquals("A 2-second meeting", 2.0, Helper.howLongWasMeetingInSeconds(64_000), 0.001);
+    }
+
+    @Test
+    public void testhowLongWillDiarizationTake00() {
+        assertEquals("A 10-second meeting at 5x speed", 2.0, Helper.howLongWillDiarizationTake(10.0, 5.0), 0.001);
+    }
+
+    @Test
+    public void testhowLongWillDiarizationTake01() {
+        assertEquals("A 20-second meeting at 4x speed", 5.0, Helper.howLongWillDiarizationTake(20.0, 4.0), 0.001);
     }
 }
