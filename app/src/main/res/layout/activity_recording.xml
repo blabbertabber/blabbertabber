@@ -62,8 +62,8 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:onClick="togglePauseRecord"
                 android:drawableTop="@drawable/ic_play_arrow_24dp"
+                android:onClick="togglePauseRecord"
                 android:text="@string/button_record"
                 android:visibility="invisible" />
 
@@ -72,9 +72,9 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:drawableTop="@drawable/ic_pause_24dp"
                 android:onClick="togglePauseRecord"
-                android:text="@string/button_pause"
-                android:drawableTop="@drawable/ic_pause_24dp" />
+                android:text="@string/button_pause" />
         </FrameLayout>
 
         <Button
@@ -83,9 +83,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableTop="@drawable/ic_skip_previous_black_24dp"
             android:onClick="reset"
-            android:text="@string/button_reset"
-            android:drawableTop="@drawable/ic_fast_rewind_24dp" />
+            android:text="@string/button_reset" />
 
         <Button
             android:id="@+id/button_finish"
@@ -93,9 +93,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:drawableTop="@drawable/ic_stop_24dp"
             android:onClick="summary"
-            android:text="@string/button_finish"
-            android:drawableTop="@drawable/ic_stop_24dp" />
+            android:text="@string/button_finish" />
 
     </LinearLayout>
 </LinearLayout>

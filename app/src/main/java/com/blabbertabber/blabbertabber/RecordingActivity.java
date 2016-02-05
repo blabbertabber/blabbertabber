@@ -285,15 +285,14 @@ public class RecordingActivity extends Activity {
         pause(); // stop the recording and animations
         diarizationProgress();
         final Context context = this;
-        final Thread t = new Thread() {
+        new Thread() {
             @Override
             public void run() {
                 diarize();
                 Intent intent = new Intent(context, SummaryActivity.class);
                 startActivity(intent);
             }
-        };
-        t.start();
+        }.start();
     }
 
     private void stopPreviousSpeaker() {

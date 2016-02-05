@@ -196,8 +196,9 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     }
 
     private AudioRecordAbstract createAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
+        Log.wtf(TAG, "createAudioRecord()");
         // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-        return "goldfish".equals(Build.HARDWARE) ?
+        return ( "goldfish".equals(Build.HARDWARE) || "ranchu".equals(Build.HARDWARE) ) ?
                 new AudioRecordEmulator(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes) :
                 new AudioRecordReal(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
     }
