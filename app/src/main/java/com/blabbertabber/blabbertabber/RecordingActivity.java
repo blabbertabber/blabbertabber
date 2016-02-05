@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,7 +15,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -57,6 +57,7 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final AnimatorSet NULL_ANIMATOR_SET = new AnimatorSet();
+    public static double processingToMeetingLengthRatio = 1.0;
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -281,6 +282,100 @@ public class RecordingActivity extends Activity {
 
     public void summary(View v) {
         Log.i(TAG, "summary()");
+        pause(); // stop the recording and animations
+        diarizationProgress();
+        final Context context = this;
+        final Thread t = new Thread() {
+            @Override
+            public void run() {
+                diarize();
+                Intent intent = new Intent(context, SummaryActivity.class);
+                startActivity(intent);
+            }
+        };
+        t.start();
+    }
+
+    private void stopPreviousSpeaker() {
+        Log.i(TAG, "stopPreviousSpeaker()");
+        if (mPreviousSpeakerId >= 0) {
+            // The previous speaker is valid; we are not initializing.
+            Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
+            previousSpeaker.stopSpeaking();
+        }
+    }
+
+    private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
+        if (speakerId != mPreviousSpeakerId) {
+            // Aha! The speaker has changed.
+            stopPreviousSpeaker();
+            mPreviousSpeakerId = speakerId;
+        }
+        Speaker speaker = mSpeakers.speakers[speakerId];
+        speaker.startSpeaking();
+
+        // PieSlices are "maxed-out" by default
+        // Max-out corresponds to a 32767 speaker volume
+        // .80 * PieSlice is the min, corresponding to a 0 speaker volume
+        // "goldenRatio" has nothing to do with the Golden Ratio
+        float goldenRatio = (float) (0.2 * (double) speakerVolume / (double) Short.MAX_VALUE + 0.8);
+        Log.d(TAG, "updateSpeakerVolumeView() goldenRatio: " + goldenRatio);
+        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (goldenRatio));
+        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (goldenRatio));
+
+        ObjectAnimator bScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(bluePieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
+        ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
+
+        // shrink and expand the pie slices, depending on how loudly people are talking
+        AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
+        ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
+        ephemeralAnimatorSet.start();
+    }
+
+    private void copySphinxConfigFileIntoPlace() {
+        String outputFilePathname = getFilesDir() + "/" + SPHINX_CONFIG;
+        try {
+            InputStream inputStream = getAssets().open(SPHINX_CONFIG, AssetManager.ACCESS_BUFFER);
+            Helper.copyInputFileStreamToFilesystem(inputStream, outputFilePathname);
+        } catch (IOException e) {
+            Log.wtf(TAG, "copySphinxConfigFileIntoPlace() couldn't copy file");
+            Toast.makeText(this, "Configuration didn't succeed, expect no results", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        // log everything
+        String argumentString = " " + requestCode + " [ ";
+        for (String perm : permissions) {
+            argumentString += perm + ", ";
+        }
+        argumentString += " ], [ ";
+        for (int grantResult : grantResults) {
+            argumentString += grantResult + ", ";
+        }
+        argumentString += " ]";
+        Log.i(TAG, "onRequestPermissionsResult() " + argumentString);
+
+        // boilerplate from http://developer.android.com/training/permissions/requesting.html
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // permission denied, message & exit gracefully
+                    Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                return;
+            }
+        }
+        Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
+    }
+
+    private void diarize() {
         // Transform the raw file into a .wav file
         WavFile wavFile;
         try {
@@ -377,7 +472,7 @@ public class RecordingActivity extends Activity {
         }
 
         //write initial segmentation file for LIUM_SpkDiarization
-        String uemSegment = String.format("test 1 0 %d U U U S0", allFeatures.size());
+        String uemSegment = String.format("BlabTab 1 0 %d U U U S0", allFeatures.size());
         try {
             FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg");
             uemWriter.write(uemSegment);
@@ -420,7 +515,7 @@ public class RecordingActivity extends Activity {
             e.printStackTrace();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            Toast.makeText(this, "Exception "+e.getClass().getName()+": " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Exception " + e.getClass().getName() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
@@ -430,148 +525,37 @@ public class RecordingActivity extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
-        Intent intent = new Intent(this, SummaryActivity.class);
-        startActivity(intent);
     }
 
-    private void stopPreviousSpeaker() {
-        Log.i(TAG, "stopPreviousSpeaker()");
-        if (mPreviousSpeakerId >= 0) {
-            // The previous speaker is valid; we are not initializing.
-            Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
-            previousSpeaker.stopSpeaking();
-        }
-    }
+    private void diarizationProgress() {
+        Log.i(TAG, "diarizationProgress()");
+        final ProgressDialog diarizationProgress = new ProgressDialog(this);
+        diarizationProgress.setMessage(getString(R.string.performing_diarization));
+        diarizationProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        diarizationProgress.setIndeterminate(false);
+        diarizationProgress.setProgress(0);
+        diarizationProgress.show();
 
-    private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
-        if (speakerId != mPreviousSpeakerId) {
-            // Aha! The speaker has changed.
-            stopPreviousSpeaker();
-            mPreviousSpeakerId = speakerId;
-        }
-        Speaker speaker = mSpeakers.speakers[speakerId];
-        speaker.startSpeaking();
-
-        // PieSlices are "maxed-out" by default
-        // Max-out corresponds to a 32767 speaker volume
-        // .80 * PieSlice is the min, corresponding to a 0 speaker volume
-        // "goldenRatio" has nothing to do with the Golden Ratio
-        float goldenRatio = (float) (0.2 * (double) speakerVolume / (double) Short.MAX_VALUE + 0.8);
-        Log.d(TAG, "updateSpeakerVolumeView() goldenRatio: " + goldenRatio);
-        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (goldenRatio));
-        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (goldenRatio));
-
-        ObjectAnimator bScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(bluePieSlice, phvx, phvy).setDuration(20);
-        ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
-        ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
-
-        // shrink and expand the pie slices, depending on how loudly people are talking
-        AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
-        ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
-        ephemeralAnimatorSet.start();
-    }
-
-    private void copySphinxConfigFileIntoPlace() {
-        String outputFilePathname = getFilesDir() + "/" + SPHINX_CONFIG;
-        try {
-            InputStream inputStream = getAssets().open(SPHINX_CONFIG, AssetManager.ACCESS_BUFFER);
-            Helper.copyInputFileStreamToFilesystem(inputStream, outputFilePathname);
-        } catch (IOException e) {
-            Log.wtf(TAG, "copySphinxConfigFileIntoPlace() couldn't copy file");
-            Toast.makeText(this, "Configuration didn't succeed, expect no results", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        // log everything
-        String argumentString = " " + requestCode + " [ ";
-        for (String perm : permissions) {
-            argumentString += perm + ", ";
-        }
-        argumentString += " ], [ ";
-        for (int grantResult : grantResults) {
-            argumentString += grantResult + ", ";
-        }
-        argumentString += " ]";
-        Log.i(TAG, "onRequestPermissionsResult() " + argumentString);
-
-        // boilerplate from http://developer.android.com/training/permissions/requesting.html
-        switch (requestCode) {
-            case REQUEST_RECORD_AUDIO: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    // permission denied, message & exit gracefully
-                    Toast.makeText(getApplicationContext(), "BlabberTabber exited because it's unable to access the microphone", Toast.LENGTH_LONG).show();
-                    finish();
+        File meetingFile = new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME);
+        double diarizationDuration = Helper.howLongWillDiarizationTake(
+                Helper.howLongWasMeetingInSeconds(meetingFile.length()),
+                MainActivity.processorSpeed
+        );
+        // 1000 seconds/milliseconds, 100 ticks (each tick is 1% on the progressDialog)
+        final long sleepInterval = (long) (1000.0 * diarizationDuration / 100.0);
+        new Thread() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 100; i++) {
+                    try {
+                        sleep(sleepInterval);
+                        diarizationProgress.setProgress(i);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
-                return;
             }
-        }
-        Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
+        }.start();
     }
-
-    private class diarize extends AsyncTask<Void, Integer, Void> {
-        int DONE_LINEARSEG = 50;
-        int DONE_LINEARCLUST = 100;
-        String basePathName = getApplicationContext().getFilesDir() + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
-
-        String[] linearSegParams =
-                {
-                        "--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".uem.seg", "--sOutputMask=" + basePathName + ".s.seg", AudioEventProcessor.RECORDER_RAW_FILENAME
-                };
-        String[] linearClustParams = {"--trace", "--help", "--fInputMask=" + basePathName + ".mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=" + basePathName + ".s.seg", "--sOutputMask=" + basePathName + ".l.seg", "--cMethod=l", "--cThr=2", AudioEventProcessor.RECORDER_RAW_FILENAME};
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-//            showDialog(DRZ_DIALOG);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                MSeg.main(linearSegParams);
-            } catch (DiarizationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            setProgress(DONE_LINEARSEG);
-
-            try {
-                MClust.main(linearClustParams);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            setProgress(DONE_LINEARCLUST);
-
-            return null;
-        }
-
-//        @Override
-//        protected void onPostExecute(Void unused) {
-//            dismissDialog(DRZ_DIALOG);
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Integer... value) {
-//            dProgressDialog.setProgress(value[0]);
-//        }
-    }
-
-/*    private class diarize extends AsyncTask<Void, Integer, Void> {
-        int DONE_LINEARSEG = 50;
-        int DONE_LINEARCLUST = 100;
-        String[] linearSegParams = {"--trace", "--help", "--kind=FULL", "--sMethod=GLR", "--fInputMask=/sdcard/test.mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=/sdcard/test.uem.seg", "--sOutputMask=/sdcard/test.s.seg", "test"};
-        String[] linearClustParams = {"--trace", "--help", "--fInputMask=/sdcard/test.mfc", "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0", "--sInputMask=/sdcard/test.s.seg", "--sOutputMask=/sdcard/test.l.seg", "--cMethod=l", "--cThr=2", "test"};
-
-    }*/
 }

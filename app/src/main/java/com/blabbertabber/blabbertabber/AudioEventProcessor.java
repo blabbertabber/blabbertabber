@@ -27,12 +27,12 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     public static final int CANT_WRITE_MEETING_FILE = -3;
     public static final String RECORDER_FILENAME_NO_EXTENSION = "meeting";
     public static final String RECORDER_RAW_FILENAME = RECORDER_FILENAME_NO_EXTENSION + ".raw";
-    private static final String TAG = "AudioEventProcessor";
-    private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     // http://developer.android.com/reference/android/media/AudioRecord.html
     // "44100Hz is currently the only rate that is guaranteed to work on all devices"
     // 16k samples/sec * 2 bytes/sample = 32kB/sec == 115.2 MB/hour
-    private static final int RECORDER_SAMPLE_RATE_IN_HZ = 16_000;
+    public static final int RECORDER_SAMPLE_RATE_IN_HZ = 16_000;
+    private static final String TAG = "AudioEventProcessor";
+    private static final int RECORDER_AUDIO_SOURCE = BestMicrophone.getBestMicrophone();
     private static final int RECORDER_CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int NUM_FRAMES = RECORDER_SAMPLE_RATE_IN_HZ / 5;  // 5 updates/second
