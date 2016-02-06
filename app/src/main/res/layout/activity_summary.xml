@@ -429,5 +429,5 @@
         android:layout_gravity="start"
         android:choiceMode="singleChoice"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/drawer"></android.support.design.widget.NavigationView>
+        app:menu="@menu/drawer" />
 </android.support.v4.widget.DrawerLayout>
