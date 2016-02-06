@@ -164,6 +164,16 @@ public class SummaryActivity extends Activity {
         startActivity(sendIntent);
     }
 
+    public void showRawFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".raw";
+        launchSpeakerStatsActivity(path);
+    }
+
+    public void showWavFile(MenuItem menuItem) {
+        String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".wav";
+        launchSpeakerStatsActivity(path);
+    }
+
     public void showMfcFile(MenuItem menuItem) {
         String path = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc";
         launchSpeakerStatsActivity(path);

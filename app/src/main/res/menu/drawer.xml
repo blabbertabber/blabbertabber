@@ -10,6 +10,14 @@
             android:onClick="launchMainActivity"
             android:title="@string/launch_main_activity" />
         <item
+            android:id="@+id/show_raw"
+            android:onClick="showRawFile"
+            android:title="@string/show_raw_file" />
+        <item
+            android:id="@+id/show_wav"
+            android:onClick="showWavFile"
+            android:title="@string/show_wav_file" />
+        <item
             android:id="@+id/show_mfc_file"
             android:onClick="showMfcFile"
             android:title="@string/show_mfc_file" />
