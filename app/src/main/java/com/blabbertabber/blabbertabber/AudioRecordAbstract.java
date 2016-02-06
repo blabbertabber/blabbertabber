@@ -8,9 +8,7 @@ public abstract class AudioRecordAbstract {
     public AudioRecordAbstract() {
     }
 
-    protected abstract void stop();     // stops the recording, closes file, cannot resume after stop().
-
-    public abstract void release();
+    protected abstract void stopAndRelease();     // stops the recording, closes file, cannot resume after stop().
 
     public abstract void setRecordPositionUpdateListener(AudioEventProcessor audioEventProcessor);
 

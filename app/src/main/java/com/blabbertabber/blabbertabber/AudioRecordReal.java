@@ -7,46 +7,51 @@ import android.media.AudioRecord;
  */
 public class AudioRecordReal extends AudioRecordAbstract {
     private static AudioRecord audioRecord;
+    private static AudioRecordReal theAudioRecordReal;
     private static int recorderAudioSource;
     private static int recorderSampleRateInHz;
     private static int recorderChannelConfig;
     private static int recorderAudioFormat;
     private static int recorderBufferSizeInBytes;
+    private static AudioEventProcessor audioEventProcessor;
+    private static int numFrames;
 
     private AudioRecordReal() {
     }
 
-    public AudioRecordReal(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
-        this.recorderAudioSource = recorderAudioSource;
-        this.recorderSampleRateInHz = recorderSampleRateInHz;
-        this.recorderChannelConfig = recorderChannelConfig;
-        this.recorderAudioFormat = recorderAudioFormat;
-        this.recorderBufferSizeInBytes = recorderBufferSizeInBytes;
-        audioRecord = buildAudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
-    }
-
-    private synchronized AudioRecord buildAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
-        return new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+    public static synchronized AudioRecordReal getInstance(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
+        AudioRecordReal.recorderAudioSource = recorderAudioSource;
+        AudioRecordReal.recorderSampleRateInHz = recorderSampleRateInHz;
+        AudioRecordReal.recorderChannelConfig = recorderChannelConfig;
+        AudioRecordReal.recorderAudioFormat = recorderAudioFormat;
+        AudioRecordReal.recorderBufferSizeInBytes = recorderBufferSizeInBytes;
+        if (audioRecord == null) {
+            audioRecord = new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+        }
+        if (theAudioRecordReal == null) {
+            theAudioRecordReal = new AudioRecordReal();
+        }
+        return theAudioRecordReal;
     }
 
     @Override
-    protected void stop() {
+    public synchronized void stopAndRelease() {
         audioRecord.stop();
-    }
-
-    @Override
-    public synchronized void release() {
         audioRecord.release();
-        audioRecord = buildAudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+        audioRecord = new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+        audioRecord.setRecordPositionUpdateListener(audioEventProcessor);
+        audioRecord.setPositionNotificationPeriod(numFrames);
     }
 
     @Override
     public void setRecordPositionUpdateListener(AudioEventProcessor audioEventProcessor) {
+        AudioRecordReal.audioEventProcessor = audioEventProcessor;
         audioRecord.setRecordPositionUpdateListener(audioEventProcessor);
     }
 
     @Override
     public int setPositionNotificationPeriod(int numFrames) {
+        AudioRecordReal.numFrames = numFrames;
         return audioRecord.setPositionNotificationPeriod(numFrames);
     }
 
