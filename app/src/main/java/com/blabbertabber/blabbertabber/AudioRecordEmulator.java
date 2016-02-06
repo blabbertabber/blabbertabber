@@ -15,12 +15,7 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
     }
 
     @Override
-    protected void stop() {
-        notifier.interrupt();
-    }
-
-    @Override
-    public void release() {
+    protected void stopAndRelease() {
         notifier.interrupt();
     }
 

@@ -39,7 +39,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     // size of the buffer array needs to be NUM_FRAMES * 2;
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
-    private static AudioRecordAbstract audioRecord;
+    private static AudioRecordAbstract audioRecordWrapper;
     private static String rawFilePathName;
     public int numSpeakers;
     private Context context;
@@ -129,6 +129,9 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 case AudioRecord.ERROR_BAD_VALUE:
                     Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_BAD_VALUE.  Denotes a failure due to the use of an invalid value.");
                     break;
+                case AudioRecord.ERROR_INVALID_OPERATION:
+                    Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_INVALID_OPERATION.  Denotes a failure due to the improper use of a method.");
+                    break;
             }
 
         }
@@ -196,57 +199,55 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     }
 
     private AudioRecordAbstract createAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
-        Log.wtf(TAG, "createAudioRecord()");
+        Log.i(TAG, "createAudioRecord()");
         // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-        return ( "goldfish".equals(Build.HARDWARE) || "ranchu".equals(Build.HARDWARE) ) ?
+        return ("goldfish".equals(Build.HARDWARE) || "ranchu".equals(Build.HARDWARE)) ?
                 new AudioRecordEmulator(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes) :
-                new AudioRecordReal(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
+                AudioRecordReal.getInstance(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
     }
 
     @Override
     public void run() {
         Log.i(TAG, "run() STARTING Thread ID " + Thread.currentThread().getId());
 
-        if (audioRecord != null) {
-            audioRecord.stop();
-            audioRecord.release();
-            audioRecord = null;
+        if (audioRecordWrapper != null) {
+            audioRecordWrapper.stopAndRelease();
+            audioRecordWrapper = null;
         }
 
-//        audioRecord = new AudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
-//                RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
-        audioRecord = createAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
+        audioRecordWrapper = createAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
-        audioRecord.setRecordPositionUpdateListener(this);
-        int rc = audioRecord.setPositionNotificationPeriod(NUM_FRAMES);
+        audioRecordWrapper.setRecordPositionUpdateListener(this);
+        int rc = audioRecordWrapper.setPositionNotificationPeriod(NUM_FRAMES);
         Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
         if (rc != AudioRecord.SUCCESS) {
-            Log.wtf(TAG, "run()   audioRecord.setPositionNotificationPeriod(..) failed!  It returned " + rc);
+            Log.wtf(TAG, "run()   audioRecordWrapper.setPositionNotificationPeriod(..) failed!  It returned " + rc);
         }
 
-        audioRecord.startRecording();
+        audioRecordWrapper.startRecording();
 
         boolean oldRecordingServiceRecording = RecordingService.recording;
         Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
         while (true) {
             if (RecordingService.reset) {
-                // close and delete the meeting.wav file.
+                // close and re-open the meeting.wav file.
                 try {
-                    getRawFileOutputStream().close();
+                    rawFileOutputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 rawFileOutputStream = null;
+                getRawFileOutputStream();
                 RecordingService.reset = false;
             }
             if (RecordingService.recording != oldRecordingServiceRecording) {
                 Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
                 if (!RecordingService.recording) {
                     // We're not recording, stop
-                    audioRecord.stop();
+                    audioRecordWrapper.stopAndRelease();
                 } else {
-                    Log.i(TAG, "run()   About to call audioRecord.startRecording()");
-                    audioRecord.startRecording();
+                    Log.i(TAG, "run()   About to call audioRecordWrapper.startRecording()");
+                    audioRecordWrapper.startRecording();
                 }
                 oldRecordingServiceRecording = RecordingService.recording;
             }
