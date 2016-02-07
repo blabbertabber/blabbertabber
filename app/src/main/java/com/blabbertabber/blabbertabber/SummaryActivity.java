@@ -79,7 +79,7 @@ public class SummaryActivity extends Activity {
 
                 id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
                 tv = (TextView) findViewById(id);
-                long speakerDuration = speaker.duration();
+                long speakerDuration = speaker.getDuration();
                 double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
                 String speakerStats = String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent);
                 tv.setText((CharSequence) speakerStats);
@@ -148,7 +148,7 @@ public class SummaryActivity extends Activity {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < sp.size(); i++) {
             Speaker speaker = sp.get(i);
-            long speakerDuration = speaker.duration();
+            long speakerDuration = speaker.getDuration();
             double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
             String speakerStats = String.format(" %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDuration), speakerPercent);
             sb.append(speakerStats + "  ");

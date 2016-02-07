@@ -297,11 +297,6 @@ public class RecordingActivity extends Activity {
 
     private void stopPreviousSpeaker() {
         Log.i(TAG, "stopPreviousSpeaker()");
-        if (mPreviousSpeakerId >= 0) {
-            // The previous speaker is valid; we are not initializing.
-            Speaker previousSpeaker = mSpeakers.speakers[mPreviousSpeakerId];
-            previousSpeaker.stopSpeaking();
-        }
     }
 
     private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
@@ -310,8 +305,6 @@ public class RecordingActivity extends Activity {
             stopPreviousSpeaker();
             mPreviousSpeakerId = speakerId;
         }
-        Speaker speaker = mSpeakers.speakers[speakerId];
-        speaker.startSpeaking();
 
         // PieSlices are "maxed-out" by default
         // Max-out corresponds to a 32767 speaker volume

@@ -54,7 +54,7 @@ public class TheSpeakers {
     private static void initializeSpeakers() {
         Log.i(TAG, "initializeSpeakers()");
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            speakers[i] = new Speaker("Speaker " + i); // TODO: internationalize
+            speakers[i] = new Speaker("Speaker " + i, 'U'); // TODO: internationalize
             speakers[i].setColor(speakerColors[i]);
         }
     }
@@ -63,7 +63,7 @@ public class TheSpeakers {
         int iSpeaker = 0;
         double[] speakersTimes = new double[MAX_SPEAKERS];
         for (Speaker s : speakers) {
-            speakersTimes[iSpeaker] = (double) s.duration();
+            speakersTimes[iSpeaker] = (double) s.getDuration();
             iSpeaker++;
         }
         return speakersTimes;
@@ -73,7 +73,7 @@ public class TheSpeakers {
     public long getMeetingDuration() {
         long duration = 0;
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            duration += speakers[i].duration();
+            duration += speakers[i].getDuration();
         }
         return duration;
     }
@@ -82,7 +82,7 @@ public class TheSpeakers {
     public long getAverageSpeakerDuration() {
         long numSpeakers = 0;
         for (int i = 0; i < MAX_SPEAKERS; i++) {
-            if (speakers[i].duration() > 0) {
+            if (speakers[i].getDuration() > 0) {
                 numSpeakers++;
             }
         }
@@ -97,8 +97,8 @@ public class TheSpeakers {
     public long getMaxSpeakerDuration() {
         long max = 0;
         for (Speaker s : speakers) {
-            if (s.duration() > max) {
-                max = s.duration();
+            if (s.getDuration() > max) {
+                max = s.getDuration();
             }
         }
         return max;
@@ -108,8 +108,8 @@ public class TheSpeakers {
     public long getMinSpeakerDuration() {
         long min = Long.MAX_VALUE;
         for (Speaker s : speakers) {
-            if (s.duration() < min && s.duration() > 0) {
-                min = s.duration();
+            if (s.getDuration() < min && s.getDuration() > 0) {
+                min = s.getDuration();
             }
         }
         return min == Long.MAX_VALUE ? 0 : min;
@@ -124,7 +124,7 @@ public class TheSpeakers {
     public ArrayList<Speaker> getSortedSpeakerList() {
         ArrayList<Speaker> sorted = new ArrayList<Speaker>();
         for (Speaker s : speakers) {
-            if (s.duration() > 0) sorted.add(s);
+            if (s.getDuration() > 0) sorted.add(s);
         }
         // We use reverseOrder() because we want it in descending order
         Collections.sort(sorted, Collections.reverseOrder());

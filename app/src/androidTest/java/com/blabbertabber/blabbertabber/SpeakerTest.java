@@ -18,10 +18,22 @@ import static junit.framework.Assert.assertTrue;
 public class SpeakerTest {
     private static final String TAG = "SpeakerTest";
 
-    //    @Test
-//    public void
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void testConstructor() {
+        Speaker speaker = new Speaker("Sam", 'M');
+        assertEquals("Newly constructed speaker's name is Sam", "Sam", speaker.getName());
+        assertEquals("Newly constructed speaker's gender is M", 'M', speaker.getGender());
+    }
+
+    @Test
+    public void testAddTurn() {
+        Speaker speaker = new Speaker("Sam", 'M');
+        speaker.addTurn(529, 293);
+        assertEquals("Duration is 293", 293, speaker.getDuration());
+    }
 
     @Test
     public void testCompareto() {
