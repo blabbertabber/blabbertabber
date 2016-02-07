@@ -1,8 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
-import android.util.Log;
-
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -13,49 +12,43 @@ public class Speaker implements Comparable<Speaker> {
     private static final String TAG = "Speaker";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
     private int color;
-    private long mTotalSpeakingTime = 0; // milliseconds
+    private ArrayList<Long> startTimes = new ArrayList<Long>();  // features since start of meeting
+    private ArrayList<Long> durations = new ArrayList<Long>();  // duration in features
     private Date mStartDate = null;
     private boolean mSpoke = false;
 
     private String mName = null;
+    private char mGender = '\0';
 
     // constructor for setting name, preferred constructor
-    public Speaker(String name) {
+    public Speaker(String name, char gender) {
         mName = name;
+        mGender = gender;
     }
 
     // constructor that allows injecting totalSpeakingTime and name; meant for tests exclusively
     public Speaker(String name, long totalSpeakingTime) {
+        startTimes.add(0L);
+        durations.add(totalSpeakingTime);
         mName = name;
-        mTotalSpeakingTime = totalSpeakingTime;
     }
 
-    public void startSpeaking() {
-        mSpoke = true;
-        if (mStartDate == null) {
-            mStartDate = new Date();
-            Log.v(TAG, "start time: " + format.format(mStartDate) + " mTotalSpeakingTime: " + mTotalSpeakingTime);
-        }
+    public void addTurn(long startTime, long duration) {
+        startTimes.add(startTime);
+        durations.add(duration);
     }
 
-    public void stopSpeaking() {
-        if (mStartDate == null) {
-            Log.wtf(TAG, "It should be impossible to call stopSpeaking() before calling startSpeaking().");
-            return;
-        }
-        long stopTime = System.currentTimeMillis();
-        mTotalSpeakingTime += (stopTime - mStartDate.getTime());
-        mStartDate = null;
-        Log.v(TAG, "stop time: " + mStartDate + " mTotalSpeakingTime: " + mTotalSpeakingTime);
+    public char getGender() {
+        return mGender;
     }
 
     public int compareTo(Speaker s) {
         // e.compareTo(null) should throw a NullPointerException
         // http://docs.oracle.com/javase/7/docs/api/java/lang/Comparable.html
         if (s == null) throw new NullPointerException();
-        if (duration() > s.duration()) {
+        if (getDuration() > s.getDuration()) {
             return 1;
-        } else if (duration() == s.duration()) {
+        } else if (getDuration() == s.getDuration()) {
             return mName.compareTo(s.mName);
         } else {
             return -1;
@@ -66,8 +59,12 @@ public class Speaker implements Comparable<Speaker> {
         return mName;
     }
 
-    public long duration() {
-        return mTotalSpeakingTime;
+    public long getDuration() {
+        long totalDuration = 0;
+        for (long duration : durations) {
+            totalDuration += duration;
+        }
+        return totalDuration;
     }
 
     public int getColor() {
