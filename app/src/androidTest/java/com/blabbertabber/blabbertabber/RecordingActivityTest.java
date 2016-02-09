@@ -37,12 +37,6 @@ public class RecordingActivityTest {
         onView(withId(R.id.recording_root_view)).check(matches(isDisplayed()));
     }
 
-    @Test
-    public void recordingActivityIsPortrait() {
-        int orientation = (TestHelpers.getActivityInstance()).getResources().getConfiguration().orientation;
-        assertEquals(orientation, Configuration.ORIENTATION_PORTRAIT);
-    }
-
     // Test the dummies; this can be fleshed out later
     // fail: android:visibility="gone" in activity_main.xml
     // fail: android:clickable="false" in activity_main.xml
