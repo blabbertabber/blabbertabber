@@ -1,7 +1,6 @@
 package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.ViewMatchers;
 
@@ -15,7 +14,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static junit.framework.Assert.assertEquals;
 
 /**
  * Created by cunnie on 9/12/15.

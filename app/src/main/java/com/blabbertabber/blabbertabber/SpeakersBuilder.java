@@ -1,6 +1,9 @@
 package com.blabbertabber.blabbertabber;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by brendancunnie on 2/8/16.
@@ -22,6 +25,8 @@ public class SpeakersBuilder {
     }
 
     public Speaker[] build() {
-        return speakerMap.values().toArray(new Speaker[0]);
+        List<Speaker> speakers = new ArrayList<Speaker>(speakerMap.values());
+        Collections.sort(speakers, Collections.reverseOrder());
+        return speakers.toArray(new Speaker[0]);
     }
 }
