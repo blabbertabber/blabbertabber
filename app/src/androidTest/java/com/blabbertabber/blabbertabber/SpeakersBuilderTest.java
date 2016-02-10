@@ -58,8 +58,21 @@ public class SpeakersBuilderTest {
         sb.add(3000, 50, "Pat", 'M');
         Speaker[] speakers = sb.build();
         assertEquals("Building Speakers after adding one 'turn' returns an array with one speaker.", 2, speakers.length);
-        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's name.", "Pat", speakers[1].getName());
-        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's gender.", 'M', speakers[1].getGender());
-        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's duration.", 350, speakers[1].getDuration());
+        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's name.", "Pat", speakers[0].getName());
+        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's gender.", 'M', speakers[0].getGender());
+        assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's duration.", 350, speakers[0].getDuration());
+    }
+
+    @Test
+    public void testBuildReturnsSortedArray() {
+        SpeakersBuilder sb = new SpeakersBuilder();
+        sb.add(0, 279, "Sam", 'F');
+        sb.add(1000, 300, "Teri", 'M');
+        sb.add(2000, 1, "Pat", 'M');
+        sb.add(3000, 50, "Leslie", 'M');
+        Speaker[] speakers = sb.build();
+        assertEquals("First speaker has most time.", 300, speakers[0].getDuration());
+        assertEquals("Second speaker has second-most time.", 279, speakers[1].getDuration());
+        assertEquals("Last speaker has least time.", 1, speakers[3].getDuration());
     }
 }
