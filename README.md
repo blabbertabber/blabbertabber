@@ -1,3 +1,5 @@
+***Warning: although this app is under active development, it does not yet work.***
+
 # BlabberTabber
 
 <!--
@@ -32,6 +34,10 @@ which libraries to use.
 
 * Vaquero, C., Vinyals, O., and Friedland, G.,
   *[A Hybrid Approach to Online Speaker Diarization](http://www.icsi.berkeley.edu/pubs/speech/hybridapproach10.pdf)*,  INTERSPEECH, page 2638-2641. ISCA, (2010)
+
+* Friedland, G., Janin, A., Imseng, D., Anguera, X., Gottlieb, L, Huijbregts, M., Tai Knox, M. Vinyals, O.
+  *[The ICSI RT-09 Speaker Diarization System](http://www.icsi.berkeley.edu/pubs/speech/rt09speaker11.pdf)*,
+  IEEE Transactions on Audio, Speech, and Language Processing, 2/1/12
 
 * Gonina E., Friedland G., Cook H., Keutzer K., *[Fast Speaker Diarization Using a High-Level Scripting Language](https://www.eecs.berkeley.edu/~hcook/papers/gmm_asru2011.pdf)*, In Proc. of ASRU Workshop, 2011.
 
