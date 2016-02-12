@@ -15,7 +15,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
 /**
  * Created by cunnie on 11/11/15.
@@ -186,7 +187,7 @@ public class HelperTest {
 
     @Test
     public void testHowFastIsMyProcessor() {
-        assertTrue("My processor is fast enough", Helper.howFastIsMyProcessor() > 2.0);
+        assertThat("My processor is fast enough", Helper.howFastIsMyProcessor(), greaterThan(2.0));
     }
 
     @Test
