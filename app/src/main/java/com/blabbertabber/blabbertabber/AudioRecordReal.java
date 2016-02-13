@@ -2,7 +2,6 @@ package com.blabbertabber.blabbertabber;
 
 import android.media.AudioRecord;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Created by brendancunnie on 1/24/16.
