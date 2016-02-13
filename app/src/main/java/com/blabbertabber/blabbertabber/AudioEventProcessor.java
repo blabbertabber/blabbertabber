@@ -219,11 +219,13 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
         audioRecordWrapper.setRecordPositionUpdateListener(this);
         int rc = audioRecordWrapper.setPositionNotificationPeriod(NUM_FRAMES);
-        Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS));
+        Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS)
+                + " audioRecordWrapper: " + audioRecordWrapper);
         if (rc != AudioRecord.SUCCESS) {
             Log.wtf(TAG, "run()   audioRecordWrapper.setPositionNotificationPeriod(..) failed!  It returned " + rc);
         }
 
+        Log.i(TAG, "run() audioRecordWrapper: " + audioRecordWrapper);
         audioRecordWrapper.startRecording();
 
         boolean oldRecordingServiceRecording = RecordingService.recording;

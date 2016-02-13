@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 
@@ -72,21 +72,21 @@ public class SummaryActivity extends Activity {
 
         String segPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
         FileInputStream in;
+        Speaker[] sp;
         Reader rdr;
         try {
             in = new FileInputStream(segPathFileName);
-
-        } catch (FileNotFoundException e) {
-            Log.wtf(TAG, "FileNotFoundException: " + e + " thrown while trying to open " + segPathFileName);
+            sp = new SpeakersBuilder().parseSegStream(in).build();
+        } catch (IOException e) {
+            Log.wtf(TAG, e.getClass().getName() + ": " + e + " thrown while trying to open " + segPathFileName);
+            Toast.makeText(this, "I could not open the segmentation file, quitting", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
             return;
         }
 
-        /// TODO: factor out sp's construction
-        ArrayList<Speaker> sp = TheSpeakers.getInstance().getSortedSpeakerList();
-
         try {
-            for (int i = 0; i < sp.size(); i++) {
-                Speaker speaker = sp.get(i);
+            for (int i = 0; i < sp.length; i++) {
+                Speaker speaker = sp[i];
 
                 int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
                 TextView tv = (TextView) findViewById(id);
