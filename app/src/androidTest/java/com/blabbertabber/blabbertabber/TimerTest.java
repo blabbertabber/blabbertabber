@@ -7,7 +7,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by cunnie on 11/11/15.
@@ -38,7 +40,8 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, +/- 40% " + time, time > 30 && time < 70);
+        assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
+        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
     }
 
     @Test
@@ -70,7 +73,8 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, < +800% " + time, time > 50 && time < 400);
+        assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
+        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
     }
 
     @Test
@@ -88,8 +92,8 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        // emulator
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, < +800%", time > 50 && time < 400);
+        assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
+        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
     }
 
     @Test
@@ -115,7 +119,8 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '50' milliseconds, +/- 40% " + time, time > 30 && time < 70);
+        assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
+        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
     }
 
     @Test
@@ -145,6 +150,7 @@ public class TimerTest {
             e.printStackTrace();
         }
         time = timer.time();
-        assertTrue("Started, time elapsed should return should return '100' milliseconds, +/- 40% " + time, time > 70 && time < 130);
+        assertThat("Started, time elapsed should return should be greater than 99 ms", time, greaterThan(99L));
+        assertThat("Started, time elapsed should return should be less than 110 ms", time, lessThan(110L));
     }
 }
