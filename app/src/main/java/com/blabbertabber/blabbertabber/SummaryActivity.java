@@ -13,6 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.Reader;
 import java.util.ArrayList;
 
 /**
@@ -67,6 +70,18 @@ public class SummaryActivity extends Activity {
         long maxSpeakerDuration = TheSpeakers.getInstance().getMaxSpeakerDuration();
         maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
 
+        String segPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
+        FileInputStream in;
+        Reader rdr;
+        try {
+            in = new FileInputStream(segPathFileName);
+
+        } catch (FileNotFoundException e) {
+            Log.wtf(TAG, "FileNotFoundException: " + e + " thrown while trying to open " + segPathFileName);
+            return;
+        }
+
+        /// TODO: factor out sp's construction
         ArrayList<Speaker> sp = TheSpeakers.getInstance().getSortedSpeakerList();
 
         try {
