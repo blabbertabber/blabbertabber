@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Shows a bar chart of speakers in decreasing order
@@ -46,6 +47,9 @@ public class SummaryActivity extends Activity {
         } else {
             Log.i(TAG, "onCreate() mDrawerLayout is not null!");
         }
+
+        ArrayList<Speaker> speakers = new ArrayList<Speaker>();
+
     }
 
     @Override
@@ -54,26 +58,9 @@ public class SummaryActivity extends Activity {
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_summary);
 
-        TextView durationView = (TextView) findViewById(R.id.textview_duration);
-        long meetingDuration = TheSpeakers.getInstance().getMeetingDuration();
-        durationView.setText(Helper.timeToHMMSS(meetingDuration));
-
-        TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
-        long avgSpeakerDuration = TheSpeakers.getInstance().getAverageSpeakerDuration();
-        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
-
-        TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
-        long minSpeakerDuration = TheSpeakers.getInstance().getMinSpeakerDuration();
-        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
-
-        TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
-        long maxSpeakerDuration = TheSpeakers.getInstance().getMaxSpeakerDuration();
-        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
-
         String segPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
         FileInputStream in;
-        Speaker[] sp;
-        Reader rdr;
+        ArrayList<Speaker> sp;
         try {
             in = new FileInputStream(segPathFileName);
             sp = new SpeakersBuilder().parseSegStream(in).build();
@@ -84,9 +71,31 @@ public class SummaryActivity extends Activity {
             return;
         }
 
+        long meetingDuration = 0L;
+        for ( Speaker s : sp ) {
+            meetingDuration += s.getDuration();
+        }
+        long avgSpeakerDuration = meetingDuration / sp.size();
+
+        TextView durationView = (TextView) findViewById(R.id.textview_duration);
+        durationView.setText(Helper.timeToHMMSS(meetingDuration));
+
+        TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
+        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
+
+        TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
+        long minSpeakerDuration = Collections.min(sp).getDuration();
+        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
+
+        TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
+        long maxSpeakerDuration = Collections.min(sp).getDuration();
+        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
+
+
+
         try {
-            for (int i = 0; i < sp.length; i++) {
-                Speaker speaker = sp[i];
+            for (int i = 0; i < sp.size(); i++) {
+                Speaker speaker = sp.get(i);
 
                 int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
                 TextView tv = (TextView) findViewById(id);
@@ -96,8 +105,7 @@ public class SummaryActivity extends Activity {
                 tv = (TextView) findViewById(id);
                 long speakerDuration = speaker.getDuration();
                 double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
-                String speakerStats = String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent);
-                tv.setText((CharSequence) speakerStats);
+                tv.setText(String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent));
 
                 id = R.id.class.getField("bar_speaker_" + i).getInt(0);
                 RectangleView rv = (RectangleView) findViewById(id);
