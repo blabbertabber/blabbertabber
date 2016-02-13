@@ -11,13 +11,12 @@ import java.io.StreamTokenizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by brendancunnie on 2/8/16.
  */
 public class SpeakersBuilder {
-    private static final String TAG="SpeakersBuilder";
+    private static final String TAG = "SpeakersBuilder";
     private static final int[] speakerColors = {
             0xb0ff6600,
             0xb0ffE600,

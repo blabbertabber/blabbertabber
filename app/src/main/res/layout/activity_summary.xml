@@ -85,316 +85,49 @@
                 android:layout_gravity="right" />
         </GridLayout>
 
-        <GridLayout
-            android:id="@+id/speaker_duration_grid"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
-            android:columnCount="3"
-            android:paddingTop="25dp"
-            android:useDefaultMargins="true">
-
-            <TextView
-                android:id="@+id/speaker_name_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/speaker_name_title"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/speaker_duration_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="@string/speaker_duration_title"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/speaker_barchart_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/speaker_duration_title"
-                android:textStyle="bold" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_0"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_1"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_2"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_3"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_4"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_5"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_6"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_7"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_8"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_9"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_10"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_11"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_12"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_13"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_14"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/speaker_name_label_15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/speaker_duration_label_15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.blabbertabber.blabbertabber.RectangleView
-                android:id="@+id/bar_speaker_15"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_gravity="center_vertical" />
-
-
-            <TextView
-                android:id="@+id/ghost_view_to_prevent_last_speaker_from_stretching"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </GridLayout>
+            android:layout_weight="1">
+
+            <GridLayout
+                android:id="@+id/speaker_duration_grid"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                android:columnCount="3"
+                android:paddingTop="25dp"
+                android:useDefaultMargins="true">
+
+                <TextView
+                    android:id="@+id/speaker_name_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/speaker_name_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/speaker_duration_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="@string/speaker_duration_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/speaker_barchart_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/speaker_duration_title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/ghost_view_to_prevent_last_speaker_from_stretching"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </GridLayout>
+        </ScrollView>
 
         <GridLayout
             android:layout_width="fill_parent"

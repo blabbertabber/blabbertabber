@@ -30,7 +30,7 @@ public class SpeakersBuilderTest {
         SpeakersBuilder sb = new SpeakersBuilder();
         ArrayList<Speaker> speakers = sb.build();
         assertEquals("Building Speakers without adding data returns an empty array.",
-                0, speakers.size() );
+                0, speakers.size());
     }
 
     @Test

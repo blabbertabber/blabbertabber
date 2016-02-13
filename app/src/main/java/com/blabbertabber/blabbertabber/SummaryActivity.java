@@ -9,13 +9,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -72,7 +72,7 @@ public class SummaryActivity extends Activity {
         }
 
         long meetingDuration = 0L;
-        for ( Speaker s : sp ) {
+        for (Speaker s : sp) {
             meetingDuration += s.getDuration();
         }
         long avgSpeakerDuration = meetingDuration / sp.size();
@@ -92,33 +92,50 @@ public class SummaryActivity extends Activity {
         maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
 
 
+//        try {
+        for (int i = 0; i < sp.size(); i++) {
+            Speaker speaker = sp.get(i);
 
-        try {
-            for (int i = 0; i < sp.size(); i++) {
-                Speaker speaker = sp.get(i);
+            TextView name = new TextView(this);
+            name.setText(speaker.getName());
+            GridLayout speakerGrid = (GridLayout) findViewById(R.id.speaker_duration_grid);
+//                GridLayout.Spec spec = GridLayout.spec(Spec.WRAP_CONTENT);
+//                GridLayout.LayoutParams params = new GridLayout.LayoutParams(spec,spec);
+            speakerGrid.addView(name);
 
-                int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
-                TextView tv = (TextView) findViewById(id);
-                tv.setText(speaker.getName());
+            TextView duration = new TextView(this);
+            duration.setText("" + speaker.getDuration());
+            speakerGrid.addView(duration);
 
-                id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
-                tv = (TextView) findViewById(id);
-                long speakerDuration = speaker.getDuration();
-                double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
-                tv.setText(String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent));
+            RectangleView rv = new RectangleView(this);
+            rv.setVisible(true);
+            rv.setColor(speaker.getColor());
+            rv.setBarRatio((float) speaker.getDuration() / (float) maxSpeakerDuration);
+            speakerGrid.addView(rv);
+            rv.invalidate();
 
-                id = R.id.class.getField("bar_speaker_" + i).getInt(0);
-                RectangleView rv = (RectangleView) findViewById(id);
-                rv.setVisible(true);
-                rv.setColor(speaker.getColor());
-                rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
-                rv.invalidate();
-            }
-        } catch (NoSuchFieldException e) {
-            Log.wtf(TAG, "NoSuchFieldException exception thrown on index with message " + e.getMessage());
-        } catch (IllegalAccessException e) {
-            Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
+//                int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
+//                TextView tv = (TextView) findViewById(id);
+//                tv.setText(speaker.getName());
+//
+//                id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
+//                tv = (TextView) findViewById(id);
+//                long speakerDuration = speaker.getDuration();
+//                double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
+//                tv.setText(String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent));
+//
+//                id = R.id.class.getField("bar_speaker_" + i).getInt(0);
+//                RectangleView rv = (RectangleView) findViewById(id);
+//                rv.setVisible(true);
+//                rv.setColor(speaker.getColor());
+//                rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
+//                rv.invalidate();
         }
+//        } catch (NoSuchFieldException e) {
+//            Log.wtf(TAG, "NoSuchFieldException exception thrown on index with message " + e.getMessage());
+//        } catch (IllegalAccessException e) {
+//            Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
+//        }
     }
 
     /**
