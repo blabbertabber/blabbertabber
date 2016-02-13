@@ -1,11 +1,14 @@
 package com.blabbertabber.blabbertabber;
 
 import android.media.AudioRecord;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by brendancunnie on 1/24/16.
  */
 public class AudioRecordReal extends AudioRecordAbstract {
+    private static final String TAG = "AudioRecordReal";
     private static AudioRecord audioRecord;
     private static AudioRecordReal theAudioRecordReal;
     private static int recorderAudioSource;
@@ -41,6 +44,7 @@ public class AudioRecordReal extends AudioRecordAbstract {
         audioRecord = new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
         audioRecord.setRecordPositionUpdateListener(audioEventProcessor);
         audioRecord.setPositionNotificationPeriod(numFrames);
+        Log.i(TAG, "stopAndRelease() audioRecord: " + audioRecord);
     }
 
     @Override
@@ -57,6 +61,13 @@ public class AudioRecordReal extends AudioRecordAbstract {
 
     @Override
     public void startRecording() {
-        audioRecord.startRecording();
+        Log.i(TAG, "startRecording() audioRecord: " + audioRecord + " state: "
+                + audioRecord.getState() + " recordingState: " + audioRecord.getRecordingState());
+        // TODO get rid of this! this masks a bug
+        try {
+            audioRecord.startRecording();
+        } catch (IllegalStateException e) {
+            Log.wtf(TAG, "startRecording() " + e.getClass().getName() + ": " + e.getMessage());
+        }
     }
 }
