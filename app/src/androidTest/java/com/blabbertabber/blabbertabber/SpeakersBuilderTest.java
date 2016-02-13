@@ -77,8 +77,21 @@ public class SpeakersBuilderTest {
         sb.add(3000, 50, "Leslie", 'M');
         Speaker[] speakers = sb.build();
         assertEquals("First speaker has most time.", 300, speakers[0].getDuration());
+        assertEquals("First speaker has correct color.", 0xb0ff6600, speakers[0].getColor());
         assertEquals("Second speaker has second-most time.", 279, speakers[1].getDuration());
+        assertEquals("Second speaker has correct color.", 0xb0ffE600, speakers[1].getColor());
         assertEquals("Last speaker has least time.", 1, speakers[3].getDuration());
+        assertEquals("Last speaker has correct color.", 0xb01aff00, speakers[3].getColor());
+    }
+
+    @Test
+    public void testColorsWrapAround() {
+        SpeakersBuilder sb = new SpeakersBuilder();
+        for (int i = 0; i < 16; i++) {
+            sb.add(0, 279, "Sam " + i, 'F');
+        }
+        sb.add(0, 179, "Bobo", 'M');
+        assertEquals("Last speaker has correct color.", 0xb0ff6600, sb.build()[16].getColor());
     }
 
     @Test

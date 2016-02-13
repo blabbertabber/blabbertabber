@@ -15,7 +15,24 @@ import java.util.List;
  * Created by brendancunnie on 2/8/16.
  */
 public class SpeakersBuilder {
-    HashMap<String, Speaker> speakerMap = new HashMap<String, Speaker>();
+    private static final int[] speakerColors = {
+            0xb0ff6600,
+            0xb0ffE600,
+            0xb099ff00,
+            0xb01aff00,
+            0xb0ff001a,
+            0xb0ff8b3d,
+            0xb0ffaf7a,
+            0xb000ff66,
+            0xb0ff0099,
+            0xb07acaff,
+            0xb03db1ff,
+            0xb000ffe6,
+            0xb0e600ff,
+            0xb06600ff,
+            0xb0001aff,
+            0xb00099ff};
+    private HashMap<String, Speaker> speakerMap = new HashMap<String, Speaker>();
 
     public SpeakersBuilder() {
     }
@@ -53,6 +70,13 @@ public class SpeakersBuilder {
     public Speaker[] build() {
         List<Speaker> speakers = new ArrayList<Speaker>(speakerMap.values());
         Collections.sort(speakers, Collections.reverseOrder());
-        return speakers.toArray(new Speaker[0]);
+        return colorize(speakers.toArray(new Speaker[0]));
+    }
+
+    private Speaker[] colorize(Speaker[] speakers) {
+        for (int i = 0; i < speakers.length; i++) {
+            speakers[i].setColor(speakerColors[i % speakerColors.length]);
+        }
+        return speakers;
     }
 }
