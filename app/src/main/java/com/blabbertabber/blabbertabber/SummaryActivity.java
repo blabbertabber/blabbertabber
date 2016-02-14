@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
@@ -78,29 +80,27 @@ public class SummaryActivity extends Activity {
         long avgSpeakerDuration = meetingDuration / sp.size();
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
-        durationView.setText(Helper.timeToHMMSS(meetingDuration));
+        durationView.setText("" + meetingDuration);
 
         TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
-        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
+        avgSpeakerDurationView.setText("" + avgSpeakerDuration);
 
         TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
         long minSpeakerDuration = Collections.min(sp).getDuration();
-        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
+        minSpeakerDurationView.setText("" + minSpeakerDuration);
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
-        long maxSpeakerDuration = Collections.min(sp).getDuration();
-        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
+        long maxSpeakerDuration = Collections.max(sp).getDuration();
+        maxSpeakerDurationView.setText("" + maxSpeakerDuration);
 
 
-//        try {
         for (int i = 0; i < sp.size(); i++) {
             Speaker speaker = sp.get(i);
+            Log.i(TAG, "onResume() speaker: " + speaker.getName() + " sp.size(): " + sp.size());
 
             TextView name = new TextView(this);
             name.setText(speaker.getName());
             GridLayout speakerGrid = (GridLayout) findViewById(R.id.speaker_duration_grid);
-//                GridLayout.Spec spec = GridLayout.spec(Spec.WRAP_CONTENT);
-//                GridLayout.LayoutParams params = new GridLayout.LayoutParams(spec,spec);
             speakerGrid.addView(name);
 
             TextView duration = new TextView(this);
@@ -111,31 +111,13 @@ public class SummaryActivity extends Activity {
             rv.setVisible(true);
             rv.setColor(speaker.getColor());
             rv.setBarRatio((float) speaker.getDuration() / (float) maxSpeakerDuration);
+            GridLayout.LayoutParams glp = new GridLayout.LayoutParams();
+            glp.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics());
+            glp.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            glp.setGravity(Gravity.CENTER_VERTICAL);
+            rv.setLayoutParams(glp);
             speakerGrid.addView(rv);
-            rv.invalidate();
-
-//                int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
-//                TextView tv = (TextView) findViewById(id);
-//                tv.setText(speaker.getName());
-//
-//                id = R.id.class.getField("speaker_duration_label_" + i).getInt(0);
-//                tv = (TextView) findViewById(id);
-//                long speakerDuration = speaker.getDuration();
-//                double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
-//                tv.setText(String.format(" %8s (%2.0f%%)", Helper.timeToHMMSS(speakerDuration), speakerPercent));
-//
-//                id = R.id.class.getField("bar_speaker_" + i).getInt(0);
-//                RectangleView rv = (RectangleView) findViewById(id);
-//                rv.setVisible(true);
-//                rv.setColor(speaker.getColor());
-//                rv.setBarRatio((float) speakerDuration / (float) maxSpeakerDuration);
-//                rv.invalidate();
         }
-//        } catch (NoSuchFieldException e) {
-//            Log.wtf(TAG, "NoSuchFieldException exception thrown on index with message " + e.getMessage());
-//        } catch (IllegalAccessException e) {
-//            Log.wtf(TAG, "IllegalAccessException exception thrown with message " + e.getMessage());
-//        }
     }
 
     /**
