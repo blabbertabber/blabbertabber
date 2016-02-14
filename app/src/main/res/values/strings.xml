@@ -2,15 +2,18 @@
     <string name="app_name">BlabberTabber</string>
 
     <string name="welcome_text" formatted="false">BlabberTabber allows you to record how much time each
-        speaker has spoken in a meeting.\n
+        speaker has spoken in a meeting.  It is currently in ALPHA test, and does NOT produce meaningful
+        results.\n
         \nTo pause, press "PAUSE", to resume, press
         "RECORD", and to reset the tally, press "RESET".\n
         \nWhen the meeting is over, press finish to see the final tally. You will have the option
         to email or SMS the results.\n
-        \nBlabberTabber is wrong 20% of the time, which isn\'t perfect but better than Rush Limbaugh.
+        \nBlabberTabber IS WRONG 100% OF THE TIME. We are working to fix it.\n
+        \nPlease do not review BlabberTabber at this time.  (Unless, of course, you want to give us
+        five stars to encourage us to finish it.)
     </string>
     <string name="first_time">display splash screen</string>
-    <string name="launch_recording_activity">Okay, got it!</string>
+    <string name="launch_recording_activity">I understand that BlabberTabber is NOT accurate!</string>
 
     <string name="action_settings">Settings</string>
     <string name="button_finish">finish</string>
@@ -46,9 +49,9 @@
     <string name="drawer_title">Advanced</string>
     <string name="title_activity_acknowledgements">AcknowledgementsActivity</string>
 
-    <string name="acknowledgements_text" formatted="false">BlabberTabber was written
-        by Brendan Cunnie and Brian Cunnie.\n
-        \nCharlotte Cunningham designed the UI and created the graphics.\n
+    <string name="acknowledgements_text" formatted="false">
+        Charlotte Cunningham designed BlabberTabber and also created all graphics.\n
+        \nBlabberTabber was written by Brendan Cunnie and Brian Cunnie.\n
         \nDaniel Di Matteo wrote the first android diarization program. His code
         helped us tremendously, and uses LIUM.\n
         \nLIUM is a Java-based open source toolkit for diarization, written by
