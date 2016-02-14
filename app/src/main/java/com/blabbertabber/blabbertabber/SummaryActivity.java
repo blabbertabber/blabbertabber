@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -89,7 +90,7 @@ public class SummaryActivity extends Activity {
         minSpeakerDurationView.setText("" + minSpeakerDuration);
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
-        long maxSpeakerDuration = Collections.min(sp).getDuration();
+        long maxSpeakerDuration = Collections.max(sp).getDuration();
         maxSpeakerDurationView.setText("" + maxSpeakerDuration);
 
 
@@ -116,7 +117,8 @@ public class SummaryActivity extends Activity {
             rv.setBarRatio((float) speaker.getDuration() / (float) maxSpeakerDuration);
             GridLayout.LayoutParams glp = new GridLayout.LayoutParams();
 //            glp.height = GridLayout.LayoutParams.MATCH_PARENT;
-            glp.height = 8;
+//            glp.height = 8; // "12sp"
+            glp.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics());
             glp.width = GridLayout.LayoutParams.WRAP_CONTENT;
             glp.setGravity(Gravity.CENTER_VERTICAL);
             rv.setLayoutParams(glp);
