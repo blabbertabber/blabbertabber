@@ -29,10 +29,12 @@ public class RectangleView extends View {
     }
 
     public void setColor(int color) {
+        Log.i(TAG, "setColor() color: " + color);
         mColor = color;
     }
 
     public void setVisible(boolean visible) {
+        Log.i(TAG, "setVisible() visible: " + visible);
         mVisible = visible;
     }
 
@@ -41,6 +43,7 @@ public class RectangleView extends View {
         // 1.0 means it's the longest speaker
         // 0.5 means that this speaker has spoken half as much as the longest speaker
         // etc...
+        Log.i(TAG, "setBarRatio() barRatio: " + barRatio);
         mBarRatio = barRatio;
     }
 
@@ -62,5 +65,11 @@ public class RectangleView extends View {
             myPaint.setStrokeWidth(1);
             canvas.drawRect(rect, myPaint);
         }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        Log.i(TAG, "onSizeChanged( " + w + ", " + h + ", " + oldw + ", " + oldh + " )");
     }
 }
