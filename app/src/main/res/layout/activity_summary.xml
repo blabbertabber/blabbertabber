@@ -120,11 +120,6 @@
                     android:text="@string/speaker_duration_title"
                     android:textStyle="bold" />
 
-                <!--<TextView-->
-                <!--android:id="@+id/ghost_view_to_prevent_last_speaker_from_stretching"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content" />-->
-
             </GridLayout>
         </ScrollView>
 

@@ -17,15 +17,24 @@ public class RectangleView extends View {
     private boolean mVisible = false;
     private int mColor = Color.GREEN;
     private float mBarRatio = (float) 0.50;
+    private RectF mRectF;
+    private Paint mPaint;
 
     public RectangleView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
         Log.i(TAG, "RectangleView(Context, AttributeSet)");
     }
 
     public RectangleView(Context context) {
         super(context);
+        init();
         Log.i(TAG, "RectangleView(Context)");
+    }
+
+    private void init() {
+        mRectF = new RectF();
+        mPaint = new Paint();
     }
 
     public void setColor(int color) {
@@ -53,17 +62,14 @@ public class RectangleView extends View {
         Log.i(TAG, "onDraw()");
 
         if (mVisible) {
-            RectF rect = new RectF();
-            rect.left = 0;
-            rect.top = 0;
-            rect.right = mBarRatio * (float) (getWidth() - getLeft());
-            rect.bottom = getHeight();
-            Log.i(TAG, "getWidth() " + getWidth() + " getLeft() " + getLeft() + " rect.right " + rect.right + " bottom " + rect.bottom);
-
-            Paint myPaint = new Paint();
-            myPaint.setColor(mColor);
-            myPaint.setStrokeWidth(1);
-            canvas.drawRect(rect, myPaint);
+            mRectF.left = 0;
+            mRectF.top = 0;
+            mRectF.right = mBarRatio * (float) (getWidth() - getLeft());
+            mRectF.bottom = getHeight();
+            Log.i(TAG, "getWidth() " + getWidth() + " getLeft() " + getLeft() + " rect.right " + mRectF.right + " bottom " + mRectF.bottom);
+            mPaint.setColor(mColor);
+            mPaint.setStrokeWidth(1);
+            canvas.drawRect(mRectF, mPaint);
         }
     }
 
