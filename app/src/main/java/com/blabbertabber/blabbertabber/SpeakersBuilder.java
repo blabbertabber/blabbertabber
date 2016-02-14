@@ -44,20 +44,20 @@ public class SpeakersBuilder {
         Log.i(TAG, "parseSegStream()");
         Reader r = new BufferedReader(new InputStreamReader(in));
         StreamTokenizer st = new StreamTokenizer(r);
-        int numChars;
-        numChars = st.nextToken();
-        st.nextToken();
-        st.nextToken();
-        long startTime = (long) st.nval;
-        st.nextToken();
-        long duration = (long) st.nval;
-        st.nextToken();
-        char gender = st.sval.charAt(0);
-        st.nextToken();
-        st.nextToken();
-        st.nextToken();
-        String name = st.sval;
-        add(startTime, duration, name, gender);
+        while ( st.nextToken() != st.TT_EOF ) { // show name
+            st.nextToken(); // the channel number
+            st.nextToken(); // the start of the segment (in features)
+            long startTime = (long) st.nval;
+            st.nextToken(); // the length of the segment (in features)
+            long duration = (long) st.nval;
+            st.nextToken(); // the speaker gender (U=unknown, F=female, M=Male)
+            char gender = st.sval.charAt(0);
+            st.nextToken(); // the type of band (T=telephone, S=studio)
+            st.nextToken(); // the type of environment (music, speech only, …)
+            st.nextToken(); // the speaker label
+            String name = st.sval;
+            add(startTime, duration, name, gender);
+        }
         return this;
     }
 

@@ -109,12 +109,15 @@ public class SpeakersBuilderTest {
     @Test
     public void parseSegStreamTest() throws IOException {
         InputStream inputStream = new ByteArrayInputStream(
-                "BlabTab 1 0 568 U U U S0".getBytes(StandardCharsets.UTF_8));
+                "BlabTab 1 0 568 U U U S0\nBlabTab 1 568 500 F U U S1\n\n".getBytes(StandardCharsets.UTF_8));
 
         ArrayList<Speaker> speakers = new SpeakersBuilder().parseSegStream(inputStream).build();
-        assertEquals("The number of speakers created is 1", 1, speakers.size());
+        assertEquals("The number of speakers created is 1", 2, speakers.size());
         assertEquals("returns an array with that speaker's name.", "S0", speakers.get(0).getName());
         assertEquals("returns an array with that speaker's gender.", 'U', speakers.get(0).getGender());
         assertEquals("returns an array with that speaker's duration.", 568, speakers.get(0).getDuration());
+        assertEquals("returns an array with that speaker's name.", "S1", speakers.get(1).getName());
+        assertEquals("returns an array with that speaker's gender.", 'F', speakers.get(1).getGender());
+        assertEquals("returns an array with that speaker's duration.", 500, speakers.get(1).getDuration());
     }
 }
