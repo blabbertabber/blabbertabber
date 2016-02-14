@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridLayout;
@@ -78,23 +79,25 @@ public class SummaryActivity extends Activity {
         long avgSpeakerDuration = meetingDuration / sp.size();
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
-        durationView.setText(Helper.timeToHMMSS(meetingDuration));
+        durationView.setText("" + meetingDuration);
 
         TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
-        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
+        avgSpeakerDurationView.setText("" + avgSpeakerDuration);
 
         TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
         long minSpeakerDuration = Collections.min(sp).getDuration();
-        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
+        minSpeakerDurationView.setText("" + minSpeakerDuration);
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
         long maxSpeakerDuration = Collections.min(sp).getDuration();
-        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
+        maxSpeakerDurationView.setText("" + maxSpeakerDuration);
 
 
 //        try {
+//        for (int i = 0; i < sp.size(); i++) {
         for (int i = 0; i < sp.size(); i++) {
             Speaker speaker = sp.get(i);
+            Log.i(TAG, "onResume() speaker: " + speaker.getName() + " sp.size(): " + sp.size());
 
             TextView name = new TextView(this);
             name.setText(speaker.getName());
@@ -111,8 +114,14 @@ public class SummaryActivity extends Activity {
             rv.setVisible(true);
             rv.setColor(speaker.getColor());
             rv.setBarRatio((float) speaker.getDuration() / (float) maxSpeakerDuration);
+            GridLayout.LayoutParams glp = new GridLayout.LayoutParams();
+//            glp.height = GridLayout.LayoutParams.MATCH_PARENT;
+            glp.height = 8;
+            glp.width = GridLayout.LayoutParams.WRAP_CONTENT;
+            glp.setGravity(Gravity.CENTER_VERTICAL);
+            rv.setLayoutParams(glp);
             speakerGrid.addView(rv);
-            rv.invalidate();
+//            rv.invalidate();
 
 //                int id = R.id.class.getField("speaker_name_label_" + i).getInt(0);
 //                TextView tv = (TextView) findViewById(id);

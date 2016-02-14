@@ -44,7 +44,7 @@ public class SpeakersBuilder {
         Log.i(TAG, "parseSegStream()");
         Reader r = new BufferedReader(new InputStreamReader(in));
         StreamTokenizer st = new StreamTokenizer(r);
-        while ( st.nextToken() != st.TT_EOF ) { // show name
+        while (st.nextToken() != st.TT_EOF) { // show name
             st.nextToken(); // the channel number
             st.nextToken(); // the start of the segment (in features)
             long startTime = (long) st.nval;
