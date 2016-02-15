@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class WavFileTest {
-    private static final String TAG = "TheSpeakersTest";
+    private static final String TAG = "WavFileTest";
 
     @Test
     public void returnsCorrectWavFilename() {

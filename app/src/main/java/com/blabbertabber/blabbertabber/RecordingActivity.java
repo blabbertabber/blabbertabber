@@ -75,8 +75,6 @@ public class RecordingActivity extends Activity {
             Log.v(TAG, "mServerConn.onServiceDisconnected()");
         }
     };
-    private int mPreviousSpeakerId = -1;
-    private TheSpeakers mSpeakers;
     private BroadcastReceiver mReceiver;
     private PieSlice bluePieSlice;
     private PieSlice redPieSlice;
@@ -98,19 +96,17 @@ public class RecordingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
-        mSpeakers = TheSpeakers.getInstance();
 
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
-                    /// TODO: remove speaker id, and change data passed to just an int.  No array needed.
                     int[] speakerinfo = intent.getIntArrayExtra(AudioEventProcessor.RECORD_MESSAGE);
-                    int speaker = speakerinfo[0], volume = speakerinfo[1];
+                    int volume = speakerinfo[0];
                     // do something here.
-                    Log.v(TAG, "mReceiver.onReceive()" + speaker + ", " + volume);
-                    updateSpeakerVolumeView(speaker, volume);
+                    Log.v(TAG, "mReceiver.onReceive() " + volume);
+                    updateSpeakerVolumeView(volume);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
                     int status = intent.getIntExtra(AudioEventProcessor.RECORD_STATUS_MESSAGE, AudioEventProcessor.UNKNOWN_STATUS);
@@ -263,16 +259,12 @@ public class RecordingActivity extends Activity {
         // stop the animations
         findViewById(R.id.button_record).setVisibility(View.VISIBLE);
         findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
-        // close-out the current speaker
-        stopPreviousSpeaker();
         // pause the animation
         animatorSet.pause();
     }
 
     public void reset(View v) {
         Log.i(TAG, "reset()");
-        mPreviousSpeakerId = -1;
-        mSpeakers.reset();
         // reset the animation and begin recording
         animatorSet.end();
         animatorSet.start();
@@ -295,17 +287,7 @@ public class RecordingActivity extends Activity {
         }.start();
     }
 
-    private void stopPreviousSpeaker() {
-        Log.i(TAG, "stopPreviousSpeaker()");
-    }
-
-    private void updateSpeakerVolumeView(int speakerId, int speakerVolume) {
-        if (speakerId != mPreviousSpeakerId) {
-            // Aha! The speaker has changed.
-            stopPreviousSpeaker();
-            mPreviousSpeakerId = speakerId;
-        }
-
+    private void updateSpeakerVolumeView(int speakerVolume) {
         // PieSlices are "maxed-out" by default
         // Max-out corresponds to a 32767 speaker volume
         // .80 * PieSlice is the min, corresponding to a 0 speaker volume

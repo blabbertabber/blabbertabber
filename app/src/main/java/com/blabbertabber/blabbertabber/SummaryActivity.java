@@ -25,13 +25,14 @@ import java.util.Collections;
  * Shows a bar chart of speakers in decreasing order
  */
 public class SummaryActivity extends Activity {
-
     private static final String TAG = "SummaryActivity";
     private static final CharSequence DRAWER_TITLE = "BlabberTabber Options"; // TODO internationalize, make string
     private static final CharSequence NORMAL_TITLE = "BlabberTabber";
     // Nav Drawer variables
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
+    private long mMeetingDurationInMilliseconds;
+    private ArrayList<Speaker> mSpeakers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,41 +63,41 @@ public class SummaryActivity extends Activity {
 
         String segPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
         FileInputStream in;
-        ArrayList<Speaker> sp;
+        long segFileSize = new File(segPathFileName).length();
+        mMeetingDurationInMilliseconds = segFileSize
+                * 1000
+                / (AudioEventProcessor.RECORDER_SAMPLE_RATE_IN_HZ * 2);
         try {
+            Log.i(TAG, "File size: " + segFileSize);
             in = new FileInputStream(segPathFileName);
-            sp = new SpeakersBuilder().parseSegStream(in).build();
+            mSpeakers = new SpeakersBuilder().parseSegStream(in).build();
+            Log.i(TAG, "sp.size(): " + mSpeakers.size());
         } catch (IOException e) {
             Log.wtf(TAG, e.getClass().getName() + ": " + e + " thrown while trying to open " + segPathFileName);
             Toast.makeText(this, "I could not open the segmentation file, quitting", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             return;
         }
-
-        long meetingDuration = 0L;
-        for (Speaker s : sp) {
-            meetingDuration += s.getDuration();
-        }
-        long avgSpeakerDuration = meetingDuration / sp.size();
+        long avgSpeakerDuration = mMeetingDurationInMilliseconds / mSpeakers.size();
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
-        durationView.setText("" + meetingDuration);
+        durationView.setText("" + mMeetingDurationInMilliseconds);
 
         TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
         avgSpeakerDurationView.setText("" + avgSpeakerDuration);
 
         TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
-        long minSpeakerDuration = Collections.min(sp).getDuration();
+        long minSpeakerDuration = Collections.min(mSpeakers).getDuration();
         minSpeakerDurationView.setText("" + minSpeakerDuration);
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
-        long maxSpeakerDuration = Collections.max(sp).getDuration();
+        long maxSpeakerDuration = Collections.max(mSpeakers).getDuration();
         maxSpeakerDurationView.setText("" + maxSpeakerDuration);
 
 
-        for (int i = 0; i < sp.size(); i++) {
-            Speaker speaker = sp.get(i);
-            Log.i(TAG, "onResume() speaker: " + speaker.getName() + " sp.size(): " + sp.size());
+        for (int i = 0; i < mSpeakers.size(); i++) {
+            Speaker speaker = mSpeakers.get(i);
+            Log.i(TAG, "onResume() speaker: " + speaker.getName() + " sp.size(): " + mSpeakers.size());
 
             TextView name = new TextView(this);
             name.setText(speaker.getName());
@@ -157,7 +158,6 @@ public class SummaryActivity extends Activity {
     }
 
     public void newMeeting(View v) {
-        TheSpeakers.getInstance().reset();
         // clear out the old, raw-PCM file
         AudioEventProcessor.newMeetingFile();
         Intent i = new Intent(this, RecordingActivity.class);
@@ -165,13 +165,11 @@ public class SummaryActivity extends Activity {
     }
 
     public void share(View v) {
-        long meetingDuration = TheSpeakers.getInstance().getMeetingDuration();
-        ArrayList<Speaker> sp = TheSpeakers.getInstance().getSortedSpeakerList();
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < sp.size(); i++) {
-            Speaker speaker = sp.get(i);
+        for (int i = 0; i < mSpeakers.size(); i++) {
+            Speaker speaker = mSpeakers.get(i);
             long speakerDuration = speaker.getDuration();
-            double speakerPercent = 100 * (double) speakerDuration / (double) meetingDuration;
+            double speakerPercent = 100 * (double) speakerDuration / (double) mMeetingDurationInMilliseconds;
             String speakerStats = String.format(" %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDuration), speakerPercent);
             sb.append(speakerStats + "  ");
             sb.append(speaker.getName());
