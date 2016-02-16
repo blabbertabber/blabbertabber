@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * Shows a bar chart of speakers in decreasing order
@@ -33,6 +34,12 @@ public class SummaryActivity extends Activity {
     private NavigationView mNavigationView;
     private long mMeetingDurationInMilliseconds;
     private ArrayList<Speaker> mSpeakers;
+
+    public static String speakerDurationAndPercent(long speakerDurationInCentiseconds, long meetingDurationInMilliseconds) {
+        long speakerDurationinMilliseconds = 10 * speakerDurationInCentiseconds;
+        double speakerPercent = 100 * (double) speakerDurationinMilliseconds / (double) meetingDurationInMilliseconds;
+        return (String.format(Locale.getDefault(), " %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDurationinMilliseconds), speakerPercent));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +69,14 @@ public class SummaryActivity extends Activity {
         setContentView(R.layout.activity_summary);
 
         String segPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".l.seg";
+        String rawPathFileName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".raw";
         FileInputStream in;
-        long segFileSize = new File(segPathFileName).length();
-        mMeetingDurationInMilliseconds = segFileSize
+        long rawFileSize = new File(rawPathFileName).length();
+        mMeetingDurationInMilliseconds = rawFileSize
                 * 1000
                 / (AudioEventProcessor.RECORDER_SAMPLE_RATE_IN_HZ * 2);
         try {
-            Log.i(TAG, "File size: " + segFileSize);
+            Log.i(TAG, "File size: " + rawFileSize);
             in = new FileInputStream(segPathFileName);
             mSpeakers = new SpeakersBuilder().parseSegStream(in).build();
             Log.i(TAG, "sp.size(): " + mSpeakers.size());
@@ -81,18 +89,18 @@ public class SummaryActivity extends Activity {
         long avgSpeakerDuration = mMeetingDurationInMilliseconds / mSpeakers.size();
 
         TextView durationView = (TextView) findViewById(R.id.textview_duration);
-        durationView.setText("" + mMeetingDurationInMilliseconds);
+        durationView.setText(Helper.timeToHMMSS(mMeetingDurationInMilliseconds));
 
         TextView avgSpeakerDurationView = (TextView) findViewById(R.id.textview_average);
-        avgSpeakerDurationView.setText("" + avgSpeakerDuration);
+        avgSpeakerDurationView.setText(Helper.timeToHMMSSm(avgSpeakerDuration));
 
         TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
         long minSpeakerDuration = Collections.min(mSpeakers).getDuration();
-        minSpeakerDurationView.setText("" + minSpeakerDuration);
+        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration * 10)); // convert centiseconds to milliseconds
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
         long maxSpeakerDuration = Collections.max(mSpeakers).getDuration();
-        maxSpeakerDurationView.setText("" + maxSpeakerDuration);
+        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration * 10));
 
 
         for (int i = 0; i < mSpeakers.size(); i++) {
@@ -105,7 +113,7 @@ public class SummaryActivity extends Activity {
             speakerGrid.addView(name);
 
             TextView duration = new TextView(this);
-            duration.setText("" + speaker.getDuration());
+            duration.setText(speakerDurationAndPercent(speaker.getDuration(), mMeetingDurationInMilliseconds));
             speakerGrid.addView(duration);
 
             RectangleView rv = new RectangleView(this);
@@ -168,10 +176,7 @@ public class SummaryActivity extends Activity {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < mSpeakers.size(); i++) {
             Speaker speaker = mSpeakers.get(i);
-            long speakerDuration = speaker.getDuration();
-            double speakerPercent = 100 * (double) speakerDuration / (double) mMeetingDurationInMilliseconds;
-            String speakerStats = String.format(" %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDuration), speakerPercent);
-            sb.append(speakerStats + "  ");
+            sb.append(speakerDurationAndPercent(speaker.getDuration(), mMeetingDurationInMilliseconds));
             sb.append(speaker.getName());
             sb.append("\n");
         }
