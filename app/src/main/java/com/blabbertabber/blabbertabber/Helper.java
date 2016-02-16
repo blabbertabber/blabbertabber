@@ -48,7 +48,7 @@ public class Helper {
      * Converts time to a string, e.g. "1:59:30"
      * or "3.6" or "5:33".
      *
-     * @param milliseconds Time in millseconds since start of meeting
+     * @param milliseconds Time in milliseconds since start of meeting
      * @return String formatted time interval string in "H:MM:SS" format.
      */
     public static String timeToHMMSS(long milliseconds) {
