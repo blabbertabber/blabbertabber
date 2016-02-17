@@ -13,6 +13,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isClickable;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.not;
 
 /**
@@ -64,5 +65,12 @@ public class SummaryActivityTest {
         for (int i = 0; i < drawerItems.length; i++) {
             onView(withText(drawerItems[i])).check(matches(not(isDisplayed())));
         }
+    }
+
+    @Test
+    public void speakerDurationAndPercentTest() {
+        assertEquals("60,000ms meeting and 600cs speaker should return ' 6 (10%) '(",
+                "        6 (10%) ",
+                SummaryActivity.speakerDurationAndPercent(600L, 60_000L));
     }
 }
