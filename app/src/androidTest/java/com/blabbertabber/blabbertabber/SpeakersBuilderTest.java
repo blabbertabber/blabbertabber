@@ -115,9 +115,9 @@ public class SpeakersBuilderTest {
         assertEquals("The number of speakers created is 1", 2, speakers.size());
         assertEquals("returns an array with that speaker's name.", "S0", speakers.get(0).getName());
         assertEquals("returns an array with that speaker's gender.", 'U', speakers.get(0).getGender());
-        assertEquals("returns an array with that speaker's duration.", 568, speakers.get(0).getDuration());
+        assertEquals("returns an array with that speaker's duration.", 5680, speakers.get(0).getDuration());
         assertEquals("returns an array with that speaker's name.", "S1", speakers.get(1).getName());
         assertEquals("returns an array with that speaker's gender.", 'F', speakers.get(1).getGender());
-        assertEquals("returns an array with that speaker's duration.", 500, speakers.get(1).getDuration());
+        assertEquals("returns an array with that speaker's duration.", 5000, speakers.get(1).getDuration());
     }
 }
