@@ -12,20 +12,31 @@ public class Speaker implements Comparable<Speaker> {
     private ArrayList<Long> startTimes = new ArrayList<Long>();  // features since start of meeting
     private ArrayList<Long> durations = new ArrayList<Long>();  // duration in features
 
+    private String mLabel = null;
     private String mName = null;
     private char mGender = '\0';
 
-    // constructor for setting name, preferred constructor
-    public Speaker(String name, char gender) {
-        mName = name;
+    // constructor for setting label, preferred constructor
+    public Speaker(String label, char gender) {
+        mLabel = label;
+        mName = label;  // default name is the Label
         mGender = gender;
     }
 
-    // constructor that allows injecting totalSpeakingTimeInMilliseconds and name; meant for tests exclusively
-    public Speaker(String name, long totalSpeakingTimeInMilliseconds) {
+    // constructor that allows injecting totalSpeakingTimeInMilliseconds and label; meant for tests exclusively
+    public Speaker(String label, long totalSpeakingTimeInMilliseconds) {
         startTimes.add(0L);
         durations.add(totalSpeakingTimeInMilliseconds);
-        mName = name;
+        mLabel = label;
+        mName = label;  // default name is the Label
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        this.mName = name;
     }
 
     public void addTurn(long startTimeInMilliseconds, long durationInMilliseconds) {
@@ -50,8 +61,8 @@ public class Speaker implements Comparable<Speaker> {
         }
     }
 
-    public String getName() {
-        return mName;
+    private String getLabel() {
+        return mLabel;
     }
 
     public long getDuration() {

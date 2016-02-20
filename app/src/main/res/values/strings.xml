@@ -56,4 +56,6 @@
         \nGerald Friedland, Ph.D. and Ekaterina Gonina, Ph.D. advised us and
         published the research papers which inspired us to write BlabberTabber.
         </string>
+
+    <string name="speaker">Speaker</string>
 </resources>
