@@ -19,7 +19,7 @@
         android:layout_weight="1"
         android:onClick="rushLimbaughIsWrong"
         android:text="@string/welcome_text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
     <Button
