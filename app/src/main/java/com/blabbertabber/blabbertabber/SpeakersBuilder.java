@@ -79,6 +79,11 @@ public class SpeakersBuilder {
         Log.i(TAG, "build()");
         ArrayList<Speaker> speakers = new ArrayList<Speaker>(speakerMap.values());
         Collections.sort(speakers, Collections.reverseOrder());
+        int speakerNum = 1;
+        for (Speaker speaker : speakers) {
+            /// TODO: internationalize Speaker.  Something like context.getResources().getString(R.string.speaker)
+            speaker.setName("Speaker " + speakerNum++);
+        }
         return colorize(speakers);
     }
 

@@ -41,7 +41,7 @@ public class SpeakersBuilderTest {
         assertEquals("Building Speakers after adding one 'turn' returns an array with one speaker.",
                 1, speakers.size());
         assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's name.",
-                "Sam", speakers.get(0).getName());
+                "Speaker 1", speakers.get(0).getName());
         assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's gender.",
                 'F', speakers.get(0).getGender());
         assertEquals("Building Speakers after adding one 'turn' returns an array with that speaker's duration.",
@@ -56,7 +56,7 @@ public class SpeakersBuilderTest {
         ArrayList<Speaker> speakers = sb.build();
         assertEquals("Adding one 'turn' returns an array with one speaker.", 1, speakers.size());
         assertEquals("Adding one 'turn' returns an array with that speaker's name.",
-                "Sam", speakers.get(0).getName());
+                "Speaker 1", speakers.get(0).getName());
         assertEquals("Adding one 'turn' returns an array with that speaker's gender.",
                 'F', speakers.get(0).getGender());
         assertEquals("Adding one 'turn' returns an array with that speaker's duration.",
@@ -73,7 +73,7 @@ public class SpeakersBuilderTest {
         ArrayList<Speaker> speakers = sb.build();
         assertEquals("Adding one 'turn' returns an array with one speaker.", 2, speakers.size());
         assertEquals("Adding one 'turn' returns an array with that speaker's name.",
-                "Pat", speakers.get(0).getName());
+                "Speaker 1", speakers.get(0).getName());
         assertEquals("Adding one 'turn' returns an array with that speaker's gender.",
                 'M', speakers.get(0).getGender());
         assertEquals("Adding one 'turn' returns an array with that speaker's duration.",
@@ -113,10 +113,10 @@ public class SpeakersBuilderTest {
 
         ArrayList<Speaker> speakers = new SpeakersBuilder().parseSegStream(inputStream).build();
         assertEquals("The number of speakers created is 1", 2, speakers.size());
-        assertEquals("returns an array with that speaker's name.", "S0", speakers.get(0).getName());
+        assertEquals("returns an array with that speaker's name.", "Speaker 1", speakers.get(0).getName());
         assertEquals("returns an array with that speaker's gender.", 'U', speakers.get(0).getGender());
         assertEquals("returns an array with that speaker's duration.", 5680, speakers.get(0).getDuration());
-        assertEquals("returns an array with that speaker's name.", "S1", speakers.get(1).getName());
+        assertEquals("returns an array with that speaker's name.", "Speaker 2", speakers.get(1).getName());
         assertEquals("returns an array with that speaker's gender.", 'F', speakers.get(1).getGender());
         assertEquals("returns an array with that speaker's duration.", 5000, speakers.get(1).getDuration());
     }
