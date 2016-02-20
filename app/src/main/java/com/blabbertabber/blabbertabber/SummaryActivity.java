@@ -35,10 +35,9 @@ public class SummaryActivity extends Activity {
     private long mMeetingDurationInMilliseconds;
     private ArrayList<Speaker> mSpeakers;
 
-    public static String speakerDurationAndPercent(long speakerDurationInCentiseconds, long meetingDurationInMilliseconds) {
-        long speakerDurationinMilliseconds = 10 * speakerDurationInCentiseconds;
-        double speakerPercent = 100 * (double) speakerDurationinMilliseconds / (double) meetingDurationInMilliseconds;
-        return (String.format(Locale.getDefault(), " %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDurationinMilliseconds), speakerPercent));
+    public static String speakerDurationAndPercent(long speakerDurationInMilliseconds, long meetingDurationInMilliseconds) {
+        double speakerPercent = 100 * (double) speakerDurationInMilliseconds / (double) meetingDurationInMilliseconds;
+        return (String.format(Locale.getDefault(), " %8s (%2.0f%%) ", Helper.timeToHMMSS(speakerDurationInMilliseconds), speakerPercent));
     }
 
     @Override
@@ -96,11 +95,11 @@ public class SummaryActivity extends Activity {
 
         TextView minSpeakerDurationView = (TextView) findViewById(R.id.textview_min);
         long minSpeakerDuration = Collections.min(mSpeakers).getDuration();
-        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration * 10)); // convert centiseconds to milliseconds
+        minSpeakerDurationView.setText(Helper.timeToHMMSSm(minSpeakerDuration));
 
         TextView maxSpeakerDurationView = (TextView) findViewById(R.id.textview_max);
         long maxSpeakerDuration = Collections.max(mSpeakers).getDuration();
-        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration * 10));
+        maxSpeakerDurationView.setText(Helper.timeToHMMSSm(maxSpeakerDuration));
 
 
         for (int i = 0; i < mSpeakers.size(); i++) {

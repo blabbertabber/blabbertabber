@@ -47,29 +47,31 @@ public class SpeakersBuilder {
         while (st.nextToken() != st.TT_EOF) { // show name
             st.nextToken(); // the channel number
             st.nextToken(); // the start of the segment (in features)
-            long startTime = (long) st.nval;
+            // convert centiseconds to milliseconds
+            long startTimeInMilliseconds = (long) st.nval * 10;
             st.nextToken(); // the length of the segment (in features)
-            long duration = (long) st.nval;
+            // convert centiseconds to milliseconds
+            long durationInMilliseconds = (long) st.nval * 10;
             st.nextToken(); // the speaker gender (U=unknown, F=female, M=Male)
             char gender = st.sval.charAt(0);
             st.nextToken(); // the type of band (T=telephone, S=studio)
             st.nextToken(); // the type of environment (music, speech only, …)
             st.nextToken(); // the speaker label
             String name = st.sval;
-            add(startTime, duration, name, gender);
+            add(startTimeInMilliseconds, durationInMilliseconds, name, gender);
         }
         return this;
     }
 
-    public SpeakersBuilder add(long startTime, long duration, String name, char gender) {
-        Log.i(TAG, "add() start: " + startTime + " duration: " + duration +
+    public SpeakersBuilder add(long startTimeInMilliseconds, long durationInMilliseconds, String name, char gender) {
+        Log.i(TAG, "add() start: " + startTimeInMilliseconds + " duration: " + durationInMilliseconds +
                 " name: " + name + " gender: " + gender);
         Speaker speaker = speakerMap.get(name);
         if (speaker == null) {
             speaker = new Speaker(name, gender);
             speakerMap.put(name, speaker);
         }
-        speaker.addTurn(startTime, duration);
+        speaker.addTurn(startTimeInMilliseconds, durationInMilliseconds);
         return this;
     }
 
