@@ -2,25 +2,20 @@
     <string name="app_name">BlabberTabber</string>
 
     <string name="welcome_text" formatted="false">BlabberTabber allows you to record how much time each
-        speaker has spoken in a meeting.  It is currently in ALPHA test, and does NOT produce meaningful
-        results.\n
+        speaker has spoken in a meeting.  It is under construction.  It does not work yet.\n
         \nTo pause, press "PAUSE", to resume, press
         "RECORD", and to reset the tally, press "RESET".\n
-        \nWhen the meeting is over, press finish to see the final tally. You will have the option
-        to email or SMS the results.\n
-        \nBlabberTabber IS WRONG 100% OF THE TIME. We are working to fix it.\n
-        \nPlease do not review BlabberTabber at this time.  (Unless, of course, you want to give us
-        five stars to encourage us to finish it.)
+        \nWhen the meeting is over, press "FINISH" to see the final tally.\n
     </string>
     <string name="first_time">display splash screen</string>
-    <string name="launch_recording_activity">I understand that BlabberTabber is NOT accurate!</string>
+    <string name="launch_recording_activity">Got it!</string>
 
     <string name="action_settings">Settings</string>
     <string name="button_finish">finish</string>
     <string name="button_pause">pause</string>
     <string name="button_record">record</string>
     <string name="button_reset">reset</string>
-    <string name="performing_diarization">Performing Diarization</string>
+    <string name="performing_diarization">Analyzing Meeting</string>
 
     <string name="button_new_meeting">New Meeting</string>
     <string name="button_share">Share</string>
@@ -32,7 +27,8 @@
     <string name="text_min_header">Min</string>
     <string name="text_average_header">Average</string>
     <string name="speaker_name_title">Speaker</string>
-    <string name="speaker_duration_title">Duration</string>
+    <string name="speaker_barchart_title">Duration</string>
+    <string name="speaker_time_title">H:MM:SS</string>
     <string name="play_meeting_wav">Replay Meeting</string>
     <string name="launch_main_activity">Show Splash Screen</string>
     <string name="launch_speakerstats_activity">Speaker Statistics</string>
