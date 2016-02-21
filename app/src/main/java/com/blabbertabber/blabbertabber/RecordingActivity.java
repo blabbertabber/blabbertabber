@@ -23,6 +23,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -160,8 +161,13 @@ public class RecordingActivity extends Activity {
         redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
         yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
 
-        // TODO: decide if someone pauses the meeting, switches to another activity, switches
-        // back to this activity--do we resume right away or honor the pause? We currently resume.
+        /// TODO: Determine if we need this for Toolbar manipulation.
+        ///       If not, delete these lines.
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Log.i(TAG, "onCreate  toolbar: " + toolbar);
+
+        /// TODO: decide if someone pauses the meeting, switches to another activity, switches
+        /// back to this activity--do we resume right away or honor the pause? We currently resume.
         record();
     }
 
