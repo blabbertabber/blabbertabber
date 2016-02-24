@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F0F0F0"
+        android:title="@string/app_name"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
