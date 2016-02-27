@@ -22,19 +22,58 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:onClick="togglePauseRecord"
+            android:layout_centerVertical="true"
             android:src="@drawable/big_speaker_circle" />
+
+        <TextView
+            android:id="@+id/button_pause_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="180dp"
+            android:text="@string/button_pause"
+            android:textColor="#404040"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_record_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="180dp"
+            android:text="@string/button_record"
+            android:textColor="#404040"
+            android:textSize="24sp"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/button_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickPause"
+            android:src="@drawable/ic_pause_circle_outline_white" />
+
+        <ImageView
+            android:id="@+id/button_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickRecord"
+            android:src="@drawable/ic_play_arrow_white"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 
     <TextView
         android:id="@+id/meeting_timer"
-        android:text="01:59:59"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:textSize="48sp"
-        android:textColor="#4a4a4a" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#4a4a4a"
+        android:textSize="48sp" />
 
 
     <LinearLayout
@@ -44,32 +83,6 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
-        <FrameLayout
-            android:id="@+id/toggle_pause_record"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <Button
-                android:id="@+id/button_record"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_play_arrow_24dp"
-                android:onClick="togglePauseRecord"
-                android:text="@string/button_record"
-                android:visibility="invisible" />
-
-            <Button
-                android:id="@+id/button_pause"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableTop="@drawable/ic_pause_24dp"
-                android:onClick="togglePauseRecord"
-                android:text="@string/button_pause" />
-        </FrameLayout>
-
         <Button
             android:id="@+id/button_reset"
             style="?android:attr/borderlessButtonStyle"
@@ -78,7 +91,8 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/ic_skip_previous_black_24dp"
             android:onClick="reset"
-            android:text="@string/button_reset" />
+            android:text="@string/button_reset"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/button_finish"
@@ -88,7 +102,8 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/ic_stop_24dp"
             android:onClick="summary"
-            android:text="@string/button_finish" />
+            android:text="@string/button_finish"
+            android:visibility="invisible" />
 
     </LinearLayout>
 </LinearLayout>
