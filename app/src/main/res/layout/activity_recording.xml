@@ -5,34 +5,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F0F0F0"
+        android:title="@string/app_name" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4">
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/blue_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b00099fe"
-            pie_slice:startAngle="250"
-            pie_slice:sweepAngle="40" />
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/red_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b0fe0019"
-            pie_slice:startAngle="245"
-            pie_slice:sweepAngle="50" />
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/yellow_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b0fee500"
-            pie_slice:startAngle="240"
-            pie_slice:sweepAngle="60" />
 
         <ImageView
             android:id="@+id/speaker_ball"
@@ -43,6 +26,16 @@
             android:src="@drawable/big_speaker_circle" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/meeting_timer"
+        android:text="01:59:59"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="48sp"
+        android:textColor="#4a4a4a" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
