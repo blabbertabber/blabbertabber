@@ -196,20 +196,30 @@ public class RecordingActivity extends Activity {
         );
     }
 
-    public void togglePauseRecord(View v) {
-        Log.i(TAG, "togglePauseRecord() getRecording initial state: " + RecordingService.recording);
-        if (RecordingService.recording) {
-            // was recording; need to pause
-            pause();
-            findViewById(R.id.button_reset).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_finish).setVisibility(View.VISIBLE);
-        } else {
-            // was paused; need to record
-            record();
-            findViewById(R.id.button_reset).setVisibility(View.INVISIBLE);
-            findViewById(R.id.button_finish).setVisibility(View.INVISIBLE);
-        }
+    public void clickRecord(View v) {
+        Log.i(TAG, "clickRecord() ");
+        // was paused; need to record
+        record();
+        findViewById(R.id.button_reset).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_finish).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_record_caption).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_pause_caption).setVisibility(View.VISIBLE);
     }
+
+    public void clickPause(View v) {
+        Log.i(TAG, "clickPause() ");
+        // was recording; need to pause
+        pause();
+        findViewById(R.id.button_reset).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_finish).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_record).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_record_caption).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_pause_caption).setVisibility(View.INVISIBLE);
+    }
+
 
     private void record() {
         Log.i(TAG, "record()");

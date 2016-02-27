@@ -22,8 +22,48 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:onClick="togglePauseRecord"
+            android:layout_centerVertical="true"
             android:src="@drawable/big_speaker_circle" />
+
+        <TextView
+            android:id="@+id/button_pause_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="180dp"
+            android:text="@string/button_pause"
+            android:textColor="#404040"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/button_record_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="180dp"
+            android:text="@string/button_record"
+            android:textColor="#404040"
+            android:textSize="24sp"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/button_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickPause"
+            android:src="@drawable/ic_pause_circle_outline_white" />
+
+        <ImageView
+            android:id="@+id/button_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickRecord"
+            android:src="@drawable/ic_play_arrow_white"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 
