@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -71,6 +72,8 @@ public class RecordingActivity extends Activity {
         }
     };
     private BroadcastReceiver mReceiver;
+    private Timer mTimer = new Timer();
+    private TextView mTimerView;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -92,7 +95,7 @@ public class RecordingActivity extends Activity {
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
                     int[] speakerinfo = intent.getIntArrayExtra(AudioEventProcessor.RECORD_MESSAGE);
                     int volume = speakerinfo[0];
-                    // do something here.
+                    mTimerView.setText(Helper.timeToHMMSSMinuteMandatory(mTimer.time()));
                     Log.v(TAG, "mReceiver.onReceive() " + volume);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
@@ -134,6 +137,7 @@ public class RecordingActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
         setContentView(R.layout.activity_recording);
+        mTimerView = (TextView) findViewById(R.id.meeting_timer);
         // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -209,6 +213,7 @@ public class RecordingActivity extends Activity {
             Log.i(TAG, "record() bailing out early, don't have permissions");
             return;
         }
+        mTimer.start();
         RecordingService.recording = true;
 
         // start the animations
@@ -218,6 +223,7 @@ public class RecordingActivity extends Activity {
 
     private void pause() {
         Log.i(TAG, "pause()");
+        mTimer.stop();
         RecordingService.recording = false;
         findViewById(R.id.button_record).setVisibility(View.VISIBLE);
         findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
@@ -225,13 +231,15 @@ public class RecordingActivity extends Activity {
 
     public void reset(View v) {
         Log.i(TAG, "reset()");
+        mTimer.reset();
         RecordingService.reset = true;
         record(); // start recording again immediately after a reset
     }
 
     public void summary(View v) {
         Log.i(TAG, "summary()");
-        pause(); // stop the recording and animations
+        mTimer.stop();
+        pause(); // stop the recording
         diarizationProgress();
         final Context context = this;
         new Thread() {
