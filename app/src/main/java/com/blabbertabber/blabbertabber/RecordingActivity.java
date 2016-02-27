@@ -1,10 +1,6 @@
 package com.blabbertabber.blabbertabber;
 
 import android.Manifest;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -57,8 +53,6 @@ public class RecordingActivity extends Activity {
     public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
     private static final int REQUEST_RECORD_AUDIO = 51;
-    private static final AnimatorSet NULL_ANIMATOR_SET = new AnimatorSet();
-    public static double processingToMeetingLengthRatio = 1.0;
     private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
@@ -77,13 +71,6 @@ public class RecordingActivity extends Activity {
         }
     };
     private BroadcastReceiver mReceiver;
-    private PieSlice bluePieSlice;
-    private PieSlice redPieSlice;
-    private PieSlice yellowPieSlice;
-    private ObjectAnimator rotateBlue;
-    private ObjectAnimator rotateRed;
-    private ObjectAnimator rotateYellow;
-    private AnimatorSet animatorSet = NULL_ANIMATOR_SET;    // Null object pattern
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -107,7 +94,6 @@ public class RecordingActivity extends Activity {
                     int volume = speakerinfo[0];
                     // do something here.
                     Log.v(TAG, "mReceiver.onReceive() " + volume);
-                    updateSpeakerVolumeView(volume);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
                     int status = intent.getIntExtra(AudioEventProcessor.RECORD_STATUS_MESSAGE, AudioEventProcessor.UNKNOWN_STATUS);
@@ -157,10 +143,6 @@ public class RecordingActivity extends Activity {
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
         }
-        bluePieSlice = (PieSlice) findViewById(R.id.blue_pie_slice);
-        redPieSlice = (PieSlice) findViewById(R.id.red_pie_slice);
-        yellowPieSlice = (PieSlice) findViewById(R.id.yellow_pie_slice);
-
         /// TODO: Determine if we need this for Toolbar manipulation.
         ///       If not, delete these lines.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -187,10 +169,6 @@ public class RecordingActivity extends Activity {
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
-        // clear out the animatorSet; it doesn't recover properly (paused/started/running
-        // are all true, but the animations are frozen)
-        animatorSet.cancel(); // cancel() is quicker than end(); it doesn't wait for animations to finish
-        animatorSet = NULL_ANIMATOR_SET;
     }
 
     @Override
@@ -236,44 +214,17 @@ public class RecordingActivity extends Activity {
         // start the animations
         findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
         findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
-
-        rotateBlue = ObjectAnimator.ofFloat(bluePieSlice, View.ROTATION, 360).setDuration(7_000);
-        rotateRed = ObjectAnimator.ofFloat(redPieSlice, View.ROTATION, -360).setDuration(11_000);
-        rotateYellow = ObjectAnimator.ofFloat(yellowPieSlice, View.ROTATION, 360).setDuration(13_000);
-
-        rotateBlue.setRepeatCount(ValueAnimator.INFINITE);
-        rotateRed.setRepeatCount(ValueAnimator.INFINITE);
-        rotateYellow.setRepeatCount(ValueAnimator.INFINITE);
-
-        if (animatorSet == NULL_ANIMATOR_SET) {
-            animatorSet = new AnimatorSet();
-            animatorSet.play(rotateBlue).with(rotateRed).with(rotateYellow);
-            animatorSet.start();
-        } else {
-            Log.i(TAG, "animatorSet.isPaused(): " + animatorSet.isPaused() +
-                    " animatorSet.isStarted(): " + animatorSet.isStarted() +
-                    " animatorSet.isRunning(): " + animatorSet.isRunning());
-            if (animatorSet.isPaused()) {
-                animatorSet.resume();
-            }
-        }
     }
 
     private void pause() {
         Log.i(TAG, "pause()");
         RecordingService.recording = false;
-        // stop the animations
         findViewById(R.id.button_record).setVisibility(View.VISIBLE);
         findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
-        // pause the animation
-        animatorSet.pause();
     }
 
     public void reset(View v) {
         Log.i(TAG, "reset()");
-        // reset the animation and begin recording
-        animatorSet.end();
-        animatorSet.start();
         RecordingService.reset = true;
         record(); // start recording again immediately after a reset
     }
@@ -291,26 +242,6 @@ public class RecordingActivity extends Activity {
                 startActivity(intent);
             }
         }.start();
-    }
-
-    private void updateSpeakerVolumeView(int speakerVolume) {
-        // PieSlices are "maxed-out" by default
-        // Max-out corresponds to a 32767 speaker volume
-        // .80 * PieSlice is the min, corresponding to a 0 speaker volume
-        // "goldenRatio" has nothing to do with the Golden Ratio
-        float goldenRatio = (float) (0.2 * (double) speakerVolume / (double) Short.MAX_VALUE + 0.8);
-        Log.d(TAG, "updateSpeakerVolumeView() goldenRatio: " + goldenRatio);
-        PropertyValuesHolder phvx = PropertyValuesHolder.ofFloat(View.SCALE_X, (float) (goldenRatio));
-        PropertyValuesHolder phvy = PropertyValuesHolder.ofFloat(View.SCALE_Y, (float) (goldenRatio));
-
-        ObjectAnimator bScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(bluePieSlice, phvx, phvy).setDuration(20);
-        ObjectAnimator rScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(redPieSlice, phvx, phvy).setDuration(20);
-        ObjectAnimator yScaleAnimation = ObjectAnimator.ofPropertyValuesHolder(yellowPieSlice, phvx, phvy).setDuration(20);
-
-        // shrink and expand the pie slices, depending on how loudly people are talking
-        AnimatorSet ephemeralAnimatorSet = new AnimatorSet();
-        ephemeralAnimatorSet.play(bScaleAnimation).with(rScaleAnimation).with(yScaleAnimation);
-        ephemeralAnimatorSet.start();
     }
 
     private void copySphinxConfigFileIntoPlace() {
