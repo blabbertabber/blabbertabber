@@ -10,36 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F0F0F0"
-        android:title="@string/app_name"/>
+        android:title="@string/app_name" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4">
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/blue_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b00099fe"
-            pie_slice:startAngle="250"
-            pie_slice:sweepAngle="40" />
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/red_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b0fe0019"
-            pie_slice:startAngle="245"
-            pie_slice:sweepAngle="50" />
-
-        <com.blabbertabber.blabbertabber.PieSlice xmlns:pie_slice="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/yellow_pie_slice"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            pie_slice:pieColor="#b0fee500"
-            pie_slice:startAngle="240"
-            pie_slice:sweepAngle="60" />
 
         <ImageView
             android:id="@+id/speaker_ball"
