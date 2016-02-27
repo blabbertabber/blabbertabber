@@ -199,9 +199,15 @@ public class RecordingActivity extends Activity {
     public void togglePauseRecord(View v) {
         Log.i(TAG, "togglePauseRecord() getRecording initial state: " + RecordingService.recording);
         if (RecordingService.recording) {
+            // was recording; need to pause
             pause();
+            findViewById(R.id.button_reset).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_finish).setVisibility(View.VISIBLE);
         } else {
+            // was paused; need to record
             record();
+            findViewById(R.id.button_reset).setVisibility(View.INVISIBLE);
+            findViewById(R.id.button_finish).setVisibility(View.INVISIBLE);
         }
     }
 
@@ -215,18 +221,12 @@ public class RecordingActivity extends Activity {
         }
         mTimer.start();
         RecordingService.recording = true;
-
-        // start the animations
-        findViewById(R.id.button_record).setVisibility(View.INVISIBLE);
-        findViewById(R.id.button_pause).setVisibility(View.VISIBLE);
     }
 
     private void pause() {
         Log.i(TAG, "pause()");
         mTimer.stop();
         RecordingService.recording = false;
-        findViewById(R.id.button_record).setVisibility(View.VISIBLE);
-        findViewById(R.id.button_pause).setVisibility(View.INVISIBLE);
     }
 
     public void reset(View v) {
