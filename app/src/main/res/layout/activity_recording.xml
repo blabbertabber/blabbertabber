@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:paddingTop="180dp"
+            android:paddingTop="280dp"
             android:text="@string/button_pause"
             android:textColor="#404040"
             android:textSize="24sp" />
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:paddingTop="180dp"
+            android:paddingTop="280dp"
             android:text="@string/button_record"
             android:textColor="#404040"
             android:textSize="24sp"
