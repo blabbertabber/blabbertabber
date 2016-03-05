@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ import fr.lium.spkDiarization.programs.MSeg;
 public class RecordingActivity extends Activity {
     public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
+    private static final String PREF_ELAPSED_TIME = "com.blabbertabber.blabbertabber.pref_elapsed_time";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private RecordingService mRecordingService;
     private boolean mBound = false;
@@ -136,6 +138,9 @@ public class RecordingActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume()");
+        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        mElapsedTime = sharedPref.getLong(PREF_ELAPSED_TIME, mElapsedTime);
         setContentView(R.layout.activity_recording);
         mTimerView = (TextView) findViewById(R.id.meeting_timer);
         // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE
