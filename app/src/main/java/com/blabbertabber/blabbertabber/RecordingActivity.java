@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -138,9 +137,9 @@ public class RecordingActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume()");
-        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        mElapsedTime = sharedPref.getLong(PREF_ELAPSED_TIME, mElapsedTime);
+        double meetingInSeconds = Helper.howLongWasMeetingInSeconds(new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME).length());
+        Log.i(TAG, "onResume   meetingInSeconds: " + meetingInSeconds + "   Timer: " + mTimer.time());
+        mTimer = new Timer((long) (meetingInSeconds * 1000));
         setContentView(R.layout.activity_recording);
         mTimerView = (TextView) findViewById(R.id.meeting_timer);
         // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE

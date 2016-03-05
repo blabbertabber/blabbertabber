@@ -146,7 +146,7 @@ public class Helper {
     /**
      * Calculates the duration of a meeting based on the file's size in bytes
      *
-     * @param fileSizeInBytes, typically File(getFilesDir() + "/meeting.raw").size()
+     * @param fileSizeInBytes, typically new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME).length()
      * @return double
      */
     public static double howLongWasMeetingInSeconds(long fileSizeInBytes) {
