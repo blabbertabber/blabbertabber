@@ -13,6 +13,11 @@ public class Timer {
         reset();
     }
 
+    public Timer(long elapsedTimeMillis) {
+        reset();
+        elapsedTime = elapsedTimeMillis;
+    }
+
     /**
      * How much time has elapsed
      *

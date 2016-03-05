@@ -196,4 +196,11 @@ public class TimerTest {
         assertThat("Started, time elapsed should return should be greater than 149 ms", time, greaterThan(149L));
         assertThat("Started, time elapsed should return should be less than 160 ms", time, lessThan(160L));
     }
+
+    @Test
+    public void constructorWithElapsedTime() {
+        timer = new Timer(120);
+        time = timer.time();
+        assertEquals("Time elapsed should be 149 ms", time, 120L);
+    }
 }
