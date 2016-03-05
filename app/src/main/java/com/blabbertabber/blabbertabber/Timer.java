@@ -7,7 +7,7 @@ public class Timer {
     private long startTime;
     private long elapsedTime;
     private boolean started = false;
-    private boolean running;
+    private boolean running = false;
 
     public Timer() {
         reset();
@@ -16,6 +16,7 @@ public class Timer {
     public Timer(long elapsedTimeMillis) {
         reset();
         elapsedTime = elapsedTimeMillis;
+        started = true;
     }
 
     /**

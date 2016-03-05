@@ -200,7 +200,6 @@ public class TimerTest {
     @Test
     public void constructorWithElapsedTime() {
         timer = new Timer(120);
-        time = timer.time();
-        assertEquals("Time elapsed should be 149 ms", time, 120L);
+        assertEquals("Time elapsed should be 120 ms", 120L, timer.time());
     }
 }

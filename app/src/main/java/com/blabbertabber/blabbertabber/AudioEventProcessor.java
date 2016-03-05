@@ -89,15 +89,15 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
 
     @Override
     public void onPeriodicNotification(AudioRecord recorder) {
-        Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)");
+        Log.v(TAG, "onPeriodicNotification(AudioRecord recorder)");
         short buffer[] = new short[NUM_FRAMES];
         int readSize = recorder.read(buffer, 0, NUM_FRAMES);
         if (readSize > 0) {
-            Log.i(TAG, "onPeriodicNotification(AudioRecord recorder)   readSize: " + readSize);
+            Log.v(TAG, "onPeriodicNotification(AudioRecord recorder)   readSize: " + readSize);
             onPeriodicNotification(buffer);
         } else {
             // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
-            Log.i(TAG, "onPeriodicNotification() NEGATIVE readsize: " + readSize);
+            Log.v(TAG, "onPeriodicNotification() NEGATIVE readsize: " + readSize);
             switch (readSize) {
                 case AudioRecord.ERROR_BAD_VALUE:
                     Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_BAD_VALUE.  Denotes a failure due to the use of an invalid value.");
@@ -110,7 +110,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     }
 
     public void onPeriodicNotification(short[] buffer) {
-        Log.i(TAG, "onPeriodicNotification()");
+        Log.v(TAG, "onPeriodicNotification()");
         short maxAmplitude = writeRawAndReturnMaxAmplitude(buffer);
         Log.v(TAG, "onPeriodicNotification(buffer) readsize: " + buffer.length + " maxAmplitude " + maxAmplitude);
         sendVolume(maxAmplitude);
