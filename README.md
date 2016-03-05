@@ -15,7 +15,7 @@ BlabberTabber is an Android Application that performs
 
 | Summary Screen | Recording Screen | Splash Screen |
 |----------------|------------------|---------------|
-| ![summary screen](https://cloud.githubusercontent.com/assets/1020675/11888325/fca259bc-a4f0-11e5-9746-ee5a5b14ef5b.png) | ![recording screen](https://cloud.githubusercontent.com/assets/1020675/12866959/d4bd625e-cc94-11e5-8a67-f6409a672087.png) | ![splash screen](http://imgur.com/t8CfYaL.png) |
+| ![summary screen](https://cloud.githubusercontent.com/assets/1020675/11888325/fca259bc-a4f0-11e5-9746-ee5a5b14ef5b.png) | ![recording screen](https://cloud.githubusercontent.com/assets/4217110/13548751/7646b710-e2c5-11e5-87b7-49be7367ebcc.png) | ![splash screen](http://imgur.com/t8CfYaL.png) |
 
 ### Acknowledgements
 
