@@ -23,6 +23,12 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g" // Use gig increments depending on needs
+        dexInProcess false
+    }
+
 }
 
 // https://github.com/codepath/android_guides/wiki/Design-Support-Library
