@@ -45,6 +45,8 @@
     <string name="drawer_title">Advanced</string>
     <string name="title_activity_acknowledgements">AcknowledgementsActivity</string>
 
+    <string name="recording_service">Recording</string>
+
     <string name="acknowledgements_text" formatted="false">
         Charlotte Cunningham designed BlabberTabber and also created all graphics.\n
         \nBlabberTabber was written by Brendan Cunnie and Brian Cunnie.\n

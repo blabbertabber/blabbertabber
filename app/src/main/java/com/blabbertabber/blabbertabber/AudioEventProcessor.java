@@ -1,5 +1,9 @@
 package com.blabbertabber.blabbertabber;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
@@ -39,9 +43,11 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
     // size of the buffer array needs to be NUM_FRAMES * 2;
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
     private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
+    private static final int RECORDER_NOTIFICATION_ID = 19937;   // Unique id for notifications
     private static AudioRecordAbstract audioRecordWrapper;
     private static String rawFilePathName;
     public int numSpeakers;
+    NotificationManager mNotificationManager;
     private Context context;
     private OutputStream rawFileOutputStream;
     private LocalBroadcastManager mBroadcastManager;
@@ -58,6 +64,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
             e.printStackTrace();
         }
         mBroadcastManager = LocalBroadcastManager.getInstance(context);
+        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         /// TODO remove
         numSpeakers = 1;
     }
@@ -188,6 +195,7 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
 
         Log.i(TAG, "run() audioRecordWrapper: " + audioRecordWrapper);
         audioRecordWrapper.startRecording();
+        notificationBar(true);
 
         boolean oldRecordingServiceRecording = RecordingService.recording;
         Log.i(TAG, "run()   RecordingService.recording: " + RecordingService.recording + "   oldRecordingServiceRecording: " + oldRecordingServiceRecording);
@@ -208,9 +216,11 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 if (!RecordingService.recording) {
                     // We're not recording, stop
                     audioRecordWrapper.stopAndRelease();
+                    notificationBar(false);
                 } else {
                     Log.i(TAG, "run()   About to call audioRecordWrapper.startRecording()");
                     audioRecordWrapper.startRecording();
+                    notificationBar(true);
                 }
                 oldRecordingServiceRecording = RecordingService.recording;
             }
@@ -221,6 +231,39 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void notificationBar(boolean show) {
+        if (show) {
+            Notification.Builder mBuilder =
+                    new Notification.Builder(context)
+                            .setSmallIcon(R.drawable.ic_mic)
+                            .setContentTitle(context.getString(R.string.app_name))
+                            .setContentText(context.getString(R.string.recording_service));
+            // Creates an explicit intent for an Activity in your app
+            Intent resultIntent = new Intent(context, RecordingActivity.class);
+
+            // The stack builder object will contain an artificial back stack for the
+            // started Activity.
+            // This ensures that navigating backward from the Activity leads out of
+            // your application to the Home screen.
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+            // Adds the back stack for the Intent (but not the Intent itself)
+            stackBuilder.addParentStack(RecordingActivity.class);
+            // Adds the Intent that starts the Activity to the top of the stack
+            stackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent =
+                    stackBuilder.getPendingIntent(
+                            0,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+            mBuilder.setContentIntent(resultPendingIntent);
+
+            // mId allows you to update the notification later on.
+            mNotificationManager.notify(RECORDER_NOTIFICATION_ID, mBuilder.build());
+        } else {
+            mNotificationManager.cancelAll();
         }
     }
 }
