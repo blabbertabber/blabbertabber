@@ -26,7 +26,7 @@ android {
 
     dexOptions {
         javaMaxHeapSize "4g" // Use gig increments depending on needs
-        dexInProcess false
+//        dexInProcess false
     }
 
 }
