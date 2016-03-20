@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -53,7 +54,7 @@ import fr.lium.spkDiarization.programs.MSeg;
 public class RecordingActivity extends Activity {
     public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
-    private static final String PREF_ELAPSED_TIME = "com.blabbertabber.blabbertabber.pref_elapsed_time";
+    private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
     private static final int REQUEST_RECORD_AUDIO = 51;
     private RecordingService mRecordingService;
     private boolean mBound = false;
@@ -137,8 +138,13 @@ public class RecordingActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume()");
+
+        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        RecordingService.recording = sharedPref.getBoolean(PREF_RECORDING, RecordingService.recording);
+
         double meetingInSeconds = Helper.howLongWasMeetingInSeconds(new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME).length());
-        Log.i(TAG, "onResume   meetingInSeconds: " + meetingInSeconds + "   Timer: " + mTimer.time());
+        Log.w(TAG, "onResume   meetingInSeconds: " + meetingInSeconds + "   Timer: " + mTimer.time());
         mTimer = new Timer((long) (meetingInSeconds * 1000));
         setContentView(R.layout.activity_recording);
         mTimerView = (TextView) findViewById(R.id.meeting_timer);
@@ -171,6 +177,10 @@ public class RecordingActivity extends Activity {
             unbindService(mServerConn);
         }
         pause();
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(PREF_RECORDING, RecordingService.recording);
+        editor.apply();
     }
 
     @Override
