@@ -197,6 +197,8 @@ public class RecordingActivity extends Activity {
 
     private void registerRecordingServiceReceiver() {
         Intent serviceIntent = new Intent(this, RecordingService.class);
+        // Start service first, then bind to it. Sounds redundant, but we have our reasons
+        startService(serviceIntent);
         if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
             Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
         } else {
