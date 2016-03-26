@@ -8,8 +8,8 @@ android {
         applicationId "com.blabbertabber.blabbertabber"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 6
-        versionName "0.8.4"
+        versionCode 7
+        versionName "0.8.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        multiDexEnabled true
     }
