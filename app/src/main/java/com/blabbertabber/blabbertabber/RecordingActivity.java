@@ -21,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -75,7 +74,6 @@ public class RecordingActivity extends Activity {
     };
     private BroadcastReceiver mReceiver;
     private Timer mTimer = new Timer();
-    private TextView mTimerView;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -89,6 +87,7 @@ public class RecordingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+        setContentView(R.layout.activity_recording);
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -97,7 +96,7 @@ public class RecordingActivity extends Activity {
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
                     int[] speakerinfo = intent.getIntArrayExtra(AudioEventProcessor.RECORD_MESSAGE);
                     int volume = speakerinfo[0];
-                    mTimerView.setText(Helper.timeToHMMSSMinuteMandatory(mTimer.time()));
+                    displayTimer(mTimer);
                     Log.v(TAG, "mReceiver.onReceive() " + volume);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
@@ -139,16 +138,7 @@ public class RecordingActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
 
-        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        RecordingService.recording = sharedPref.getBoolean(PREF_RECORDING, RecordingService.recording);
-
-        double meetingInSeconds = Helper.howLongWasMeetingInSeconds(new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME).length());
-        Log.w(TAG, "onResume   meetingInSeconds: " + meetingInSeconds + "   Timer: " + mTimer.time());
-        mTimer = new Timer((long) (meetingInSeconds * 1000));
-        setContentView(R.layout.activity_recording);
-        mTimerView = (TextView) findViewById(R.id.meeting_timer);
-        // Let's make sure we have android.permission.RECORD_AUDIO permission and WRITE_EXTERNAL_STORAGE
+        // Let's make sure we have android.permission.RECORD_AUDIO
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             registerRecordingServiceReceiver();
@@ -157,14 +147,20 @@ public class RecordingActivity extends Activity {
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     REQUEST_RECORD_AUDIO);
         }
-        /// TODO: Determine if we need this for Toolbar manipulation.
-        ///       If not, delete these lines.
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Log.i(TAG, "onCreate  toolbar: " + toolbar);
 
-        /// TODO: decide if someone pauses the meeting, switches to another activity, switches
-        /// back to this activity--do we resume right away or honor the pause? We currently resume.
-        record();
+        double meetingInSeconds = Helper.howLongWasMeetingInSeconds(new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME).length());
+        Log.w(TAG, "onResume   meetingInSeconds: " + meetingInSeconds + "   Timer: " + mTimer.time());
+        mTimer = new Timer((long) (meetingInSeconds * 1000));
+        displayTimer(mTimer);
+
+        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        if (sharedPref.getBoolean(PREF_RECORDING, RecordingService.recording)) {
+            // we're recording, not paused; maybe the screen was rotated
+            clickRecord(null);
+        } else {
+            clickPause(null);
+        }
     }
 
     @Override
@@ -176,7 +172,6 @@ public class RecordingActivity extends Activity {
         if (mServerConn != null && mBound) {
             unbindService(mServerConn);
         }
-        pause();
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(PREF_RECORDING, RecordingService.recording);
@@ -197,6 +192,8 @@ public class RecordingActivity extends Activity {
 
     private void registerRecordingServiceReceiver() {
         Intent serviceIntent = new Intent(this, RecordingService.class);
+        // Start service first, then bind to it. Sounds redundant, but we have our reasons
+        startService(serviceIntent);
         if (bindService(serviceIntent, mServerConn, BIND_AUTO_CREATE)) {
             Log.i(TAG, "bindService() succeeded, mBound: " + mBound);
         } else {
@@ -316,6 +313,11 @@ public class RecordingActivity extends Activity {
             }
         }
         Log.wtf(TAG, "Oops, an unasked-for permission was granted/denied.");
+    }
+
+    private void displayTimer(Timer t) {
+        ((TextView) findViewById(R.id.meeting_timer))
+                .setText(Helper.timeToHMMSSMinuteMandatory(t.time()));
     }
 
     private void diarize() {

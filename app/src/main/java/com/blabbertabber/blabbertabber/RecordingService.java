@@ -54,7 +54,14 @@ public class RecordingService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "onStartCommand() startId: " + startId + " flags: " + flags);
+        return START_NOT_STICKY;
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind()");
         return mBinder;
     }
 
