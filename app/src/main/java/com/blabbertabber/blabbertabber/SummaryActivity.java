@@ -227,7 +227,7 @@ public class SummaryActivity extends Activity {
 
     public void launchAcknowledgementsActivity(MenuItem menuItem) {
         Log.i(TAG, "launchAcknowledgementsActivity()");
-        Intent intent = new Intent(this, AcknowledgementsActivity.class);
+        Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
     }
 }

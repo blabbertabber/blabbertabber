@@ -20,11 +20,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
  */
 
 
-public class AcknowledgementsActivityTest {
-    private static final String TAG = "AcknowledgementsActivityTest";
+public class AboutActivityTest {
+    private static final String TAG = "AboutActivityTest";
     @Rule
-    public IntentsTestRule<AcknowledgementsActivity> mActivityRule =
-            new IntentsTestRule<AcknowledgementsActivity>(AcknowledgementsActivity.class);
+    public IntentsTestRule<AboutActivity> mActivityRule =
+            new IntentsTestRule<AboutActivity>(AboutActivity.class);
 
     @Test
     public void buttonAckFinishTest() {

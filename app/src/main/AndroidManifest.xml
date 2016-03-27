@@ -24,7 +24,7 @@
         </activity>
         <activity android:name=".RecordingActivity" />
         <activity android:name=".SummaryActivity" />
-        <activity android:name=".AcknowledgementsActivity" />
+        <activity android:name=".AboutActivity" />
         <activity android:name=".SpeakerStatsActivity" />
 
         <service
