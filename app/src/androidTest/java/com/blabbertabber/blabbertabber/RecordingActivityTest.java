@@ -39,6 +39,12 @@ public class RecordingActivityTest {
     // fail: android:clickable="false" in activity_main.xml
     @Test
     public void InitialScreenTest() {
+        // if R.id.button_record is displayed (artifact of earlier state)
+        // then click it so that button_pause is displayed and test can continue
+        if (!RecordingService.recording) {
+            onView(withId(R.id.button_record)).perform(click());
+        }
+
         onView(withId(R.id.button_pause)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.button_pause_caption)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
@@ -61,7 +67,6 @@ public class RecordingActivityTest {
 
         onView(withId(R.id.button_reset)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.button_finish)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
 
         // test the toggle feature; can't be in a separate test because it resets the state
         // note that we click button_record because that's the visible one, not button_pause.
