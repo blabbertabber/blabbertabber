@@ -34,8 +34,8 @@
             android:onClick="showLSegFile"
             android:title="@string/show_l_seg_file" />
         <item
-            android:id="@+id/acknowledgements"
-            android:onClick="launchAcknowledgementsActivity"
-            android:title="@string/launch_acknowledgements_activity" />
+            android:id="@+id/about"
+            android:onClick="launchAboutActivity"
+            android:title="@string/launch_about_activity" />
     </group>
 </menu>
