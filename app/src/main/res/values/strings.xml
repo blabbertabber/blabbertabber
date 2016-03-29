@@ -38,18 +38,19 @@
     <string name="show_uem_seg_file">Show .uem.seg File</string>
     <string name="show_s_seg_file">Show .s.seg File</string>
     <string name="show_l_seg_file">Show .l.seg File</string>
-    <string name="launch_acknowledgements_activity">Acknowledgements</string>
+    <string name="launch_about_activity">About</string>
     <string name="drawer_open">Open Sesame!</string>
     <string name="drawer_close">Close Sesame!</string>
     <string name="drawer_description">Beautiful Drawers!</string>
     <string name="drawer_title">Advanced</string>
-    <string name="title_activity_acknowledgements">AcknowledgementsActivity</string>
+    <string name="title_activity_about">AboutActivity</string>
 
     <string name="recording_service">Recording</string>
 
-    <string name="acknowledgements_text" formatted="false">
-        Charlotte Cunningham designed BlabberTabber and also created all graphics.\n
-        \nBlabberTabber was written by Brendan Cunnie and Brian Cunnie.\n
+    <string name="about_version">version</string>
+    <string name="about_text" formatted="false">
+        Charlotte Cunningham designed BlabberTabber and created many of the graphics.\n
+        \nBrendan Cunnie and Brian Cunnie coded BlabberTabber.\n
         \nDaniel Di Matteo wrote the first android diarization program. His code
         helped us tremendously, and uses LIUM.\n
         \nLIUM is a Java-based open source toolkit for diarization, written by

@@ -51,7 +51,7 @@ public class SummaryActivityTest {
         int[] drawerItems = {
                 R.string.play_meeting_wav,
                 R.string.launch_main_activity,
-                R.string.launch_acknowledgements_activity,
+                R.string.launch_about_activity,
         };
 
         // slide open the NavigationDrawer to expose the menuItems
