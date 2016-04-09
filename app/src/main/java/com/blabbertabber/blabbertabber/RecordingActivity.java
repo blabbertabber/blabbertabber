@@ -253,8 +253,9 @@ public class RecordingActivity extends Activity {
     public void reset(View v) {
         Log.i(TAG, "reset()");
         mTimer.reset();
+        displayTimer(mTimer);
         RecordingService.reset = true;
-        record(); // start recording again immediately after a reset
+        pause();
     }
 
     public void summary(View v) {
