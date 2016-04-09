@@ -18,7 +18,7 @@ public class RecordingService extends Service {
     // read-mostly, only written when the recording is paused.
     // I realize that I'm making a global variable to show recording state, but, hey,
     // whether the app is recording is a global condition. Sorry, zealots, pander your dogma elsewhere.
-    public static volatile boolean recording = true;
+    public static volatile boolean recording = false;
     public static volatile boolean reset = false;
     private final IBinder mBinder = new RecordingBinder();
     private Thread mThreadRecorder;
