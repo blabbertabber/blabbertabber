@@ -74,6 +74,7 @@ public class RecordingActivity extends Activity {
     };
     private BroadcastReceiver mReceiver;
     private Timer mTimer = new Timer();
+    private Thread mTimerDisplayThread;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -94,10 +95,7 @@ public class RecordingActivity extends Activity {
             public void onReceive(Context context, Intent intent) {
                 Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
-                    int[] speakerinfo = intent.getIntArrayExtra(AudioEventProcessor.RECORD_MESSAGE);
-                    int volume = speakerinfo[0];
                     displayTimer(mTimer);
-                    Log.v(TAG, "mReceiver.onReceive() " + volume);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
                     // If we start sending statuses other than MICROPHONE_UNAVAILABLE, add logic to check status message returned.
                     int status = intent.getIntExtra(AudioEventProcessor.RECORD_STATUS_MESSAGE, AudioEventProcessor.UNKNOWN_STATUS);
@@ -161,12 +159,31 @@ public class RecordingActivity extends Activity {
         } else {
             clickPause(null);
         }
+        // mTimerDisplayThread sends Intents to update the Timer TextView
+        mTimerDisplayThread = new Thread() {
+            @Override
+            public void run() {
+                Log.i(TAG, "run() starting " + Thread.currentThread().getId());
+                try {
+                    while (true) {
+                        sleep(100);
+                        Intent refreshTimerIntent = new Intent(AudioEventProcessor.RECORD_RESULT);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(refreshTimerIntent);
+                    }
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    Log.i(TAG, "run() exiting " + Thread.currentThread().getId());
+                }
+            }
+        };
+        mTimerDisplayThread.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
+        mTimerDisplayThread.interrupt();
         // unregister
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         if (mServerConn != null && mBound) {
