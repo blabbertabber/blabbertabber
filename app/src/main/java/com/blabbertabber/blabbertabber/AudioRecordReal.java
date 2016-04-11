@@ -69,4 +69,10 @@ public class AudioRecordReal extends AudioRecordAbstract {
             Log.wtf(TAG, "startRecording() " + e.getClass().getName() + ": " + e.getMessage());
         }
     }
+
+    @Override
+    public int read(short[] audioData, int offsetInShorts, int sizeInShorts) {
+        return audioRecord.read(audioData, offsetInShorts, sizeInShorts);
+    }
+
 }
