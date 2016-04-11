@@ -15,4 +15,6 @@ public abstract class AudioRecordAbstract {
     public abstract int setPositionNotificationPeriod(int numFrames);
 
     public abstract void startRecording();
+
+    public abstract int read(short[] audioData, int offsetInShorts, int sizeInShorts);
 }

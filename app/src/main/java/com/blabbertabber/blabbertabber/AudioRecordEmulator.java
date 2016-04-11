@@ -58,4 +58,17 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
         };
         notifier.start();
     }
+
+    @Override
+    public int read(short[] audioData, int offsetInShorts, int sizeInShorts) {
+        try {
+            System.arraycopy(mRandomAudioData, 0, audioData, offsetInShorts, sizeInShorts);
+            Thread.sleep(1000 / AudioEventProcessor.UPDATES_PER_SECOND);
+        } catch (InterruptedException e) {
+            Log.i(TAG, "run() InterruptedException thrown while sleep()ing.");
+            e.printStackTrace();
+            return 0;
+        }
+        return sizeInShorts;
+    }
 }
