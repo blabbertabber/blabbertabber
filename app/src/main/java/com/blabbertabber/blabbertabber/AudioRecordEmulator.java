@@ -23,40 +23,12 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
 
     @Override
     protected void stopAndRelease() {
-        notifier.interrupt();
-    }
-
-    @Override
-    public void setRecordPositionUpdateListener(AudioEventProcessor audioEventProcessor) {
-        this.audioEventProcessor = audioEventProcessor;
-    }
-
-    @Override
-    public int setPositionNotificationPeriod(int numFrames) {
-        return 0;
+        Log.i(TAG, "stopAndRelease()");
     }
 
     @Override
     public void startRecording() {
-        Log.i(TAG, "startRecording()   About to creat and start thread.");
-
-        /// start new thread
-        notifier = new Thread() {
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.currentThread();
-                        sleep(1000 / AudioEventProcessor.UPDATES_PER_SECOND);
-                        audioEventProcessor.onPeriodicNotification(mRandomAudioData);
-                    } catch (InterruptedException e) {
-                        Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
-                        e.printStackTrace();
-                        return;
-                    }
-                }
-            }
-        };
-        notifier.start();
+        Log.i(TAG, "startRecording()");
     }
 
     @Override
