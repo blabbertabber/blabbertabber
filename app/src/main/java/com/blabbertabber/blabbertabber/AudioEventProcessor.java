@@ -20,7 +20,7 @@ import java.io.OutputStream;
 /**
  * Created by brendancunnie on 1/16/16.
  */
-public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositionUpdateListener {
+public class AudioEventProcessor implements Runnable {
     public static final String RECORD_STATUS = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS";
     public static final String RECORD_RESULT = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_RESULT";
     public static final String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS_MESSAGE";
@@ -94,35 +94,6 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
         return rawFileOutputStream;
     }
 
-    @Override
-    public void onPeriodicNotification(AudioRecord recorder) {
-        Log.v(TAG, "onPeriodicNotification(AudioRecord recorder)");
-        short buffer[] = new short[NUM_FRAMES];
-        int readSize = recorder.read(buffer, 0, NUM_FRAMES);
-        if (readSize > 0) {
-            Log.v(TAG, "onPeriodicNotification(AudioRecord recorder)   readSize: " + readSize);
-            onPeriodicNotification(buffer);
-        } else {
-            // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
-            Log.v(TAG, "onPeriodicNotification() NEGATIVE readsize: " + readSize);
-            switch (readSize) {
-                case AudioRecord.ERROR_BAD_VALUE:
-                    Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_BAD_VALUE.  Denotes a failure due to the use of an invalid value.");
-                    break;
-                case AudioRecord.ERROR_INVALID_OPERATION:
-                    Log.wtf(TAG, "onPeriodicNotification(..)   readSize == AudioRecord.ERROR_INVALID_OPERATION.  Denotes a failure due to the improper use of a method.");
-                    break;
-            }
-        }
-    }
-
-    public void onPeriodicNotification(short[] buffer) {
-        Log.v(TAG, "onPeriodicNotification()");
-        short maxAmplitude = writeRawAndReturnMaxAmplitude(buffer);
-        Log.v(TAG, "onPeriodicNotification(buffer) readsize: " + buffer.length + " maxAmplitude " + maxAmplitude);
-        sendVolume(maxAmplitude);
-    }
-
     private short writeRawAndReturnMaxAmplitude(short[] buffer) {
         short maxAmplitude = 0;
         byte[] rawAudio = new byte[buffer.length * 2];
@@ -147,10 +118,6 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
             e.printStackTrace();
         }
         return maxAmplitude;
-    }
-
-    @Override
-    public void onMarkerReached(AudioRecord recorder) {
     }
 
     /**
@@ -185,14 +152,6 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
 
         audioRecordWrapper = createAudioRecord(RECORDER_AUDIO_SOURCE, RECORDER_SAMPLE_RATE_IN_HZ,
                 RECORDER_CHANNEL_CONFIG, RECORDER_AUDIO_FORMAT, RECORDER_BUFFER_SIZE_IN_BYTES);
-        audioRecordWrapper.setRecordPositionUpdateListener(this);
-        int rc = audioRecordWrapper.setPositionNotificationPeriod(NUM_FRAMES);
-        Log.i(TAG, "run()   rc == AudioRecord.SUCCESS: " + (rc == AudioRecord.SUCCESS)
-                + " audioRecordWrapper: " + audioRecordWrapper);
-        if (rc != AudioRecord.SUCCESS) {
-            Log.wtf(TAG, "run()   audioRecordWrapper.setPositionNotificationPeriod(..) failed!  It returned " + rc);
-        }
-
         Log.i(TAG, "run() audioRecordWrapper: " + audioRecordWrapper);
         audioRecordWrapper.startRecording();
         notificationBar(true);
@@ -224,9 +183,28 @@ public class AudioEventProcessor implements Runnable, AudioRecord.OnRecordPositi
                 }
                 oldRecordingServiceRecording = RecordingService.recording;
             }
+            if (RecordingService.recording) {
+                short buffer[] = new short[NUM_FRAMES];
+                int readSize = audioRecordWrapper.read(buffer, 0, NUM_FRAMES);
+                if (readSize > 0) {
+                    Log.v(TAG, "run() readSize: " + readSize);
+                    writeRawAndReturnMaxAmplitude(buffer);
+                } else {
+                    // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
+                    Log.v(TAG, "run() NEGATIVE readsize: " + readSize);
+                    switch (readSize) {
+                        case AudioRecord.ERROR_BAD_VALUE:
+                            Log.wtf(TAG, "run()   readSize == AudioRecord.ERROR_BAD_VALUE.  Denotes a failure due to the use of an invalid value.");
+                            break;
+                        case AudioRecord.ERROR_INVALID_OPERATION:
+                            Log.wtf(TAG, "run(..)   readSize == AudioRecord.ERROR_INVALID_OPERATION.  Denotes a failure due to the improper use of a method.");
+                            break;
+                    }
+                }
+            }
 
             try {
-                Thread.currentThread().sleep(200);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
                 e.printStackTrace();
