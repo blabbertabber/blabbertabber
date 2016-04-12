@@ -41,21 +41,7 @@ public class AudioRecordReal extends AudioRecordAbstract {
         audioRecord.stop();
         audioRecord.release();
         audioRecord = new AudioRecord(recorderAudioSource, recorderSampleRateInHz, recorderChannelConfig, recorderAudioFormat, recorderBufferSizeInBytes);
-        audioRecord.setRecordPositionUpdateListener(audioEventProcessor);
-        audioRecord.setPositionNotificationPeriod(numFrames);
         Log.i(TAG, "stopAndRelease() audioRecord: " + audioRecord);
-    }
-
-    @Override
-    public void setRecordPositionUpdateListener(AudioEventProcessor audioEventProcessor) {
-        AudioRecordReal.audioEventProcessor = audioEventProcessor;
-        audioRecord.setRecordPositionUpdateListener(audioEventProcessor);
-    }
-
-    @Override
-    public int setPositionNotificationPeriod(int numFrames) {
-        AudioRecordReal.numFrames = numFrames;
-        return audioRecord.setPositionNotificationPeriod(numFrames);
     }
 
     @Override
@@ -69,4 +55,10 @@ public class AudioRecordReal extends AudioRecordAbstract {
             Log.wtf(TAG, "startRecording() " + e.getClass().getName() + ": " + e.getMessage());
         }
     }
+
+    @Override
+    public int read(short[] audioData, int offsetInShorts, int sizeInShorts) {
+        return audioRecord.read(audioData, offsetInShorts, sizeInShorts);
+    }
+
 }
