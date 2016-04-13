@@ -29,9 +29,6 @@ public class SummaryActivity extends Activity {
     private static final String TAG = "SummaryActivity";
     private static final CharSequence DRAWER_TITLE = "BlabberTabber Options"; // TODO internationalize, make string
     private static final CharSequence NORMAL_TITLE = "BlabberTabber";
-    // Nav Drawer variables
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
     private long mMeetingDurationInMilliseconds;
     private ArrayList<Speaker> mSpeakers;
 
@@ -48,8 +45,8 @@ public class SummaryActivity extends Activity {
         // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
         setContentView(R.layout.activity_summary);
         // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
         if (mDrawerLayout == null) {
             Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
             return;
@@ -172,7 +169,7 @@ public class SummaryActivity extends Activity {
     }
 
     public void share(View v) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mSpeakers.size(); i++) {
             Speaker speaker = mSpeakers.get(i);
             sb.append(speakerDurationAndPercent(speaker.getDuration(), mMeetingDurationInMilliseconds));

@@ -7,9 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 /**
- * Do we really need to do this?
- * This class spawns the DeviceRecorder or EmulatorRecorder thread.  But can that thread be
- * spawned just as easily in RecordingActivity?
+ * RecordingService continues to record even if another Activity is running
  */
 public class RecordingService extends Service {
     private static final String TAG = "RecordingService";
@@ -22,9 +20,6 @@ public class RecordingService extends Service {
     public static volatile boolean reset = false;
     private final IBinder mBinder = new RecordingBinder();
     private Thread mThreadRecorder;
-    // emulator crashes if attempts to use the actual microphone, so we simulate microphone in EmulatorRecorder
-    ////private AudioRecordAbstract mRecorder = "goldfish".equals(Build.HARDWARE) ? new EmulatorRecorder(this) : new DeviceRecorder(this);
-    private AudioEventProcessor mAudioEventProcessor;
 
     public RecordingService() {
         Log.i(TAG, "RecordingService()   this: " + this);
@@ -33,11 +28,11 @@ public class RecordingService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
-        mAudioEventProcessor = new AudioEventProcessor(this);
+        AudioEventProcessor audioEventProcessor = new AudioEventProcessor(this);
         // make sure we're not spawning another thread if we already have one. We're being
         // overly cautious; in spite of frequent testing, this if-block always succeeds.
         if (mThreadRecorder == null || !mThreadRecorder.isAlive()) {
-            mThreadRecorder = new Thread(mAudioEventProcessor);
+            mThreadRecorder = new Thread(audioEventProcessor);
             mThreadRecorder.start();
         }
     }
@@ -66,8 +61,5 @@ public class RecordingService extends Service {
     }
 
     public class RecordingBinder extends Binder {
-        RecordingService getService() {
-            return RecordingService.this;
-        }
     }
 }
