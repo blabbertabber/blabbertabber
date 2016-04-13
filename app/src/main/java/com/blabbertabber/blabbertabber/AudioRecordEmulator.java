@@ -5,19 +5,18 @@ import android.util.Log;
 import java.util.Random;
 
 /**
- * Created by brendancunnie on 1/24/16.
+ * AudioRecord for testing on emulators with no hardware sound (e.g. on a Mac Pro emulator)
  */
 public class AudioRecordEmulator extends AudioRecordAbstract {
     static final String TAG = "AudioRecordEmulator";
-    private Thread notifier;
-    private AudioEventProcessor audioEventProcessor;
-    private short[] mRandomAudioData = new short[AudioEventProcessor.NUM_FRAMES];
+    private short[] randomAudioData;
 
     public AudioRecordEmulator(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
         // We create a random buffer of sound to emulate the real AudioRecord
         Random random = new Random();
-        for (int i = 0; i < mRandomAudioData.length; i++) {
-            mRandomAudioData[i] = (short) (random.nextInt(Short.MAX_VALUE * 2) - Short.MAX_VALUE);
+        randomAudioData = new short[AudioEventProcessor.NUM_FRAMES];
+        for (int i = 0; i < randomAudioData.length; i++) {
+            randomAudioData[i] = (short) (random.nextInt(Short.MAX_VALUE * 2) - Short.MAX_VALUE);
         }
     }
 
@@ -34,7 +33,7 @@ public class AudioRecordEmulator extends AudioRecordAbstract {
     @Override
     public int read(short[] audioData, int offsetInShorts, int sizeInShorts) {
         try {
-            System.arraycopy(mRandomAudioData, 0, audioData, offsetInShorts, sizeInShorts);
+            System.arraycopy(randomAudioData, 0, audioData, offsetInShorts, sizeInShorts);
             Thread.sleep(1000 / AudioEventProcessor.UPDATES_PER_SECOND);
         } catch (InterruptedException e) {
             Log.i(TAG, "run() InterruptedException thrown while sleep()ing.");

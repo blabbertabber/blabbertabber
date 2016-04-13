@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * Created by brendancunnie on 2/8/16.
+ * maintains the Speakers, the times, the colors to draw the bars
  */
 public class SpeakersBuilder {
     private static final String TAG = "SpeakersBuilder";
@@ -44,7 +44,7 @@ public class SpeakersBuilder {
         Log.i(TAG, "parseSegStream()");
         Reader r = new BufferedReader(new InputStreamReader(in));
         StreamTokenizer st = new StreamTokenizer(r);
-        while (st.nextToken() != st.TT_EOF) { // show name
+        while (st.nextToken() != StreamTokenizer.TT_EOF) { // show name
             st.nextToken(); // the channel number
             st.nextToken(); // the start of the segment (in features)
             // convert centiseconds to milliseconds

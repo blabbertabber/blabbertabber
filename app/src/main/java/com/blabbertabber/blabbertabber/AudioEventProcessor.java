@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Build;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.File;
@@ -18,13 +17,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Created by brendancunnie on 1/16/16.
+ * Records audio to a file; is meant to run as a thread, call by RecordingService
+ * uses AudioEventProcessor to handle the audio.
  */
 public class AudioEventProcessor implements Runnable {
     public static final String RECORD_STATUS = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS";
     public static final String RECORD_RESULT = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_RESULT";
     public static final String RECORD_STATUS_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_STATUS_MESSAGE";
-    public static final String RECORD_MESSAGE = "com.blabbertabber.blabbertabber.AudioEventProcessor.RECORD_MESSAGE";
     public static final int UNKNOWN_STATUS = -1;
     public static final int MICROPHONE_UNAVAILABLE = -2;
     public static final int CANT_WRITE_MEETING_FILE = -3;
@@ -42,15 +41,13 @@ public class AudioEventProcessor implements Runnable {
     private static final int RECORDER_AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     // size of the buffer array needs to be NUM_FRAMES * 2;
     // 1 channel (mono), 2 bytes per sample (PCM 16-bit)
-    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 1 * 2;
+    private static final int RECORDER_BUFFER_SIZE_IN_BYTES = NUM_FRAMES * 2;
     private static final int RECORDER_NOTIFICATION_ID = 19937;   // Unique id for notifications
     private static AudioRecordAbstract audioRecordWrapper;
     private static String rawFilePathName;
-    public int numSpeakers;
     NotificationManager mNotificationManager;
     private Context context;
     private OutputStream rawFileOutputStream;
-    private LocalBroadcastManager mBroadcastManager;
 
     public AudioEventProcessor(Context context) {
         Log.i(TAG, "AudioEventProcessor(Context context)   context: " + context);
@@ -63,10 +60,7 @@ public class AudioEventProcessor implements Runnable {
             Log.wtf(TAG, "AudioEventProcessor()   context.openFileOutput(\"meeting.raw\", Context.MODE_WORLD_WRITEABLE) threw FileNotFoundException.");
             e.printStackTrace();
         }
-        mBroadcastManager = LocalBroadcastManager.getInstance(context);
         mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        /// TODO remove
-        numSpeakers = 1;
     }
 
     public static String getRawFilePathName() {
@@ -77,7 +71,9 @@ public class AudioEventProcessor implements Runnable {
         Log.i(TAG, "newMeetingFile()");
         File rawFile = new File(getRawFilePathName());
         if (rawFile.exists()) {
-            rawFile.delete();
+            if (!rawFile.delete()) {
+                Log.e(TAG, "newMeetingFile() failed to delete " + rawFile.getAbsolutePath());
+            }
         }
     }
 
@@ -94,8 +90,7 @@ public class AudioEventProcessor implements Runnable {
         return rawFileOutputStream;
     }
 
-    private short writeRawAndReturnMaxAmplitude(short[] buffer) {
-        short maxAmplitude = 0;
+    private void writeRaw(short[] buffer) {
         byte[] rawAudio = new byte[buffer.length * 2];
         // Performance: we must copy the PCM data into an array of bytes so that
         // we can write the RawDataOutputStream in one shot; otherwise it can take
@@ -107,9 +102,6 @@ public class AudioEventProcessor implements Runnable {
             // However the following lines seem to work both on ARM (big endian) and x86_64 emulator (little endian)
             rawAudio[i * 2] = (byte) (buffer[i] >> 8);
             rawAudio[i * 2 + 1] = (byte) buffer[i];
-            if (buffer[i] > maxAmplitude) {
-                maxAmplitude = buffer[i];
-            }
         }
         // write data out to raw file
         try {
@@ -117,20 +109,6 @@ public class AudioEventProcessor implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return maxAmplitude;
-    }
-
-    /**
-     * Utility method to broadcast the recorded volume.
-     *
-     * @param volume The volume.  0-32767 inclusive.
-     */
-    /// TODO: remove references to id.
-    /// TODO: should we change volume range to signed short?
-    public void sendVolume(int volume) {
-        Intent intent = new Intent(RECORD_RESULT);
-        intent.putExtra(RECORD_MESSAGE, new int[]{volume});
-        mBroadcastManager.sendBroadcast(intent);
     }
 
     private AudioRecordAbstract createAudioRecord(int recorderAudioSource, int recorderSampleRateInHz, int recorderChannelConfig, int recorderAudioFormat, int recorderBufferSizeInBytes) {
@@ -188,7 +166,7 @@ public class AudioEventProcessor implements Runnable {
                 int readSize = audioRecordWrapper.read(buffer, 0, NUM_FRAMES);
                 if (readSize > 0) {
                     Log.v(TAG, "run() readSize: " + readSize);
-                    writeRawAndReturnMaxAmplitude(buffer);
+                    writeRaw(buffer);
                 } else {
                     // if readSize is negative, it most likely means that we have an ERROR_INVALID_OPERATION (-3)
                     Log.v(TAG, "run() NEGATIVE readsize: " + readSize);
