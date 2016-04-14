@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * displays "About" BlabberTabber, including version & authors
+ */
 public class AboutActivity extends Activity {
     private static final String TAG = "AboutActivity";
 
@@ -21,12 +24,10 @@ public class AboutActivity extends Activity {
         super.onResume();
         Log.i(TAG, "onResume()");
         TextView version = (TextView) findViewById(R.id.aboutVersion);
-        version.setText(getString(R.string.app_name)
-                + " "
-                + getString(R.string.about_version)
-                + ": "
-                + BuildConfig.VERSION_NAME
-                + "\n");
+        version.setText(String.format("%s %s: %s\n",
+                getString(R.string.app_name),
+                getString(R.string.about_version),
+                BuildConfig.VERSION_NAME));
     }
 
     public void finish(View v) {

@@ -90,14 +90,14 @@ public class WavFile {
     }
 
     private void writeInt(final DataOutputStream output, final int value) throws IOException {
-        output.write(value >> 0);
+        output.write(value);
         output.write(value >> 8);
         output.write(value >> 16);
         output.write(value >> 24);
     }
 
     private void writeShort(final DataOutputStream output, final short value) throws IOException {
-        output.write(value >> 0);
+        output.write(value);
         output.write(value >> 8);
     }
 

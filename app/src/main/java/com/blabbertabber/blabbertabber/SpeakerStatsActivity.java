@@ -16,6 +16,10 @@ import java.io.InputStream;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
 
+/**
+ * Shares output, including speaker times, .seg files, etc...
+ */
+
 public class SpeakerStatsActivity extends Activity {
     // We don't want to attempt to display a 1.5MB binary .wav file
     // 32kB is enough to get a sense of what we're looking at
@@ -42,10 +46,10 @@ public class SpeakerStatsActivity extends Activity {
             tv.setText(fileContents);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            tv.setText("FileNotFoundException: " + e.getMessage());
+            tv.setText(String.format("FileNotFoundException: %s", e.getMessage()));
         } catch (IOException e) {
             e.printStackTrace();
-            tv.setText("IOException: " + e.getMessage());
+            tv.setText(String.format("IOException: %s", e.getMessage()));
         }
     }
 

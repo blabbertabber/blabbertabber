@@ -31,6 +31,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Objects;
 
 import edu.cmu.sphinx.frontend.Data;
@@ -43,25 +44,20 @@ import edu.cmu.sphinx.util.props.ConfigurationManager;
 import fr.lium.spkDiarization.lib.DiarizationException;
 import fr.lium.spkDiarization.programs.MClust;
 import fr.lium.spkDiarization.programs.MSeg;
-//import javax.sound.sampled.AudioFormat;
-//import android.media.AudioFormat;
 
 /**
  * Activity to record sound.
- * TODO: reflect volume in animation somehow.
  */
 public class RecordingActivity extends Activity {
     public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
     private static final int REQUEST_RECORD_AUDIO = 51;
-    private RecordingService mRecordingService;
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             RecordingService.RecordingBinder recordingBinder = (RecordingService.RecordingBinder) binder;
-            mRecordingService = recordingBinder.getService();
             mBound = true;
             Log.v(TAG, "mServerConn.onServiceConnected()");
         }
@@ -82,7 +78,7 @@ public class RecordingActivity extends Activity {
      * Extracts the volumes and speaker id from the RECORD_RESULT messages.
      * Gracefully handles any RECORD_STATUS message as a failure.
      *
-     * @param savedInstanceState
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -304,7 +300,7 @@ public class RecordingActivity extends Activity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // log everything
         String argumentString = " " + requestCode + " [ ";
         for (String perm : permissions) {
@@ -373,7 +369,6 @@ public class RecordingActivity extends Activity {
 
         //get features from audio
         try {
-            assert (allFeatures != null);
             Data feature = frontEnd.getData();
             while (!(feature instanceof DataEndSignal)) {
                 if (feature instanceof DoubleData) {
@@ -411,7 +406,7 @@ public class RecordingActivity extends Activity {
         }
         try {
             outStream.writeInt(allFeatures.size() * featureLength);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -420,7 +415,7 @@ public class RecordingActivity extends Activity {
             for (float val : feature) {
                 try {
                     outStream.writeFloat(val);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -429,13 +424,13 @@ public class RecordingActivity extends Activity {
 
         try {
             outStream.close();
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         //write initial segmentation file for LIUM_SpkDiarization
-        String uemSegment = String.format("BlabTab 1 0 %d U U U S0", allFeatures.size());
+        String uemSegment = String.format(Locale.getDefault(), "BlabTab 1 0 %d U U U S0", allFeatures.size());
         try {
             FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg");
             uemWriter.write(uemSegment);

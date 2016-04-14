@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Used in the SummaryActivity to draw the bars.
+ * draws the Speakers' bars in SummaryActivity
  */
 public class RectangleView extends View {
     private static final String TAG = "RectangleView";
