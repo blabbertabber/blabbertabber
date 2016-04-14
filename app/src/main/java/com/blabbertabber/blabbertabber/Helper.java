@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 /**
  * Useful helper functions
@@ -33,11 +34,11 @@ public class Helper {
 
         String hms;
         if (hours >= 1) {
-            hms = String.format("%d:%02d:%04.1f", hours, minutes, seconds);
+            hms = String.format(Locale.getDefault(), "%d:%02d:%04.1f", hours, minutes, seconds);
         } else if (minutes >= 1) {
-            hms = String.format("%d:%04.1f", minutes, seconds);
+            hms = String.format(Locale.getDefault(), "%d:%04.1f", minutes, seconds);
         } else {
-            hms = String.format("%1.1f", seconds);
+            hms = String.format(Locale.getDefault(), "%1.1f", seconds);
         }
         return hms;
     }
@@ -60,11 +61,11 @@ public class Helper {
 
         String hms;
         if (hours >= 1) {
-            hms = String.format("%d:%02d:%02d", hours, minutes, seconds);
+            hms = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
         } else if (minutes >= 1) {
-            hms = String.format("%d:%02d", minutes, seconds);
+            hms = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds);
         } else {
-            hms = String.format("%d", seconds);
+            hms = String.format(Locale.getDefault(), "%d", seconds);
         }
         return hms;
     }
@@ -83,17 +84,15 @@ public class Helper {
         int minutes = (int) (milliseconds / 60_000) % 60;
         int hours = (int) (milliseconds / 3600_000);
 
-        String hms = String.format("%d:%02d", minutes, seconds);
+        String hms = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds);
         if (hours >= 1) {
-            hms = String.format("%d:%02d:%02d", hours, minutes, seconds);
+            hms = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds);
         }
         return hms;
     }
 
     /**
      * Copies a file from res/raw to destination (typically context.getFilesDir())
-     *
-     * @return boolean
      */
     public static void copyInputFileStreamToFilesystem(InputStream in, String outputFilePathName) throws IOException {
         Log.i(TAG, "copyInputFileStreamToFilesystem() outputFilePathName: " + outputFilePathName);
@@ -156,11 +155,11 @@ public class Helper {
     }
 
     /**
-     * Calculates how long diarization will take, in seconds. processorSpeed should be the ratio
-     * of diarization speed to recording speed, typically set from howFastIsMyProcessor()
+     * Calculates how long diarization will take, in seconds.
      *
-     * @param meetingLengthInSeconds
-     * @param processorSpeed
+     * @param meetingLengthInSeconds double, meeting length in seconds
+     * @param processorSpeed         double, processor speed, the ratio
+     *                               of diarization speed to recording speed, typically set from howFastIsMyProcessor()
      * @return double, length in seconds
      */
     public static double howLongWillDiarizationTake(double meetingLengthInSeconds, double processorSpeed) {

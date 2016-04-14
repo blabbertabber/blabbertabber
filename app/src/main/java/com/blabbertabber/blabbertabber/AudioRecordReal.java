@@ -4,7 +4,7 @@ import android.media.AudioRecord;
 import android.util.Log;
 
 /**
- * Created by brendancunnie on 1/24/16.
+ * AudioRecord for recording (and testing on emulators with hardware sound (e.g. on a MacBook Pro emulator))
  */
 public class AudioRecordReal extends AudioRecordAbstract {
     private static final String TAG = "AudioRecordReal";
@@ -15,8 +15,6 @@ public class AudioRecordReal extends AudioRecordAbstract {
     private static int recorderChannelConfig;
     private static int recorderAudioFormat;
     private static int recorderBufferSizeInBytes;
-    private static AudioEventProcessor audioEventProcessor;
-    private static int numFrames;
 
     private AudioRecordReal() {
     }
