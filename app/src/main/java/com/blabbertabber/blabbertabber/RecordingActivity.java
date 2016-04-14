@@ -78,7 +78,7 @@ public class RecordingActivity extends Activity {
      * Extracts the volumes and speaker id from the RECORD_RESULT messages.
      * Gracefully handles any RECORD_STATUS message as a failure.
      *
-     * @param savedInstanceState Android bundle
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
