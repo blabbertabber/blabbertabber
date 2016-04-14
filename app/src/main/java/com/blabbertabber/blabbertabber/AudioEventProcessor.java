@@ -179,13 +179,14 @@ public class AudioEventProcessor implements Runnable {
                             break;
                     }
                 }
-            }
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
-                e.printStackTrace();
+            } else {
+                // sleep while not recording rather than spinning like crazy
+                try {
+                    Thread.sleep(1000 / AudioEventProcessor.UPDATES_PER_SECOND);
+                } catch (InterruptedException e) {
+                    Log.i(TAG, "run()   Huh.  InterruptedException thrown while sleep()ing.");
+                    e.printStackTrace();
+                }
             }
         }
     }
