@@ -34,5 +34,4 @@ public class WavFileTest {
         String wavFileName = WavFile.convertFilenameFromRawToWav(fileName);
         assertEquals("The .wav extension is added even if the original file's extension is raw", "/dir1/dir2/file.Xraw.wav", wavFileName);
     }
-
 }
