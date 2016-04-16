@@ -6,7 +6,4 @@
     <item
         android:id="@+id/outer_speaker_circle"
         android:drawable="@drawable/big_white_grey_circle" />
-    <item
-        android:id="@+id/inner_speaker_circle"
-        android:drawable="@drawable/small_red_orange_circle" />
 </layer-list>
