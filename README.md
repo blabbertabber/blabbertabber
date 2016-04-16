@@ -14,12 +14,12 @@ BlabberTabber is an Android Application that performs
 ### Screenshots
 
 | Splash Screen | Recording Screen | Summary Screen |
-|----------------|------------------|---------------|
+|---------------|------------------|----------------|
 | ![splash screen](https://cloud.githubusercontent.com/assets/1020675/14581292/083df82e-039e-11e6-989d-43445cdd7433.png) | ![recording screen](https://cloud.githubusercontent.com/assets/1020675/14578352/2a2ed81c-033b-11e6-8de6-54e1fe6219cf.png) | ![summary screen](https://cloud.githubusercontent.com/assets/1020675/11888325/fca259bc-a4f0-11e5-9746-ee5a5b14ef5b.png) |
 
 ### Acknowledgements
 
-[Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work. And the logo. Thanks Charlotte.
+[Charlotte Cunningham](http://www.ettolrahc.co/) did much of the design work and graphics.
 
 [Daniel Di Matteo](http://www.eecg.toronto.edu/~dandm/) wrote the first Android-based diarization
 [app](https://github.com/danieldimatteo/android-speech-diarization), and made helpful suggestions about
@@ -28,7 +28,6 @@ which libraries to use.
 ### Advisors
 
 * [Gerald Friedland, Ph.D.](http://www.gerald-friedland.org/)
-* Ekaterina Gonina, Ph.D.
 
 ### References
 
@@ -42,6 +41,9 @@ which libraries to use.
 * Gonina E., Friedland G., Cook H., Keutzer K., *[Fast Speaker Diarization Using a High-Level Scripting Language](https://www.eecs.berkeley.edu/~hcook/papers/gmm_asru2011.pdf)*, In Proc. of ASRU Workshop, 2011.
 
 * Di Matteo, D. *[Speech Diarization on a Mobile Platform](https://android-speech-diarization.googlecode.com/files/thesis.pdf)*, 2011
+
+* WenQi Huang, Yu Li, Hakim Akeb, ChuMin Li  *Greedy Algorithms for Packing Unequal Circles into a Rectangular Container*,
+Journal of the Operational Research Society, May 2005
 
 <!-- check this out at some point:
 
