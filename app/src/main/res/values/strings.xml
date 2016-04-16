@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">BlabberTabber</string>
 
-    <string name="welcome_text" formatted="false">BlabberTabber allows you to record how much time each
-        speaker has spoken in a meeting.  It is under construction.  It does not work yet.\n
+    <string name="welcome_text" formatted="false">Recording conversations without consent
+        is illegal in many states. Do the right thing: get consent before using BlabberTabber.\n
+        \nBlabberTabber records conversations and calculates how much each
+        person spoke.  It is under construction.  It does not work yet.\n
         \nTo pause, press "PAUSE", to resume, press
         "RECORD", and to reset the tally, press "RESET".\n
         \nWhen the meeting is over, press "FINISH" to see the final tally.\n
