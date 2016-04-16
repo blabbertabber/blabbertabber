@@ -42,7 +42,7 @@ which libraries to use.
 
 * Di Matteo, D. *[Speech Diarization on a Mobile Platform](https://android-speech-diarization.googlecode.com/files/thesis.pdf)*, 2011
 
-* WenQi Huang, Yu Li, Hakim Akeb, ChuMin Li  *Greedy Algorithms for Packing Unequal Circles into a Rectangular Container*,
+* WenQi Huang, Yu Li, Hakim Akeb, ChuMin Li, *Greedy Algorithms for Packing Unequal Circles into a Rectangular Container*,
 Journal of the Operational Research Society, May 2005
 
 <!-- check this out at some point:
