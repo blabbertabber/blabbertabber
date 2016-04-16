@@ -194,7 +194,7 @@ public class AudioEventProcessor implements Runnable {
         if (show) {
             Notification.Builder mBuilder =
                     new Notification.Builder(context)
-                            .setSmallIcon(R.drawable.ic_mic)
+                            .setSmallIcon(R.drawable.black_mic)
                             .setContentTitle(context.getString(R.string.app_name))
                             .setContentText(context.getString(R.string.recording_service));
             // Creates an explicit intent for an Activity in your app

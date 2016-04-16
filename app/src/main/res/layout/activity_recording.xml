@@ -25,6 +25,13 @@
             android:layout_centerVertical="true"
             android:src="@drawable/big_speaker_circle" />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/red_circle" />
+
         <TextView
             android:id="@+id/button_pause_caption"
             android:layout_width="wrap_content"
@@ -53,7 +60,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:onClick="clickPause"
-            android:src="@drawable/ic_pause_circle_outline_white"
+            android:src="@drawable/white_pause"
             android:visibility="invisible" />
 
         <ImageView
@@ -63,7 +70,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:onClick="clickRecord"
-            android:src="@drawable/ic_play_arrow_white" />
+            android:src="@drawable/white_play" />
 
     </RelativeLayout>
 
@@ -89,7 +96,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_skip_previous_black_24dp"
+            android:drawableTop="@drawable/white_reset"
             android:onClick="reset"
             android:text="@string/button_reset" />
 
@@ -99,7 +106,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_stop_24dp"
+            android:drawableTop="@drawable/black_square"
             android:onClick="summary"
             android:text="@string/button_finish" />
 
