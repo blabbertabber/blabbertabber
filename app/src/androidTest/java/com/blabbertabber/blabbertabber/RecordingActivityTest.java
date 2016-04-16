@@ -1,11 +1,15 @@
 package com.blabbertabber.blabbertabber;
 
-import android.app.Activity;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.content.pm.ActivityInfo;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -14,24 +18,27 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
- * Created by cunnie on 9/12/15.
  * Test Recording Activity
- * <p/>
- * FIXME: these tests will fail the first time BlabberTabber is run because there will be a
- * dialog asking permission to allow BlabberTabber to access microphone
  */
-public class RecordingActivityTest {
-    @Rule
-    public IntentsTestRule<RecordingActivity> mActivityRule =
-            new IntentsTestRule<RecordingActivity>(RecordingActivity.class);
-    Activity currentActivity;
 
-    // It's easier to layout the dots if we always assume portrait; we may revisit this decision.
-    @Test
+@RunWith(AndroidJUnit4.class)
+public class RecordingActivityTest {
+
+    @Rule
+    public ActivityTestRule<RecordingActivity> mActivityRule =
+            new ActivityTestRule<RecordingActivity>(RecordingActivity.class);
+    private RecordingActivity mActivity;
+
+    @Before
+    public void setUp() {
+        mActivity = mActivityRule.getActivity();
+    }
+
+    @SmallTest
     public void rootViewTest() {
         // fail: android:visibility="gone" in activity_recording.xml
         onView(withId(R.id.recording_root_view)).check(matches(isDisplayed()));
@@ -96,14 +103,19 @@ public class RecordingActivityTest {
         onView(withId(R.id.button_finish)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     }
 
-    @Test
-    public void whenIResetMeetingItShouldBePaused() {
-        // if R.id.button_pause is displayed (artifact of earlier state)
-        // then click it so that it is paused and we can Reset.
+    private void resetMeeting() {
+        // pauses recording, resets meeting. BlabberTabber is NOT recording
         if (RecordingService.recording) {
             onView(withId(R.id.button_pause)).perform(click());
         }
         onView(withId(R.id.button_reset)).perform(click());
+    }
+
+    @Test
+    public void whenIResetMeetingItShouldBePaused() {
+        // if R.id.button_pause is displayed (artifact of earlier state)
+        // then click it so that it is paused and we can Reset.
+        resetMeeting();
         assertMeetingIsPaused();
     }
 
@@ -119,10 +131,24 @@ public class RecordingActivityTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        onView(withId(R.id.button_pause)).perform(click());
-        onView(withId(R.id.button_reset)).perform(click());
+        resetMeeting();
 
         onView(withId(R.id.meeting_timer)).check(matches(withText("0:00")));
         assertMeetingIsPaused();
+    }
+
+    @Test
+    public void whenIRotateTheTimerContinuesRunning() throws InterruptedException {
+        resetMeeting();
+        onView(withId(R.id.button_record)).perform(click());
+
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        Thread.sleep(1001); // sleep for just over 1 second
+        Thread.sleep(100); // sleep for the update interval
+        onView(withId(R.id.meeting_timer)).check(matches(withText("0:01")));
+
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        Thread.sleep(1001); // sleep for just over 1 second
+        onView(withId(R.id.meeting_timer)).check(matches(withText("0:02")));
     }
 }
