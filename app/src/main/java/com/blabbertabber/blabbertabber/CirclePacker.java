@@ -53,7 +53,7 @@ public class CirclePacker {
             for (int i = 1; i < radii.length; i++) {
                 remainingRadii.add(radii[i]);
             }
-            for (double radius: remainingRadii) {
+            for (double radius : remainingRadii) {
                 Circle2D circle2 = new Circle2D(x - radius, radius, radius);
                 /// pack the third circle
 
