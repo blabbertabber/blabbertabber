@@ -1,9 +1,9 @@
 package com.blabbertabber.blabbertabber;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.security.InvalidParameterException;
 
@@ -15,7 +15,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * tests CirclePacker
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class CirclePackerTest {
 
     @Test
