@@ -16,4 +16,8 @@ public abstract class Shape {
     }
 
     abstract Collection<Point2D> intersections(Shape s);
+
+    abstract Collection<Point2D> intersections(Line l);
+
+    abstract Collection<Point2D> intersections(Circle c);
 }
