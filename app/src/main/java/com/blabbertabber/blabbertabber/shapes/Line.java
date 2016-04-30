@@ -17,15 +17,15 @@ public class Line extends Shape {
     }
 
     @Override
-    Collection<Point2D> intersections(Shape s) {
+    public Collection<Point2D> intersections(Shape s) {
         return s.intersections(this);
     }
 
-    Collection<Point2D> intersections(Circle c) {
+    public Collection<Point2D> intersections(Circle c) {
         return c.circle().intersections(line);
     }
 
-    Collection<Point2D> intersections(Line l) {
+    public Collection<Point2D> intersections(Line l) {
         return line.intersections(l.line);
     }
 }

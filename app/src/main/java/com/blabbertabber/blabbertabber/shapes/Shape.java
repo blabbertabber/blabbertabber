@@ -15,9 +15,13 @@ public abstract class Shape {
         return new Line(l);
     }
 
-    abstract Collection<Point2D> intersections(Shape s);
+    public Shape potentialLocationsForCenterOfCircleWithRadius(double radius) {
+        return this;
+    }
 
-    abstract Collection<Point2D> intersections(Line l);
+    public abstract Collection<Point2D> intersections(Shape s);
 
-    abstract Collection<Point2D> intersections(Circle c);
+    public abstract Collection<Point2D> intersections(Line l);
+
+    public abstract Collection<Point2D> intersections(Circle c);
 }

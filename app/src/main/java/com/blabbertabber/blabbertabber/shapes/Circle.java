@@ -17,15 +17,23 @@ public class Circle extends Shape {
     }
 
     @Override
-    Collection<Point2D> intersections(Shape s) {
+    public Shape potentialLocationsForCenterOfCircleWithRadius(double radius) {
+        Circle2D circle2D = new Circle2D(this.circle.center(), this.circle.radius() + radius);
+        return Shape.makeCircle(circle2D);
+    }
+
+    @Override
+    public Collection<Point2D> intersections(Shape s) {
         return s.intersections(this);
     }
 
-    Collection<Point2D> intersections(Circle c) {
+    @Override
+    public Collection<Point2D> intersections(Circle c) {
         return circle.intersections(c.circle);
     }
 
-    Collection<Point2D> intersections(Line l) {
+    @Override
+    public Collection<Point2D> intersections(Line l) {
         return circle.intersections(l.line());
     }
 
