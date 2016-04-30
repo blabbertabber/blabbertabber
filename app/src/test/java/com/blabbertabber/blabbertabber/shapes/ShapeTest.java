@@ -23,6 +23,7 @@ public class ShapeTest {
         Circle testCircle = Shape.makeCircle(new Circle2D(new Point2D(1, 1), 1));
         assertNotNull(testCircle);
     }
+
     @Test
     public void testMakeLineCreatesALine() throws Exception {
         Line testLine = Shape.makeLine(new Line2D(new Point2D(1, 1), new Point2D(2, 2)));
