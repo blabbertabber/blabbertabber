@@ -19,13 +19,13 @@ import static junit.framework.Assert.assertNotNull;
 public class ShapeTest {
 
     @Test
-    public void testMakeCircleCreatesACircle() throws Exception {
+    public void testMakeCircleCreatesACircle() {
         Circle testCircle = Shape.makeCircle(new Circle2D(new Point2D(1, 1), 1));
         assertNotNull(testCircle);
     }
 
     @Test
-    public void testMakeLineCreatesALine() throws Exception {
+    public void testMakeLineCreatesALine() {
         Line testLine = Shape.makeLine(new Line2D(new Point2D(1, 1), new Point2D(2, 2)));
         assertNotNull(testLine);
     }
