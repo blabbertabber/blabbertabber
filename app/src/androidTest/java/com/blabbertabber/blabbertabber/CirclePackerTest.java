@@ -39,24 +39,9 @@ public class CirclePackerTest {
         assertEquals("The second circle's Y coordinate should be 1", 1.0, circles[1].center().getY(), 0.1);
     }
 
-    @Test(expected=InvalidParameterException.class)
+    @Test(expected = InvalidParameterException.class)
     public void packsTwoTooBigCircles() {
         CirclePacker cp = new CirclePacker(4, 2);
         cp.addCircles(new double[]{3, 2});
-    }
-
-    @Test
-    public void packsThreeEqualCircles() {
-        CirclePacker cp = new CirclePacker(6, 2);
-        Circle2D[] circles = cp.addCircles(new double[]{1, 1, 1});
-
-        assertEquals("The first circle's X coordinate should be 1", 1.0, circles[0].center().getX(), 0.1);
-        assertEquals("The first circle's Y coordinate should be 1", 1.0, circles[0].center().getY(), 0.1);
-
-        assertEquals("The second circle's X coordinate should be 3", 3.0, circles[1].center().getX(), 0.1);
-        assertEquals("The second circle's Y coordinate should be 1", 1.0, circles[1].center().getY(), 0.1);
-
-        assertEquals("The third circle's X coordinate should be 2", 2.0, circles[1].center().getX(), 0.1);
-        assertEquals("The third circle's Y coordinate should be 1", 1.0, circles[1].center().getY(), 0.1);
     }
 }

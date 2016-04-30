@@ -1,8 +1,5 @@
 package com.blabbertabber.blabbertabber.shapes;
 
-import android.graphics.Point;
-
-import java.util.ArrayList;
 import java.util.Collection;
 
 import math.geom2d.Point2D;
