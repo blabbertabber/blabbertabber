@@ -22,8 +22,8 @@ public class CircleTest {
 
     @Test
     public void testCircleIntersectsCircle() {
-        Shape firstCircle = Shape.makeCircle(new Circle2D(new Point2D(0, 0), 2));
-        Shape secondCircle = Shape.makeCircle(new Circle2D(new Point2D(1, 1), 2));
+        Shape firstCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(0, 0), 2));
+        Shape secondCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(1, 1), 2));
         Collection<Point2D> points = firstCircle.intersections(secondCircle);
         assertEquals("There are exactly two points of intersection", 2, points.size());
 //        assertEquals("The intersection is at (0,1)", new Point2D(0,1), points.toArray()[0]);
@@ -31,8 +31,8 @@ public class CircleTest {
 
     @Test
     public void testCircleIntersectsCircleTips() {
-        Shape firstCircle = Shape.makeCircle(new Circle2D(new Point2D(0, 0), 1));
-        Shape secondCircle = Shape.makeCircle(new Circle2D(new Point2D(2, 0), 1));
+        Shape firstCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(0, 0), 1));
+        Shape secondCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(2, 0), 1));
         Collection<Point2D> points = firstCircle.intersections(secondCircle);
         // Circle2D class has a bug, returning 2 points where there is one point of intersection
         // so we confirm the point(s) returned are all at the correct location.
@@ -44,16 +44,16 @@ public class CircleTest {
 
     @Test
     public void testSomeCirclesDontIntersect() {
-        Shape firstCircle = Shape.makeCircle(new Circle2D(new Point2D(0, 0), 1));
-        Shape secondCircle = Shape.makeCircle(new Circle2D(new Point2D(2, 0), 0.99));
+        Shape firstCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(0, 0), 1));
+        Shape secondCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(2, 0), 0.99));
         Collection<Point2D> points = firstCircle.intersections(secondCircle);
         assertEquals("The lines don't intersect", 0, points.size());
     }
 
     @Test
     public void testCirclesIntersectLines() {
-        Shape circle = Shape.makeCircle(new Circle2D(new Point2D(0, 0), 1));
-        Shape line = Shape.makeLine(new Line2D(new Point2D(-3, 0), new Point2D(3, 0)));
+        Shape circle = ShapeFactory.makeCircle(new Circle2D(new Point2D(0, 0), 1));
+        Shape line = ShapeFactory.makeLine(new Line2D(new Point2D(-3, 0), new Point2D(3, 0)));
         Collection<Point2D> points = circle.intersections(line);
         assertEquals("There are exactly two points of intersection", 2, points.size());
         double sumX = 0;

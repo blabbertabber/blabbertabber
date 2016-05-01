@@ -20,13 +20,13 @@ public class ShapeTest {
 
     @Test
     public void testMakeCircleCreatesACircle() {
-        Circle testCircle = Shape.makeCircle(new Circle2D(new Point2D(1, 1), 1));
+        Circle testCircle = ShapeFactory.makeCircle(new Circle2D(new Point2D(1, 1), 1));
         assertNotNull(testCircle);
     }
 
     @Test
     public void testMakeLineCreatesALine() {
-        Line testLine = Shape.makeLine(new Line2D(new Point2D(1, 1), new Point2D(2, 2)));
+        Line testLine = ShapeFactory.makeLine(new Line2D(new Point2D(1, 1), new Point2D(2, 2)));
         assertNotNull(testLine);
     }
 }

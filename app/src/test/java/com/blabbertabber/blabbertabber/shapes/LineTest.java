@@ -7,8 +7,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import math.geom2d.Box2D;
 import math.geom2d.Point2D;
 import math.geom2d.conic.Circle2D;
 import math.geom2d.line.Line2D;
@@ -22,8 +24,8 @@ public class LineTest {
 
     @Test
     public void testLineIntersectsLine() {
-        Shape firstLine = Shape.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
-        Shape secondLine = Shape.makeLine(new Line2D(new Point2D(-1, 1), new Point2D(1, 1)));
+        Shape firstLine = ShapeFactory.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
+        Shape secondLine = ShapeFactory.makeLine(new Line2D(new Point2D(-1, 1), new Point2D(1, 1)));
         Collection<Point2D> points = firstLine.intersections(secondLine);
         assertEquals("There is exactly one point of intersection", 1, points.size());
         assertEquals("The intersection is at (0,1)", new Point2D(0, 1), points.toArray()[0]);
@@ -31,8 +33,8 @@ public class LineTest {
 
     @Test
     public void testLineIntersectsLineTips() {
-        Shape firstLine = Shape.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
-        Shape secondLine = Shape.makeLine(new Line2D(new Point2D(0, 0), new Point2D(2, 0)));
+        Shape firstLine = ShapeFactory.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
+        Shape secondLine = ShapeFactory.makeLine(new Line2D(new Point2D(0, 0), new Point2D(2, 0)));
         Collection<Point2D> points = firstLine.intersections(secondLine);
         assertEquals("There is exactly one point of intersection", 1, points.size());
         assertEquals("The intersection is at (0,1)", new Point2D(0, 0), points.toArray()[0]);
@@ -40,16 +42,16 @@ public class LineTest {
 
     @Test
     public void testParallelLinesDontIntersect() {
-        Shape firstLine = Shape.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
-        Shape secondLine = Shape.makeLine(new Line2D(new Point2D(2, 0), new Point2D(2, 2)));
+        Shape firstLine = ShapeFactory.makeLine(new Line2D(new Point2D(0, 0), new Point2D(0, 2)));
+        Shape secondLine = ShapeFactory.makeLine(new Line2D(new Point2D(2, 0), new Point2D(2, 2)));
         Collection<Point2D> points = firstLine.intersections(secondLine);
         assertEquals("The lines don't intersect", 0, points.size());
     }
 
     @Test
     public void testLinesIntersectCircles() {
-        Shape line = Shape.makeLine(new Line2D(new Point2D(-3, 0), new Point2D(3, 0)));
-        Shape circle = Shape.makeCircle(new Circle2D(new Point2D(0, 0), 1));
+        Shape line = ShapeFactory.makeLine(new Line2D(new Point2D(-3, 0), new Point2D(3, 0)));
+        Shape circle = ShapeFactory.makeCircle(new Circle2D(new Point2D(0, 0), 1));
         Collection<Point2D> points = line.intersections(circle);
         assertEquals("There are exactly two points of intersection", 2, points.size());
         double sumX = 0;
@@ -61,4 +63,33 @@ public class LineTest {
         // the above test will pass if the X points are BOTH 1; this test makes sure that their signs oppose
         assertEquals("The sum of X points should be 0", 0, sumX, 0.0000000001);
     }
+
+    @Test
+    public void testLocationsForCenterOfCircleWithRadiusReturnsParallelVerticalLine() {
+        Collection<Line> lines = ShapeFactory.makeLines(new Box2D(0, 10, 0, 5));
+        ArrayList<Shape> parallelLines = new ArrayList<>(4);
+        double radius = 2;
+        for (Line edge : lines) {
+            parallelLines.add(edge.potentialLocationsForCenterOfCircleWithRadius(radius));
+        }
+        for (Shape line : parallelLines) {
+            System.out.println("The parallel line is " + line);
+        }
+
+        Line topParallel = ShapeFactory.makeLine(new Line2D(0, 3, 10, 3));
+        Line bottomParallel = ShapeFactory.makeLine(new Line2D(0, 2, 10, 2));
+        Line leftParallel = ShapeFactory.makeLine(new Line2D(2, 0, 2, 5));
+        Line rightParallel = ShapeFactory.makeLine(new Line2D(8, 0, 8, 5));
+        assertEquals("The number of parallel lines within the box should be 4", 4, parallelLines.size());
+        long notNull = 0;
+        for (Shape line : parallelLines) {
+            if (line == null) {
+                notNull++;
+            }
+        }
+        assertEquals("The parallel lines within the box should not be null", 0, notNull);
+
+
+    }
+
 }
