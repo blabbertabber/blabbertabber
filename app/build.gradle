@@ -90,3 +90,10 @@ dependencies {
     compile files('libs/blas.jar')
     compile files('libs/javaGeom-0.11.2.jar')
 }
+
+// Concourse CI displays which tests failed
+tasks.withType(Test) {
+    testLogging {
+        events "failed"
+    }
+}
