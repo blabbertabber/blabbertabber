@@ -26,21 +26,22 @@
         <activity android:name=".SummaryActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".SpeakerStatsActivity" />
+        <activity android:name=".PackedCircleActivity"/>
 
         <service
             android:name=".RecordingService"
             android:enabled="true"
             android:exported="false" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.blabbertabber.blabbertabber.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false" >
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
 
     </application>
 
