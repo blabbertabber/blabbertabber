@@ -63,4 +63,8 @@
         </string>
 
     <string name="speaker">Speaker</string>
+    <string name="average">Average</string>
+    <string name="duration">Duration</string>
+    <string name="all_speakers">All Speakers</string>
+    <string name="total">Total</string>
 </resources>
