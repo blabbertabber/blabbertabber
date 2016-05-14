@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber.shapes;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import math.geom2d.Box2D;
 import math.geom2d.conic.Circle2D;
@@ -12,7 +12,7 @@ import math.geom2d.line.LinearShape2D;
  */
 public class ShapeFactory {
 
-    static Circle makeCircle(Circle2D c) {
+    public static Circle makeCircle(Circle2D c) {
         return new Circle(c);
     }
 
@@ -20,7 +20,7 @@ public class ShapeFactory {
         return new Line(l);
     }
 
-    static Collection<Line> makeLines(Box2D box) {
+    public static List<Line> makeLines(Box2D box) {
         Line.setEnclosingBox(box);
         ArrayList<Line> lines = new ArrayList<>();
         for (LinearShape2D linearShape : box.edges()) {
