@@ -27,7 +27,7 @@ android {
     dexOptions {
         incremental true
         maxProcessCount 4
-        javaMaxHeapSize "4g" // Use gig increments depending on needs
+        javaMaxHeapSize "1024m" // Use gig increments depending on needs
 //        dexInProcess false
     }
 }
