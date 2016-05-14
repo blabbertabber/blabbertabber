@@ -76,20 +76,24 @@ public class LineTest {
             System.out.println("The parallel line is " + line);
         }
 
-        Line topParallel = ShapeFactory.makeLine(new Line2D(0, 3, 10, 3));
-        Line bottomParallel = ShapeFactory.makeLine(new Line2D(0, 2, 10, 2));
-        Line leftParallel = ShapeFactory.makeLine(new Line2D(2, 0, 2, 5));
-        Line rightParallel = ShapeFactory.makeLine(new Line2D(8, 0, 8, 5));
+        ArrayList<Line> expectedParallelLines = new ArrayList<>();
+        expectedParallelLines.add(ShapeFactory.makeLine(new Line2D(10, 3, 0, 3)));  // top
+        expectedParallelLines.add(ShapeFactory.makeLine(new Line2D(0, 2, 10, 2)));  // left
+        expectedParallelLines.add(ShapeFactory.makeLine(new Line2D(2, 0, 2, 5)));   // bottom
+        expectedParallelLines.add(ShapeFactory.makeLine(new Line2D(8, 0, 8, 5)));   // right
         assertEquals("The number of parallel lines within the box should be 4", 4, parallelLines.size());
         long notNull = 0;
+        long parallelCount = 0;
         for (Shape line : parallelLines) {
             if (line == null) {
                 notNull++;
             }
+            if (expectedParallelLines.contains(line)) {
+                parallelCount++;
+            }
         }
         assertEquals("The parallel lines within the box should not be null", 0, notNull);
-
-
+        assertEquals("Four parallel lines should match the expected four", 4, parallelCount);
     }
 
 }

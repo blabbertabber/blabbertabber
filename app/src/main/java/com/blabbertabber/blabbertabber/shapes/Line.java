@@ -43,6 +43,24 @@ public class Line implements Shape {
                 line.lastPoint().x(), line.lastPoint().y());
     }
 
+    private boolean pointsEqual(Point2D p1, Point2D p2) {
+        return (p1.x() == p2.x()) && (p1.y() == p2.y());
+    }
+
+    @Override
+    public boolean equals(Object l) {
+        if (l instanceof Line) {
+            LinearShape2D line2 = ((Line) l).line();
+            Point2D firstPoint = line.firstPoint();
+            Point2D firstPoint2 = line2.firstPoint();
+            Point2D lastPoint = line.lastPoint();
+            Point2D lastPoint2 = line2.lastPoint();
+            return (pointsEqual(firstPoint, firstPoint2) && pointsEqual(lastPoint, lastPoint2)) ||
+                    (pointsEqual(firstPoint, lastPoint2) && pointsEqual(lastPoint, firstPoint2));
+        }
+        return false;
+    }
+
     public Collection<Point2D> intersections(Shape s) {
         return s.intersections(this);
     }
