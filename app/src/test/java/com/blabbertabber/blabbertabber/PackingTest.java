@@ -1,5 +1,10 @@
 package com.blabbertabber.blabbertabber;
 
+import com.blabbertabber.blabbertabber.shapes.Circle;
+import com.blabbertabber.blabbertabber.shapes.Line;
+import com.blabbertabber.blabbertabber.shapes.Shape;
+import com.blabbertabber.blabbertabber.shapes.ShapeFactory;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -11,7 +16,10 @@ import java.util.List;
 
 import math.geom2d.Point2D;
 import math.geom2d.conic.Circle2D;
+import math.geom2d.line.Line2D;
+import math.geom2d.line.LinearShape2D;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 
@@ -47,7 +55,6 @@ public class PackingTest {
         List<ShapePair> shapePairs = p.getShapePairs();
         Collection<Point2D> points = shapePairs.get(2).positionsForNewCircle(10);
         assertEquals("An edge/edge shape pair should have only 1 position for a new circle", 1, points.size());
-        ///double x = points
     }
 
     @Test
@@ -59,7 +66,34 @@ public class PackingTest {
         assertEquals("One circle is packed", 1, circles.size());
     }
 
-    @Test
+    // One shape pair should be circle/bottom.  Another should be circle/left.
+    public void withOneCircleTheNewShapePairsShouldBeAgainstTheBottomAndLeftEdges() {
+        ArrayList<Double> radii = new ArrayList<Double>();
+        radii.add(10.0);
+        Packing p = new Packing(20, 20, radii);
+        ArrayList<Circle2D> circles = p.packNonRecursive();
+        List<ShapePair> shapePairs = p.getShapePairs();
+        Circle circle = ShapeFactory.makeCircle(circles.get(0));
+        Line bottomEdge = ShapeFactory.makeLine(new Line2D(new Point2D(0,0), new Point2D(20,0)));
+        Line leftEdge = ShapeFactory.makeLine(new Line2D(new Point2D(0,0), new Point2D(0,20)));
+        ShapePair circleBottom = new ShapePair(circle, bottomEdge);
+        ShapePair circleLeft = new ShapePair(circle, leftEdge);
+        boolean foundCircleBottom = false;
+        boolean foundCircleLeft = false;
+        for (ShapePair shapePair : shapePairs) {
+            if (shapePair.equals(circleBottom)) {
+                foundCircleBottom = true;
+            }
+            if (shapePair.equals(circleLeft)) {
+                foundCircleLeft = true;
+            }
+        }
+        /// one shape pair should be circle/bottom.  Another should be circle/left
+        assertTrue("One of the shape pairs should be the circle touching the bottom edge", foundCircleBottom);
+        assertTrue("One of the shape pairs should be the circle touching the left edge", foundCircleLeft);
+    }
+
+        @Test
     public void packsTwoCircle() {
         ArrayList<Double> radii = new ArrayList<Double>();
         radii.add(20.0);
