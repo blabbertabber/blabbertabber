@@ -16,7 +16,8 @@ public class ShapeFactory {
         return new Circle(c);
     }
 
-    static Line makeLine(LinearShape2D l) {
+    // TODO:  see if we can rewrites tests so this is package protected
+    public static Line makeLine(LinearShape2D l) {
         return new Line(l);
     }
 

@@ -22,6 +22,7 @@ public class Packing {
     public ArrayList<ShapePair> shapePairs = new ArrayList<>();
     private ArrayList<Circle2D> circles = new ArrayList<>();
     private ArrayList<Double> remainingRadii = new ArrayList<>();
+    private List<Line> lines;
     private double x;
     private double y;
 
@@ -34,7 +35,7 @@ public class Packing {
         Log.i(TAG, "radii.size(): " + radii.size());
 
         // initialize the first 4 shapePairs
-        List<Line> lines = ShapeFactory.makeLines(new Box2D(0, x, 0, y));
+        lines = ShapeFactory.makeLines(new Box2D(0, x, 0, y));
         for (int i = 0; i < lines.size() - 1; i++) {
             shapePairs.add(new ShapePair(lines.get(i), lines.get(i + 1)));
         }
@@ -51,6 +52,10 @@ public class Packing {
         ArrayList<ShapePair> safeCopyShapePairs = new ArrayList<>(shapePairs.size());
         safeCopyShapePairs.addAll(shapePairs);
         return safeCopyShapePairs;
+    }
+
+    public List<Line> getEdges() {
+        return lines;
     }
 
     ArrayList<Circle2D> packNonRecursive() {
