@@ -39,9 +39,6 @@ public class CircleView extends View {
         radii.add((double) getWidth() / 2);
         radii.add(100.0);
         radii.add(200.0);
-        p = new Packing(getWidth(), getHeight(), radii);
-        circles = p.packNonRecursive();
-        Log.i(TAG, "circles.size(): " + circles.size());
     }
 
 
@@ -51,6 +48,10 @@ public class CircleView extends View {
         Log.i(TAG, "onDraw()");
         paint.setColor(Color.DKGRAY);
         paint.setStrokeWidth(1);
+        // FIXME: move this OUT of onDraw ASAP
+        p = new Packing(getWidth(), getHeight(), radii);
+        circles = p.packNonRecursive();
+        Log.i(TAG, "circles.size(): " + circles.size());
         canvas.drawCircle(50, 50, 45, paint);
         for (Circle2D c : circles) {
             Log.i(TAG, "c.radius(): " + c.radius());
