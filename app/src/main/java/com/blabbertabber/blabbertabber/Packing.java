@@ -20,7 +20,7 @@ import math.geom2d.conic.Circle2D;
 public class Packing {
     private final static String TAG = "Packing";
     public ArrayList<ShapePair> shapePairs = new ArrayList<>();
-    private ArrayList<Circle2D> circles = new ArrayList<>();
+    private ArrayList<Circle2D> packedCircles = new ArrayList<>();
     private ArrayList<Double> remainingRadii = new ArrayList<>();
     private List<Line> lines;
     private double x;
@@ -45,7 +45,7 @@ public class Packing {
     Packing(Packing p) {
         x = p.x;
         y = p.y;
-        Collections.copy(circles, p.circles);
+        Collections.copy(packedCircles, p.packedCircles);
     }
 
     public List<ShapePair> getShapePairs() {
@@ -60,30 +60,28 @@ public class Packing {
 
     ArrayList<Circle2D> packNonRecursive() {
         if (remainingRadii.size() == 0) {
-            return circles;
+            return packedCircles;
         }
-        double x = remainingRadii.get(0) / 2.0;
-        double y = remainingRadii.get(0) / 2.0;
+        double x = remainingRadii.get(0);
+        double y = remainingRadii.get(0);
         Circle2D firstCircle = new Circle2D(x, y, remainingRadii.get(0));
+        /// TODO: Add 2 ShapePairs to shapePairs
+        packedCircles.add(firstCircle);
         remainingRadii.remove(0);
-        ArrayList<Circle2D> circles = packRecursive(remainingRadii);
-        circles.add(firstCircle);
-        return circles;
+        return packRecursive(remainingRadii);
     }
 
     ArrayList<Circle2D> packRecursive(ArrayList<Double> remainingRadii) {
+        Log.i(TAG, "packRecursive()");
         ArrayList<Circle2D> circles = new ArrayList<>();
         if (remainingRadii.size() == 0) {
-            return circles;
+            return packedCircles;
         }
-        System.out.println(TAG + "  packRecursive()");
         for (ShapePair shapePair : shapePairs)
             try {
-                double newCircleRadius = remainingRadii.remove(0);
-                if (remainingRadii.size() > 0) {
-                    circles.add(placeNewCircle(newCircleRadius, shapePair));
-                    circles = new Packing(this).packRecursive(remainingRadii);
-                }
+                double nextCircleRadius = remainingRadii.remove(0);
+                circles.addAll(placeNewCircle(nextCircleRadius, shapePair));
+                circles = new Packing(this).packRecursive(remainingRadii);
                 return circles;
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "I couldn't pack!");
@@ -91,12 +89,15 @@ public class Packing {
         return new ArrayList<Circle2D>();
     }
 
-    Circle2D placeNewCircle(double radius, ShapePair corner) {
+    Collection<Circle2D> placeNewCircle(double radius, ShapePair corner) {
+        ArrayList<Circle2D> placedCircles = new ArrayList<>();
         Collection<Point2D> positions = corner.positionsForNewCircle(radius);
         for (Point2D position : positions) {
             Circle2D circle = new Circle2D(position.x(), position.y(), radius);
-
+            /// continue if circle is outside the box
+            /// continue if circle collides with other circles
+            placedCircles.add(circle);
         }
-        return new Circle2D();
+        return placedCircles;
     }
 }
