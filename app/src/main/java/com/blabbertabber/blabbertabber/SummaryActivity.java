@@ -161,6 +161,13 @@ public class SummaryActivity extends Activity {
         startActivity(intent);
     }
 
+    public void launchPackedCircleActivity(MenuItem menuitem) {
+        Log.i(TAG, "launchPackedCircleActivity()");
+
+        Intent intent = new Intent(this, PackedCircleActivity.class);
+        startActivity(intent);
+    }
+
     public void newMeeting(View v) {
         // clear out the old, raw-PCM file
         AudioEventProcessor.newMeetingFile();
