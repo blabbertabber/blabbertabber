@@ -13,7 +13,7 @@
 
         <!-- http://stackoverflow.com/questions/1898886/removing-an-activity-from-the-history-stack -->
         <activity
-            android:name=".PackedCircleActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:noHistory="true">
             <intent-filter>
@@ -26,7 +26,7 @@
         <activity android:name=".SummaryActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".SpeakerStatsActivity" />
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".PackedCircleActivity"/>
 
         <service
             android:name=".RecordingService"
