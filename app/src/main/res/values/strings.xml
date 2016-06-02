@@ -41,6 +41,7 @@
     <string name="show_s_seg_file">Show .s.seg File</string>
     <string name="show_l_seg_file">Show .l.seg File</string>
     <string name="launch_about_activity">About</string>
+    <string name="launch_packed_circles_activity">Circles!</string>
     <string name="drawer_open">Open Sesame!</string>
     <string name="drawer_close">Close Sesame!</string>
     <string name="drawer_description">Beautiful Drawers!</string>

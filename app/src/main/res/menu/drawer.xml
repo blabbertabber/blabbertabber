@@ -34,7 +34,11 @@
             android:onClick="showLSegFile"
             android:title="@string/show_l_seg_file" />
         <item
-            android:id="@+id/about"
+            android:id="@+id/launch_packed_circle_activity"
+            android:onClick="launchPackedCircleActivity"
+            android:title="@string/launch_packed_circles_activity" />
+        <item
+            android:id="@+id/launch_about_activity"
             android:onClick="launchAboutActivity"
             android:title="@string/launch_about_activity" />
     </group>
