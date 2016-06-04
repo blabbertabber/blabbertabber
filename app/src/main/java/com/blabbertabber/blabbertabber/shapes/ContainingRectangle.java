@@ -46,7 +46,7 @@ public class ContainingRectangle {
 
     private void PlaceRemainingCircles(ArrayList<Stack<Circle2D>> solutions, Stack<Circle2D> partialSolution, List<ShapePair> shapePairs, List<Double> remainingRadii) {
         if (remainingRadii.size() == 0) {
-            solutions.add(partialSolution);
+            solutions.add((Stack<Circle2D>) partialSolution.clone());
             return;
         }
         for (ShapePair shapePair : shapePairs) {
@@ -56,18 +56,13 @@ public class ContainingRectangle {
                     if (!fitsInCorner(newCircle, partialSolution)) {
                         break;
                     }
-                    remainingRadii.remove(radius);
+                    List<Double> remainingRadiiCopy = new ArrayList<>(remainingRadii);
+                    remainingRadiiCopy.remove(radius);
                     partialSolution.push(newCircle);
                     List<ShapePair> newShapePairs = new ArrayList<>(shapePair.newShapePairs(new Circle(newCircle)));
                     newShapePairs.addAll(shapePairs);
-                    ////shapePairs.push(newShapePairs.get(0));
-                    ////shapePairs.push(newShapePairs.get(1));
-                    PlaceRemainingCircles(solutions, partialSolution, newShapePairs, remainingRadii);
-                    ////shapePairs.pop();
-                    ////shapePairs.pop();
+                    PlaceRemainingCircles(solutions, partialSolution, newShapePairs, remainingRadiiCopy);
                     partialSolution.pop();
-                    remainingRadii.add(radius);
-
                 }
             }
         }
