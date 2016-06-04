@@ -34,13 +34,17 @@ public class ContainingRectangle {
         }
         double firstRadius = radii.remove(0);
         Circle2D firstCircle = new Circle2D(firstRadius, firstRadius, firstRadius);
+        Circle firstCircleShape = ShapeFactory.makeCircle(firstCircle);
+        shapePairs.push(new ShapePair(firstCircleShape, lines.get(0))); // bottom line
+        shapePairs.push(new ShapePair(firstCircleShape, lines.get(3))); // left line
         ArrayList<Stack<Circle2D>> solutions = new ArrayList<>();
         Stack<Circle2D> partialSolution = new Stack<>();
+        partialSolution.push(firstCircle);
         PlaceRemainingCircles(solutions, partialSolution, shapePairs, radii);
         return solutions;
     }
 
-    private void PlaceRemainingCircles(ArrayList<Stack<Circle2D>> solutions, Stack<Circle2D> partialSolution, Stack<ShapePair> shapePairs, List<Double> remainingRadii) {
+    private void PlaceRemainingCircles(ArrayList<Stack<Circle2D>> solutions, Stack<Circle2D> partialSolution, List<ShapePair> shapePairs, List<Double> remainingRadii) {
         if (remainingRadii.size() == 0) {
             solutions.add(partialSolution);
             return;
@@ -49,27 +53,35 @@ public class ContainingRectangle {
             for (double radius : remainingRadii) {
                 for (Point2D point2d : shapePair.positionsForNewCircle(radius)) {
                     Circle2D newCircle = new Circle2D(point2d, radius);
-                    if (!this.box.containsBounds(newCircle)) {
+                    if (!fitsInCorner(newCircle, partialSolution)) {
                         break;
-                    }
-                    for (Circle2D circle : partialSolution) {
-                        if (newCircle.contains(circle.center()) || newCircle.intersections(circle).size() > 0) {
-                            break;
-                        }
                     }
                     remainingRadii.remove(radius);
                     partialSolution.push(newCircle);
                     List<ShapePair> newShapePairs = new ArrayList<>(shapePair.newShapePairs(new Circle(newCircle)));
-                    shapePairs.push(newShapePairs.get(0));
-                    shapePairs.push(newShapePairs.get(1));
-                    PlaceRemainingCircles(solutions, partialSolution, shapePairs, remainingRadii);
-                    shapePairs.pop();
-                    shapePairs.pop();
+                    newShapePairs.addAll(shapePairs);
+                    ////shapePairs.push(newShapePairs.get(0));
+                    ////shapePairs.push(newShapePairs.get(1));
+                    PlaceRemainingCircles(solutions, partialSolution, newShapePairs, remainingRadii);
+                    ////shapePairs.pop();
+                    ////shapePairs.pop();
                     partialSolution.pop();
                     remainingRadii.add(radius);
 
                 }
             }
         }
+    }
+
+    private boolean fitsInCorner(Circle2D newCircle, Stack<Circle2D> partialSolution) {
+        if (!this.box.containsBounds(newCircle)) {
+            return false;
+        }
+        for (Circle2D circle : partialSolution) {
+            if (newCircle.contains(circle.center()) || newCircle.intersections(circle).size() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
