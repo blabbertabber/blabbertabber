@@ -28,7 +28,7 @@ public class ContainingRectangleTest {
 
     @Test
     public void placesOneCircle() {
-        ContainingRectangle cr = new ContainingRectangle(new Box2D(0, 2, 0, 2));
+        ContainingRectangle cr = new ContainingRectangle(new Box2D(0, 3, 0, 3));
         List<Double> radii = new ArrayList<>();
         radii.add(1.0);
         Collection<Stack<Circle2D>> csc = cr.placeFirstCircle(radii);
@@ -44,14 +44,33 @@ public class ContainingRectangleTest {
         List<Double> radii = new ArrayList<>();
         radii.add(1.5);
         radii.add(1.0);
-        Collection<Stack<Circle2D>> csc = cr.placeFirstCircle(radii);
-        Stack<Circle2D> circleStack = csc.iterator().next();
-        Circle2D soleCircle = circleStack.peek();
+        Collection<Stack<Circle2D>> cscSolutions = cr.placeFirstCircle(radii);
+        Stack<Circle2D> solution = cscSolutions.iterator().next();
+        Circle2D soleCircle = solution.pop();
+        assertEquals("The X coordinate is at 1", 4.0, soleCircle.center().x(), 0.001);
+        assertEquals("The Y coordinate is at 1", 1.0, soleCircle.center().y(), 0.001);
+        soleCircle = solution.pop();
         assertEquals("The X coordinate is at 1", 1.5, soleCircle.center().x(), 0.001);
         assertEquals("The Y coordinate is at 1", 1.5, soleCircle.center().y(), 0.001);
-        circleStack = csc.iterator().next();
-        soleCircle = circleStack.peek();
-        assertEquals("The X coordinate is at 1", 3.0, soleCircle.center().x(), 0.001);
-        assertEquals("The Y coordinate is at 1", 3.0, soleCircle.center().y(), 0.001);
+    }
+
+    @Test
+    public void placesThreeCircles() {
+        ContainingRectangle cr = new ContainingRectangle(new Box2D(0, 5, 0, 5));
+        List<Double> radii = new ArrayList<>();
+        radii.add(1.5);
+        radii.add(1.0);
+        radii.add(0.5);
+        Collection<Stack<Circle2D>> cscSolutions = cr.placeFirstCircle(radii);
+        Stack<Circle2D> solution = cscSolutions.iterator().next();
+        Circle2D soleCircle = solution.pop();
+        assertEquals("The X coordinate is at 1", 4.5, soleCircle.center().x(), 0.001);
+        assertEquals("The Y coordinate is at 1", 4.5, soleCircle.center().y(), 0.001);
+        soleCircle = solution.pop();
+        assertEquals("The X coordinate is at 1", 4.0, soleCircle.center().x(), 0.001);
+        assertEquals("The Y coordinate is at 1", 1.0, soleCircle.center().y(), 0.001);
+        soleCircle = solution.pop();
+        assertEquals("The X coordinate is at 1", 1.5, soleCircle.center().x(), 0.001);
+        assertEquals("The Y coordinate is at 1", 1.5, soleCircle.center().y(), 0.001);
     }
 }
