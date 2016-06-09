@@ -281,7 +281,7 @@ public class RecordingActivity extends Activity {
             @Override
             public void run() {
                 diarize();
-                Intent intent = new Intent(context, SummaryActivity.class);
+                Intent intent = new Intent(context, PackedCircleActivity.class);
                 startActivity(intent);
             }
         }.start();
