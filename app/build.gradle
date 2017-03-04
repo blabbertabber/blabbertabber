@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.blabbertabber.blabbertabber"
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 9
         versionName "0.8.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -41,25 +41,25 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     // App's dependencies, including test
-    compile "com.android.support:appcompat-v7:23.4.0"
-    compile "com.android.support:support-annotations:23.4.0"
+    compile "com.android.support:appcompat-v7:25.2.0"
+    compile "com.android.support:support-annotations:25.2.0"
     // needed for NavigationView
-    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support:design:25.2.0'
     // We need the next line, otherwise we'll get an error:
     // "Resolved versions for app * and test app * differ". http://g.co/androidstudio/app-test-app-conflict
-    androidTestCompile 'com.android.support:support-annotations:23.4.0'
+    androidTestCompile 'com.android.support:support-annotations:25.2.0'
     // https://developer.android.com/tools/testing-support-library/index.html
-    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
     // Set this dependency to use JUnit 4 rules
-    androidTestCompile 'com.android.support.test:rules:0.4.1'
+    androidTestCompile 'com.android.support.test:rules:0.5'
     // Set this dependency to build and run Espresso tests
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.1') {
         exclude module: 'support-annotations'
     }
     // Set this dependency to build and run UI Automator tests
-    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
     // https://code.google.com/p/android-test-kit/wiki/EspressoIntentsSetupInstructions
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
     // http://mockito.org/
     androidTestCompile 'org.mockito:mockito-core:1.10.19'
     // needed for NavigationDrawer tests http://developer.android.com/reference/android/support/test/espresso/contrib/DrawerActions.html
