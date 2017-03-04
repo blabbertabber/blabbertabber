@@ -160,12 +160,12 @@ public class HelperTest {
 
     @Test
     public void testZero_1Duration() {
-        assertEquals("50ms should return '0.0'", Helper.timeToHMMSSm(50), "0.0");
+        assertEquals("49ms should return '0.0'", Helper.timeToHMMSSm(49), "0.0");
     }
 
     @Test
     public void testPoint1_0Duration() {
-        assertEquals("51ms should return '0.1'", "0.1", Helper.timeToHMMSSm(51));
+        assertEquals("50ms should return '0.1'", "0.1", Helper.timeToHMMSSm(50));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class HelperTest {
 
     @Test
     public void testPoint1M_2Duration() {
-        assertEquals("60_051ms should return '1:00.1'", "1:00.1", Helper.timeToHMMSSm(60_051));
+        assertEquals("60_050ms should return '1:00.1'", "1:00.1", Helper.timeToHMMSSm(60_050));
     }
 
     @Test
@@ -200,7 +200,7 @@ public class HelperTest {
 
     @Test
     public void testPoint10M_1Duration() {
-        assertEquals("600_050ms should return '10:00.0'", "10:00.0", Helper.timeToHMMSSm(600_050));
+        assertEquals("600_049ms should return '10:00.0'", "10:00.0", Helper.timeToHMMSSm(600_049));
     }
 
     @Test
@@ -210,7 +210,7 @@ public class HelperTest {
 
     @Test
     public void testPoint1H_1Duration() {
-        assertEquals("3_600_050ms should return '1:00:00.0'", "1:00:00.0", Helper.timeToHMMSSm(3_600_050));
+        assertEquals("3_600_049ms should return '1:00:00.0'", "1:00:00.0", Helper.timeToHMMSSm(3_600_049));
     }
 
     // We only test error conditions; we cannot find a path that we can
@@ -223,7 +223,7 @@ public class HelperTest {
         File file = new File("/some/nonexistent/directory/sphinx");
 
         exception.expect(IOException.class);
-        exception.expectMessage(StringContains.containsString("ENOENT (No such file or directory)"));
+        exception.expectMessage(StringContains.containsString("No such file or directory"));
         Helper.copyInputFileStreamToFilesystem(inputStream, file.getAbsolutePath());
     }
 
@@ -233,7 +233,7 @@ public class HelperTest {
         File file = new File("sphinx");
 
         exception.expect(IOException.class);
-        exception.expectMessage(StringContains.containsString("open failed: EROFS (Read-only file system)"));
+        exception.expectMessage(StringContains.containsString("Read-only file system"));
         Helper.copyInputFileStreamToFilesystem(inputStream, file.getAbsolutePath());
         assertEquals("the file is created", true, file.exists());
     }
@@ -244,7 +244,7 @@ public class HelperTest {
         File file = new File("/data/local/tmp/sphinx");
 
         exception.expect(IOException.class);
-        exception.expectMessage(StringContains.containsString("open failed: EACCES (Permission denied)"));
+        exception.expectMessage(StringContains.containsString("Permission denied"));
         Helper.copyInputFileStreamToFilesystem(inputStream, file.getAbsolutePath());
         assertEquals("the file is created", true, file.exists());
     }

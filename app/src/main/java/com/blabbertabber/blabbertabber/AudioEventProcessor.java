@@ -55,7 +55,7 @@ public class AudioEventProcessor implements Runnable {
         File sharedDir = context.getFilesDir();
         rawFilePathName = sharedDir.getAbsolutePath() + "/" + "meeting.raw";
         try {
-            rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_WORLD_WRITEABLE);
+            rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_PRIVATE);
         } catch (FileNotFoundException e) {
             Log.wtf(TAG, "AudioEventProcessor()   context.openFileOutput(\"meeting.raw\", Context.MODE_WORLD_WRITEABLE) threw FileNotFoundException.");
             e.printStackTrace();
@@ -81,7 +81,7 @@ public class AudioEventProcessor implements Runnable {
         if (rawFileOutputStream == null) {
             // open rawFileOutputStream
             try {
-                rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_WORLD_WRITEABLE);
+                rawFileOutputStream = context.openFileOutput("meeting.raw", Context.MODE_PRIVATE);
             } catch (FileNotFoundException e) {
                 Log.wtf(TAG, "AudioEventProcessor()   context.openFileOutput(\"meeting.raw\", Context.MODE_WORLD_WRITEABLE) threw FileNotFoundException.");
                 e.printStackTrace();
