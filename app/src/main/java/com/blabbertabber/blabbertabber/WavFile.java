@@ -58,7 +58,7 @@ public class WavFile {
         DataOutputStream output = null;
         try {
             Log.i(TAG, "About to write to wav file in path " + waveFile.getAbsolutePath());
-            output = new DataOutputStream(context.openFileOutput(waveFile.getName(), Context.MODE_WORLD_READABLE));
+            output = new DataOutputStream(context.openFileOutput(waveFile.getName(), Context.MODE_PRIVATE));
             // WAVE header
             // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
             writeString(output, "RIFF"); // chunk id
