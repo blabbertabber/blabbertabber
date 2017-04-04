@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -22,28 +23,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.Locale;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Objects;
 
-import edu.cmu.sphinx.frontend.Data;
-import edu.cmu.sphinx.frontend.DataEndSignal;
-import edu.cmu.sphinx.frontend.DoubleData;
-import edu.cmu.sphinx.frontend.FloatData;
-import edu.cmu.sphinx.frontend.FrontEnd;
-import edu.cmu.sphinx.frontend.util.StreamDataSource;
-import edu.cmu.sphinx.util.props.ConfigurationManager;
-import fr.lium.spkDiarization.lib.DiarizationException;
-import fr.lium.spkDiarization.programs.MClust;
-import fr.lium.spkDiarization.programs.MSeg;
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Activity to record sound.
@@ -52,7 +40,10 @@ public class RecordingActivity extends Activity {
     public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
+    private static final String DIARIZER_URL = "https://diarizer.blabbertabber.com:9443/api/v1/upload";
+    private static final int MEGA = 1024 * 1024;
     private static final int REQUEST_RECORD_AUDIO = 51;
+    private static final String MULTIPART_BOUNDARY = "--ILoveMyDogCherieSheIsSoWarmAndCuddly";
     private boolean mBound = false;
     protected ServiceConnection mServerConn = new ServiceConnection() {
         @Override
@@ -244,7 +235,6 @@ public class RecordingActivity extends Activity {
         findViewById(R.id.button_pause_caption).setVisibility(View.INVISIBLE);
     }
 
-
     private void record() {
         Log.i(TAG, "record()");
         // Make sure we have all the necessary permissions, then begin recording:
@@ -275,14 +265,56 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "summary()");
         mTimer.stop();
         pause(); // stop the recording
-        diarizationProgress();
+        uploadProgress();
         final Context context = this;
+
+        // Transform the raw file into a .wav file
+        try {
+            Log.i(TAG, "summary()   AudioRecordWrapper.getRawFilePathName(): " + AudioEventProcessor.getRawFilePathName());
+            WavFile.of(this, new File(AudioEventProcessor.getRawFilePathName()));
+        } catch (IOException e) {
+            String errorTxt = "Whoops! couldn't convert " + AudioEventProcessor.getRawFilePathName()
+                    + ": " + e.getMessage();
+            Log.wtf(TAG, errorTxt);
+            Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+
         new Thread() {
             @Override
             public void run() {
-                diarize();
-                Intent intent = new Intent(context, PackedCircleActivity.class);
-                startActivity(intent);
+                // TODO: make async (currently sync)
+                HttpsURLConnection diarizer = null;
+                try {
+                    diarizer = (HttpsURLConnection) (new URL(DIARIZER_URL)).openConnection();
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                }
+
+                String soundFilePath = WavFile.convertFilenameFromRawToWav(AudioEventProcessor.getRawFilePathName());
+                File soundFile = new File(soundFilePath);
+                FileInputStream soundFileStream = null;
+                try {
+                    soundFileStream = new FileInputStream(soundFile);
+                } catch (java.io.IOException e) {
+                    Log.e(TAG, "Unable to open sound file " + soundFilePath + ".  This is catastrophic.");
+                    e.printStackTrace();
+                }
+
+                String resultsURL = "";
+                try {
+                    resultsURL = upload(diarizer, soundFileStream);
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(resultsURL));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    Log.v(TAG, "view_results(): resolved activity");
+                    startActivity(intent);
+                } else {
+                    Log.v(TAG, "view_results(): couldn't resolve activity");
+                }
             }
         }.start();
     }
@@ -334,180 +366,93 @@ public class RecordingActivity extends Activity {
                 .setText(Helper.timeToHMMSSMinuteMandatory(t.time()));
     }
 
-    private void diarize() {
-        // Transform the raw file into a .wav file
-        WavFile wavFile;
+    private String upload(HttpsURLConnection diarizerConnection, FileInputStream soundFileStream) throws IOException {
+        // http://stackoverflow.com/questions/34222980/urlconnection-always-returns-400-bad-request-when-i-try-to-upload-a-wav-file
+        // upload .wav to endpoint and return GUID
+        // TODO: don't load the entire meeting into RAM
+        // TODO: find a way to compress the sound data
+        String resultsURL = "https://diarizer.blabbertabber.com";
         try {
-            Log.i(TAG, "summary()   AudioRecordWrapper.getRawFilePathName(): " + AudioEventProcessor.getRawFilePathName());
-            wavFile = WavFile.of(this, new File(AudioEventProcessor.getRawFilePathName()));
-        } catch (IOException e) {
-            String errorTxt = "Whoops! couldn't convert " + AudioEventProcessor.getRawFilePathName()
-                    + ": " + e.getMessage();
-            Log.wtf(TAG, errorTxt);
-            Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-        // Copy Sphinx's config file into place
-        copySphinxConfigFileIntoPlace();
+            diarizerConnection.setRequestMethod("POST");
+            diarizerConnection.setDoOutput(true);
+            diarizerConnection.setDoInput(true);
+            diarizerConnection.setChunkedStreamingMode(MEGA); //disable while debugging
 
-        // Create config manager
-        ConfigurationManager cm = new ConfigurationManager(getFilesDir() + "/" + SPHINX_CONFIG);
+            // http://stackoverflow.com/questions/941628/urlconnection-filenotfoundexception-for-non-standard-http-port-sources/2274535#2274535
+            diarizerConnection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+            diarizerConnection.setRequestProperty("Accept", "*/*");
 
-        FrontEnd frontEnd = (FrontEnd) cm.lookup("mfcFrontEnd");
-        StreamDataSource audioSource = (StreamDataSource) cm.lookup("streamDataSource");
+            diarizerConnection.setRequestProperty("Connection", "Keep-Alive");
+            diarizerConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + MULTIPART_BOUNDARY);
+            diarizerConnection.setRequestProperty("Accept-Encoding", "identity"); // disable gzip compression for debuggin
+            diarizerConnection.connect();
 
-        String inputAudioFile = getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME;
+            OutputStream out = diarizerConnection.getOutputStream();
+            out.write("Q\r\n".getBytes());
 
-        try {
-            audioSource.setInputStream(new FileInputStream(inputAudioFile), "audio");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+            addFilePart(soundFileStream, out, "soundFile", "meeting.wav");
 
-        LinkedList<float[]> allFeatures = new LinkedList<float[]>();
-        int featureLength = -1;
-
-        //get features from audio
-        try {
-            Data feature = frontEnd.getData();
-            while (!(feature instanceof DataEndSignal)) {
-                if (feature instanceof DoubleData) {
-                    double[] featureData = ((DoubleData) feature).getValues();
-                    if (featureLength < 0) {
-                        featureLength = featureData.length;
-                        //logger.info("Feature length: " + featureLength);
-                    }
-                    float[] convertedData = new float[featureData.length];
-                    for (int i = 0; i < featureData.length; i++) {
-                        convertedData[i] = (float) featureData[i];
-                    }
-                    allFeatures.add(convertedData);
-                } else if (feature instanceof FloatData) {
-                    float[] featureData = ((FloatData) feature).getValues();
-                    if (featureLength < 0) {
-                        featureLength = featureData.length;
-                        //logger.info("Feature length: " + featureLength);
-                    }
-                    allFeatures.add(featureData);
-                }
-                feature = frontEnd.getData();
+            byte[] buffer = new byte[MEGA];
+            int status = diarizerConnection.getResponseCode();
+            Log.i(TAG, "return code: " + status);
+            InputStream in;
+            if (status >= 300) {
+                in = diarizerConnection.getErrorStream();
+            } else {
+                in = diarizerConnection.getInputStream();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            int length = in.read(buffer);
+            resultsURL = new String(buffer).substring(0, length);
+            Log.i(TAG, "return data: " + resultsURL);
 
-        //write the MFCC features to binary file
-        DataOutputStream outStream = null;
-        try {
-            outStream = new DataOutputStream(new FileOutputStream(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".mfc"));
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } finally {
+            diarizerConnection.disconnect();
         }
-        try {
-            outStream.writeInt(allFeatures.size() * featureLength);
-        } catch (IOException | NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        for (float[] feature : allFeatures) {
-            for (float val : feature) {
-                try {
-                    outStream.writeFloat(val);
-                } catch (IOException | NullPointerException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            outStream.close();
-        } catch (IOException | NullPointerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        //write initial segmentation file for LIUM_SpkDiarization
-        String uemSegment = String.format(Locale.getDefault(), "BlabTab 1 0 %d U U U S0", allFeatures.size());
-        try {
-            FileWriter uemWriter = new FileWriter(getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION + ".uem.seg");
-            uemWriter.write(uemSegment);
-            uemWriter.flush();
-            uemWriter.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        String basePathName = getFilesDir() + "/" + AudioEventProcessor.RECORDER_FILENAME_NO_EXTENSION;
-        String[] linearSegParams = {
-                "--trace",
-                "--help",
-                "--kind=FULL",
-                "--sMethod=GLR",
-                "--fInputMask=" + basePathName + ".mfc",
-                "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
-                "--sInputMask=" + basePathName + ".uem.seg",
-                "--sOutputMask=" + basePathName + ".s.seg",
-                AudioEventProcessor.RECORDER_RAW_FILENAME
-        };
-        String[] linearClustParams = {
-                "--trace",
-                "--help",
-                "--fInputMask=" + basePathName + ".mfc",
-                "--fInputDesc=sphinx,1:1:0:0:0:0,13,0:0:0",
-                "--sInputMask=" + basePathName + ".s.seg",
-                "--sOutputMask=" + basePathName + ".l.seg",
-                "--cMethod=l",
-                "--cThr=2",
-                AudioEventProcessor.RECORDER_RAW_FILENAME
-        };
-
-        try {
-            MSeg.main(linearSegParams);
-        } catch (DiarizationException e) {
-            // TODO Auto-generated catch block
-            Toast.makeText(this, "DiarizationException: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            Toast.makeText(this, "Exception " + e.getClass().getName() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
-        try {
-            MClust.main(linearClustParams);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        return resultsURL;
     }
 
-    private void diarizationProgress() {
-        Log.i(TAG, "diarizationProgress()");
-        final ProgressDialog diarizationProgress = new ProgressDialog(this);
-        diarizationProgress.setMessage(getString(R.string.performing_diarization));
-        diarizationProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        diarizationProgress.setIndeterminate(false);
-        diarizationProgress.setProgress(0);
-        diarizationProgress.show();
+    private void addFilePart(FileInputStream in, OutputStream out, String paramName, String fileName) throws IOException {
+        Log.i(TAG, "addFilePart()");
+        out.write(("--" + MULTIPART_BOUNDARY + "\r\n").getBytes());
+        out.write(("Content-Disposition: form-data; name=\"" + paramName + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
+        out.write(("Content-Type: application/octet-stream\r\n").getBytes());
+        out.write("\r\n".getBytes());
+
+        //
+        byte[] buffer = new byte[MEGA];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+
+        out.write("\r\n".getBytes());
+        out.write(("--" + MULTIPART_BOUNDARY + "--" + "\r\n").getBytes());
+    }
+
+    private void uploadProgress() {
+        Log.i(TAG, "uploadProgress()");
+        final ProgressDialog uploadProgressDialog = new ProgressDialog(this);
+        uploadProgressDialog.setMessage(getString(R.string.uploading_wav_file));
+        uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        uploadProgressDialog.setIndeterminate(false);
+        uploadProgressDialog.setProgress(0);
+        uploadProgressDialog.show();
 
         File meetingFile = new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME);
-        double diarizationDuration = Helper.howLongWillDiarizationTake(
+        // FIXME: howLongWillDiarizationTake -> howLongWillUploadTake, and use completely different algo
+        double uploadDuration = Helper.howLongWillDiarizationTake(
                 Helper.howLongWasMeetingInSeconds(meetingFile.length()),
                 MainActivity.processorSpeed
         );
         // 1000 seconds/milliseconds, 100 ticks (each tick is 1% on the progressDialog)
-        final long sleepInterval = (long) (1000.0 * diarizationDuration / 100.0);
+        final long sleepInterval = (long) (1000.0 * uploadDuration / 100.0);
         new Thread() {
             @Override
             public void run() {
                 for (int i = 0; i < 100; i++) {
                     try {
                         sleep(sleepInterval);
-                        diarizationProgress.setProgress(i);
+                        uploadProgressDialog.setProgress(i);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();

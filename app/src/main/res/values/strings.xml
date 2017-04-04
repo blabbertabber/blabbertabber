@@ -17,7 +17,7 @@
     <string name="button_pause">PAUSE</string>
     <string name="button_record">RECORD</string>
     <string name="button_reset">reset</string>
-    <string name="performing_diarization">Analyzing Meeting</string>
+    <string name="uploading_wav_file">Analyzing Meeting</string>
 
     <string name="button_new_meeting">New Meeting</string>
     <string name="button_share">Share</string>
@@ -54,11 +54,7 @@
     <string name="about_text" formatted="false">
         Charlotte Cunningham designed BlabberTabber and created many of the graphics.\n
         \nBrendan Cunnie and Brian Cunnie coded BlabberTabber.\n
-        \nDaniel Di Matteo wrote the first android diarization program. His code
-        helped us tremendously, and uses LIUM.\n
-        \nLIUM is a Java-based open source toolkit for diarization, written by
-        Sylvain Meignier, Gregor Dupuy, Paul Gay, and others. It uses Sphinx.\n
-        \nCMU Sphinx is open source toolkit for speech recognition.\n
+        \nDaniel Di Matteo wrote the first android diarization program.\n
         \nGerald Friedland, Ph.D. and Ekaterina Gonina, Ph.D. advised us and
         published the research papers which inspired us to write BlabberTabber.
         </string>

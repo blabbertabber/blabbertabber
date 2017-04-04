@@ -14,6 +14,7 @@ import android.view.View;
  * It is shown only the first time the application is opened.
  */
 public class MainActivity extends Activity {
+    public static final String DIARIZER_URL = "http://diarizer.blabbertabber.com/";
     private static final String TAG = "MainActivity";
     private static final String PREF_FIRST_TIME = "com.blabbertabber.blabbertabber.first_time";
     private static final String PREF_PROCESSORSPEED = "com.blabbertabber.blabbertabber.processing";
