@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,7 @@
         <activity android:name=".SummaryActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".SpeakerStatsActivity" />
-        <activity android:name=".PackedCircleActivity"/>
+        <activity android:name=".PackedCircleActivity" />
 
         <service
             android:name=".RecordingService"
