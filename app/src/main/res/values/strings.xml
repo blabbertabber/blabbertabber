@@ -3,8 +3,12 @@
 
     <string name="welcome_text" formatted="false">Recording conversations without consent
         is illegal in many states. Do the right thing: get consent before using BlabberTabber.\n
+        BlabberTabber uploads your sound file to a server for processing; don\'t use
+        BlabberTabber if that\'s unacceptable.\n
+        Your cell provider may charge you for
+        data usage when uploading, as much as a dollar or more for a one-hour meeting.\n
         \nBlabberTabber records conversations and calculates how much each
-        person spoke.  It is under construction.  It does not work yet.\n
+        person spoke.\n
         \nTo pause, press "PAUSE", to resume, press
         "RECORD", and to reset the tally, press "RESET".\n
         \nWhen the meeting is over, press "FINISH" to see the final tally.\n
@@ -54,6 +58,8 @@
     <string name="about_text" formatted="false">
         Charlotte Cunningham designed BlabberTabber and created many of the graphics.\n
         \nBrendan Cunnie and Brian Cunnie coded BlabberTabber.\n
+        \nAalto Speech Group of Aalto University provided the
+        diarization back-end; Antonio Macías Ojeda was especially helpful.\n
         \nDaniel Di Matteo wrote the first android diarization program.\n
         \nGerald Friedland, Ph.D. and Ekaterina Gonina, Ph.D. advised us and
         published the research papers which inspired us to write BlabberTabber.
