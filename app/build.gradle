@@ -32,7 +32,7 @@ android {
 
 // https://github.com/codepath/android_guides/wiki/Design-Support-Library
 ext {
-    supportLibVersion = '23.3.0'  // variable that can be referenced to keep support libs consistent
+    supportLibVersion = '25.3.1'  // variable that can be referenced to keep support libs consistent
 }
 
 dependencies {
