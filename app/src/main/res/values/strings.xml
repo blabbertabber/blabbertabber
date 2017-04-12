@@ -3,9 +3,9 @@
 
     <string name="welcome_text" formatted="false">Recording conversations without consent
         is illegal in many states. Do the right thing: get consent before using BlabberTabber.\n
-        BlabberTabber uploads your sound file to a server for processing; don\'t use
+        \nBlabberTabber uploads your sound file to a server for processing; don\'t use
         BlabberTabber if that\'s unacceptable.\n
-        Your cell provider may charge you for
+        \nYour cell provider may charge you for
         data usage when uploading, as much as a dollar or more for a one-hour meeting.\n
         \nBlabberTabber records conversations and calculates how much each
         person spoke.\n

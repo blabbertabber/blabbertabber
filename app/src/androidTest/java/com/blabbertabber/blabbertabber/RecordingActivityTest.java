@@ -14,12 +14,15 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerActions.close;
+import static android.support.test.espresso.contrib.DrawerActions.open;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Test Recording Activity
@@ -150,5 +153,32 @@ public class RecordingActivityTest {
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Thread.sleep(1001); // sleep for just over 1 second
         onView(withId(R.id.meeting_timer)).check(matches(withText("0:02")));
+    }
+
+    @Test
+    public void openAndCloseDrawerTest() {
+        /*
+            We cannot match the clickable items in the navigation drawer by their Resource ID
+            (e.g. "R.id.show_splash") because NavigationDrawer loses them; instead we
+            identify them by their strings
+         */
+
+        int[] drawerItems = {
+                R.string.play_meeting_wav,
+                R.string.launch_main_activity,
+                R.string.launch_about_activity,
+        };
+
+        // slide open the NavigationDrawer to expose the menuItems
+        onView(withId(R.id.drawer_layout)).perform(open());
+        for (int i = 0; i < drawerItems.length; i++) {
+            onView(withText(drawerItems[i])).check(matches(isDisplayed()));
+        }
+
+        // slide the drawer closed, items should NOT be displayed
+        onView(withId(R.id.drawer_layout)).perform(close());
+        for (int i = 0; i < drawerItems.length; i++) {
+            onView(withText(drawerItems[i])).check(matches(not(isDisplayed())));
+        }
     }
 }
