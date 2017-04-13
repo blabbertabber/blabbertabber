@@ -24,9 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".RecordingActivity" />
-        <activity android:name=".SummaryActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".SpeakerStatsActivity" />
         <activity android:name=".PackedCircleActivity" />
 
         <service
