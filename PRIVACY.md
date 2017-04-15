@@ -29,6 +29,15 @@ about specials, new products or services, or changes to this privacy policy.
 We reserve the right to update this privacy policy as needed.  We will update
 this document to reflect any changes.
 
+#### Recordings and Transcriptions
+
+We appreciate that the recordings of meetings are sensitive, so we will
+purge them from our servers within 7 days unless you have opted-in to allow
+us to use them for research.
+
+Transcriptions generated from the recordings of meetings will also be purged
+within 7 days unless you have opted-in to allow us to use them for research.
+
 ### Your Access to and Control Over Information
 
 You may opt out of any future contacts from us at any time. You can do the
