@@ -15,10 +15,13 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,7 +78,18 @@ public class RecordingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+        // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
         setContentView(R.layout.activity_recording);
+        // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
+        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
+        if (mDrawerLayout == null) {
+            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
+            return;
+        } else {
+            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
+        }
+
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -460,5 +474,54 @@ public class RecordingActivity extends Activity {
                 }
             }
         }.start();
+    }
+
+    /**
+     * Replays the most recent meeting.
+     * Called by the navigation drawer.
+     *
+     * @param menuItem Item selected in navigation drawer.  Unused within method.
+     */
+    public void replayMeeting(MenuItem menuItem) {
+        Log.i(TAG, "replayMeeting()");
+        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioEventProcessor.getRawFilePathName());
+        File wavFile = new File(wavFilePath);
+        Uri wavFileURI = Uri.fromFile(wavFile);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(wavFileURI, "audio/x-wav");
+        if (wavFile.exists()) {
+            Log.i(TAG, "replayMeeting(): wavFile " + wavFilePath + " exists, playing");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                Log.v(TAG, "replayMeeting(): resolved activity");
+                startActivity(intent);
+            } else {
+                Log.v(TAG, "replayMeeting(): couldn't resolve activity");
+            }
+        } else {
+            Log.e(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
+            Log.wtf(TAG, "The raw file's path name is " + AudioEventProcessor.getRawFilePathName());
+            Toast.makeText(getApplicationContext(), "Can't play meeting file " + wavFilePath + "; it doesn't exist.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void launchMainActivity(MenuItem menuitem) {
+        Log.i(TAG, "launchMainActivity()");
+        MainActivity.resetFirstTime = true;
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void launchPackedCircleActivity(MenuItem menuitem) {
+        Log.i(TAG, "launchPackedCircleActivity()");
+
+        Intent intent = new Intent(this, PackedCircleActivity.class);
+        startActivity(intent);
+    }
+
+    public void launchAboutActivity(MenuItem menuItem) {
+        Log.i(TAG, "launchAboutActivity()");
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 }
