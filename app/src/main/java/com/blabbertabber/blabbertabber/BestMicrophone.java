@@ -41,7 +41,7 @@ public class BestMicrophone {
             case "Nexus 5":
                 return (MediaRecorder.AudioSource.MIC);
             case "Nexus 6":
-                return (MediaRecorder.AudioSource.VOICE_RECOGNITION);
+                return (MediaRecorder.AudioSource.DEFAULT);
             case "Nexus 5X":
             default:
                 Log.v(TAG, "getBestMicrophone() FIXME new model: " + model);
