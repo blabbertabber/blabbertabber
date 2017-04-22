@@ -1,7 +1,9 @@
-Be considerate: when recording a meeting, make sure you have the consent of everyone at the meeting. If you don't, you may be breaking the law.
+BlabberTabber is for speech researchers only; its results are presented in a manner that would not make sense to a layperson (unless you happen to be a layperson who likes to read diarization results in RTTM format)
+
+BlabberTabber records a meeting (via your Android device's microphone). When the meeting is finished, it will upload the recording to a server for diarization (who spoke when) and transcription. If that makes you nervous, it should! Don't record anything you wouldn't want your mother to hear. We do our best to secure the server and purge the recordings frequently, but don't depend on us — we're doing this part-time at night and on weekends.
+
+BlabberTabber uses the Aalto University's speech diarizer for diarization, and CMU's Sphinx 4 for transcription.
 
 BlabberTabber is a work-in-progress! Let us know if you find bugs https://github.com/blabbertabber/blabbertabber/issues/
 
-BlabberTabber is an app that aspires to perform speaker diarization; it answers the question, "who spoke when?".
-
-BlabberTabber, when started, will record the meeting (via your Android device's microphone). When the meeting is over, pause the recording, press "Finish", and then be sent to a web page with the results.
+Be considerate: when recording a meeting, make sure you have the consent of everyone at the meeting. If you don't, you may be breaking the law.

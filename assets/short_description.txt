@@ -1,1 +1,1 @@
-BlabberTabber is an app that performs speaker diarization.
+Diarization and Transcription FOR SPEECH RESEARCHERS ONLY
