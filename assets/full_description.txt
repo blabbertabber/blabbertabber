@@ -1,0 +1,7 @@
+Be considerate: when recording a meeting, make sure you have the consent of everyone at the meeting. If you don't, you may be breaking the law.
+
+BlabberTabber is a work-in-progress! Let us know if you find bugs https://github.com/blabbertabber/blabbertabber/issues/
+
+BlabberTabber is an app that aspires to perform speaker diarization; it answers the question, "who spoke when?".
+
+BlabberTabber, when started, will record the meeting (via your Android device's microphone). When the meeting is over, pause the recording, press "Finish", and then be sent to a web page with the results.
