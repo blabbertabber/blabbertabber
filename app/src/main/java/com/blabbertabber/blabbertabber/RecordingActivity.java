@@ -523,13 +523,6 @@ public class RecordingActivity extends Activity {
         startActivity(intent);
     }
 
-    public void launchPackedCircleActivity(MenuItem menuitem) {
-        Log.i(TAG, "launchPackedCircleActivity()");
-
-        Intent intent = new Intent(this, PackedCircleActivity.class);
-        startActivity(intent);
-    }
-
     public void launchAboutActivity(MenuItem menuItem) {
         Log.i(TAG, "launchAboutActivity()");
         Intent intent = new Intent(this, AboutActivity.class);

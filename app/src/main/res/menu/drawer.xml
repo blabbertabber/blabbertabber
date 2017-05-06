@@ -10,10 +10,6 @@
             android:onClick="launchMainActivity"
             android:title="@string/launch_main_activity" />
         <item
-            android:id="@+id/launch_packed_circle_activity"
-            android:onClick="launchPackedCircleActivity"
-            android:title="@string/launch_packed_circles_activity" />
-        <item
             android:id="@+id/launch_about_activity"
             android:onClick="launchAboutActivity"
             android:title="@string/launch_about_activity" />

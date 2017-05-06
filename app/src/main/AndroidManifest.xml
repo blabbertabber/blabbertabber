@@ -25,7 +25,6 @@
         </activity>
         <activity android:name=".RecordingActivity" />
         <activity android:name=".AboutActivity" />
-        <activity android:name=".PackedCircleActivity" />
 
         <service
             android:name=".RecordingService"
