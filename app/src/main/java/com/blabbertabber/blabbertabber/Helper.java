@@ -26,7 +26,7 @@ public class Helper {
      * @return String formatted time interval string in "H:MM:SS.m" format.
      */
     public static String timeToHMMSSm(long milliseconds) {
-        Log.v(TAG, "timeToHMMSSm(" + milliseconds + ")");
+//        Log.v(TAG, "timeToHMMSSm(" + milliseconds + ")");
 
         double seconds = (milliseconds % 60_000) / 1000.0;
         int minutes = (int) (milliseconds / 60_000) % 60;

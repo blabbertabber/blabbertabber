@@ -95,7 +95,7 @@ public class RecordingActivity extends Activity {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.v(TAG, "onReceive():  received Intent: " + intent);
+//                Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
                     displayTimer(mTimer);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
