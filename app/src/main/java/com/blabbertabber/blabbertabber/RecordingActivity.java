@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -41,10 +40,9 @@ import javax.net.ssl.HttpsURLConnection;
  * Activity to record sound.
  */
 public class RecordingActivity extends Activity {
-    public static final String SPHINX_CONFIG = "sphinx4_config.xml";
     private static final String TAG = "RecordingActivity";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
-    private static final String DIARIZER_URL = "https://diarizer.blabbertabber.com:9443/api/v1/upload";
+    private static final String DIARIZER_URL = "https://diarizer.com:9443/api/v1/upload";
     private static final int MEGA = 1024 * 1024;
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final String MULTIPART_BOUNDARY = "--ILoveMyDogCherieSheIsSoWarmAndCuddly";
@@ -332,18 +330,6 @@ public class RecordingActivity extends Activity {
                 }
             }
         }.start();
-    }
-
-    private void copySphinxConfigFileIntoPlace() {
-        String outputFilePathname = getFilesDir() + "/" + SPHINX_CONFIG;
-        try {
-            InputStream inputStream = getAssets().open(SPHINX_CONFIG, AssetManager.ACCESS_BUFFER);
-            Helper.copyInputFileStreamToFilesystem(inputStream, outputFilePathname);
-        } catch (IOException e) {
-            Log.wtf(TAG, "copySphinxConfigFileIntoPlace() couldn't copy file");
-            Toast.makeText(this, "Configuration didn't succeed, expect no results", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
     }
 
     @Override
