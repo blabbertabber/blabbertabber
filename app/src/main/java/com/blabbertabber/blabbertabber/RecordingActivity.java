@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -484,23 +485,33 @@ public class RecordingActivity extends Activity {
      */
     public void replayMeeting(MenuItem menuItem) {
         Log.i(TAG, "replayMeeting()");
-        String wavFilePath = WavFile.convertFilenameFromRawToWav(AudioEventProcessor.getRawFilePathName());
-        File wavFile = new File(wavFilePath);
-        Uri wavFileURI = Uri.fromFile(wavFile);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(wavFileURI, "audio/x-wav");
-        if (wavFile.exists()) {
-            Log.i(TAG, "replayMeeting(): wavFile " + wavFilePath + " exists, playing");
+        String rawFilePath = AudioEventProcessor.getRawFilePathName();
+        File rawFile = new File(rawFilePath);
+        WavFile wavFile = null;
+        try {
+            wavFile = WavFile.of(this, rawFile);
+            Log.i(TAG, "replayMeeting(): wavFile " + WavFile.convertFilenameFromRawToWav(rawFilePath) + " exists, playing");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Log.v(TAG, "delete me");
+            Uri wavFileURI = FileProvider.getUriForFile(RecordingActivity.this, "com.blabbertabber.blabbertabber.fileprovider", wavFile);
+            intent.setDataAndType(wavFileURI, "audio/wav");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Log.v(TAG, "delete me 2");
             if (intent.resolveActivity(getPackageManager()) != null) {
                 Log.v(TAG, "replayMeeting(): resolved activity");
-                startActivity(intent);
+                try {
+                    startActivity(intent);
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "wavFile (" + AudioEventProcessor.getRawFilePathName() + ") cant't be shared");
+                }
+
+                //  Caused by: android.os.FileUriExposedException: file:///data/user/0/com.blabbertabber.blabbertabber/files/meeting.wav exposed beyond app through Intent.getData()
             } else {
-                Log.v(TAG, "replayMeeting(): couldn't resolve activity");
+                Log.e(TAG, "replayMeeting(): couldn't resolve activity");
             }
-        } else {
-            Log.e(TAG, "replayMeeting(): wavFile " + wavFilePath + " doesn't exist");
-            Log.wtf(TAG, "The raw file's path name is " + AudioEventProcessor.getRawFilePathName());
-            Toast.makeText(getApplicationContext(), "Can't play meeting file " + wavFilePath + "; it doesn't exist.", Toast.LENGTH_LONG).show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
