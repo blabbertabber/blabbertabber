@@ -14,17 +14,18 @@ import java.nio.ByteOrder;
 /**
  * Utility class to convert the .raw pcm file to a .wav file.
  */
-public class WavFile {
+public class WavFile extends File {
     private static final String TAG = "WavFile";
     public static int DEFAULT_SAMPLE_RATE = 16_000;
     File wavFile;
 
-    private WavFile() {
+    private WavFile(String path) {
+        super(path);
     }
 
     public static WavFile of(Context context, File rawFile) throws IOException {
-        WavFile wavFile = new WavFile();
         String wavFilePath = convertFilenameFromRawToWav(rawFile.getPath());
+        WavFile wavFile = new WavFile(wavFilePath);
         Log.i(TAG, "wavFilePath: " + wavFilePath);
         wavFile.rawToWave(context, rawFile, new File(wavFilePath));
         return wavFile;
