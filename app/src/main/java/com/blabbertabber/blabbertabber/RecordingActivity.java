@@ -23,6 +23,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
     private static final String DIARIZER_URL = "https://diarizer.com:9443/api/v1/upload";
+    private static final String TEST_DIARIZER_URL = "https://test.diarizer.com:9443/api/v1/upload";
     private static final int MEGA = 1024 * 1024;
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final String MULTIPART_BOUNDARY = "--ILoveMyDogCherieSheIsSoWarmAndCuddly";
@@ -298,8 +300,13 @@ public class RecordingActivity extends Activity {
             public void run() {
                 // TODO: make async (currently sync)
                 HttpsURLConnection diarizer = null;
+                CheckBox useTestServerCheckbox = (CheckBox) findViewById(R.id.use_test_server);
+                String diarizerUrl = DIARIZER_URL;
+                if (useTestServerCheckbox.isChecked()) {
+                    diarizerUrl = TEST_DIARIZER_URL;
+                }
                 try {
-                    diarizer = (HttpsURLConnection) (new URL(DIARIZER_URL)).openConnection();
+                    diarizer = (HttpsURLConnection) (new URL(diarizerUrl)).openConnection();
                 } catch (java.io.IOException e) {
                     e.printStackTrace();
                 }
