@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/play_meeting_wav"
@@ -9,6 +10,10 @@
             android:id="@+id/show_splash"
             android:onClick="launchMainActivity"
             android:title="@string/launch_main_activity" />
+        <item
+            android:id="@+id/use_test_server"
+            android:title="@string/use_test_server"
+            app:actionLayout="@layout/widget_check" />
         <item
             android:id="@+id/launch_about_activity"
             android:onClick="launchAboutActivity"
