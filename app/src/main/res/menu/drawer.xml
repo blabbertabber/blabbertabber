@@ -15,6 +15,10 @@
             android:title="@string/use_test_server"
             app:actionLayout="@layout/widget_check" />
         <item
+            android:id="@+id/use_ibm_diarizer"
+            android:title="@string/use_ibm_diarizer"
+            app:actionLayout="@layout/widget_check" />
+        <item
             android:id="@+id/launch_about_activity"
             android:onClick="launchAboutActivity"
             android:title="@string/launch_about_activity" />
