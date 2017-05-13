@@ -382,6 +382,14 @@ public class RecordingActivity extends Activity {
         String resultsURL;
         try {
             diarizerConnection.setRequestMethod("POST");
+            CheckBox useIbmBackendCheckbox = (CheckBox) findViewById(R.id.use_ibm_backend);
+            if (useIbmBackendCheckbox.isChecked()) {
+                diarizerConnection.setRequestProperty("Diarizer", "IBM");
+                diarizerConnection.setRequestProperty("Transcriber", "IBM");
+            } else {
+                diarizerConnection.setRequestProperty("Diarizer", "Aalto");
+                diarizerConnection.setRequestProperty("Transcriber", "CMUSphinx4");
+            }
             diarizerConnection.setDoOutput(true);
             diarizerConnection.setDoInput(true);
             diarizerConnection.setChunkedStreamingMode(MEGA); //disable while debugging
