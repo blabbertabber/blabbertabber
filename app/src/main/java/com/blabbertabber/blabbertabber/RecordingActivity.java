@@ -379,7 +379,7 @@ public class RecordingActivity extends Activity {
         // upload .wav to endpoint and return GUID
         // TODO: don't load the entire meeting into RAM
         // TODO: find a way to compress the sound data
-        String resultsURL = "https://diarizer.blabbertabber.com";
+        String resultsURL;
         try {
             diarizerConnection.setRequestMethod("POST");
             diarizerConnection.setDoOutput(true);
