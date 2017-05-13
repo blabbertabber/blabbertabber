@@ -41,6 +41,8 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
+        // https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html
+        <meta-data android:name="android.max_aspect" android:value="2.1" />
     </application>
 
 </manifest>
