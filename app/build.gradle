@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
 
     defaultConfig {
         applicationId "com.blabbertabber.blabbertabber"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 15
         versionName "1.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -32,20 +32,20 @@ android {
 
 // https://github.com/codepath/android_guides/wiki/Design-Support-Library
 ext {
-    supportLibVersion = '25.3.1'  // variable that can be referenced to keep support libs consistent
+    supportLibVersion = '26.0.0-beta2'  // variable that can be referenced to keep support libs consistent
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     // App's dependencies, including test
-    compile "com.android.support:appcompat-v7:25.3.1"
-    compile "com.android.support:support-annotations:25.3.1"
+    compile "com.android.support:appcompat-v7:26.0.0-beta2"
+    compile "com.android.support:support-annotations:26.0.0-beta2"
     // needed for NavigationView
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:design:26.0.0-beta2'
     // We need the next line, otherwise we'll get an error:
     // "Resolved versions for app * and test app * differ". http://g.co/androidstudio/app-test-app-conflict
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
+    androidTestCompile 'com.android.support:support-annotations:26.0.0-beta2'
     // https://developer.android.com/tools/testing-support-library/index.html
     androidTestCompile 'com.android.support.test:runner:0.5'
     // Set this dependency to use JUnit 4 rules
@@ -81,5 +81,15 @@ dependencies {
 tasks.withType(Test) {
     testLogging {
         events "failed"
+    }
+}
+
+// https://developer.android.com/topic/libraries/support-library/setup.html
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
 }
