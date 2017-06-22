@@ -32,10 +32,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Activity to record sound.
@@ -44,7 +43,7 @@ public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
     private static final String DIARIZER_URL = "https://diarizer.com:9443/api/v1/upload";
-    private static final String TEST_DIARIZER_URL = "https://test.diarizer.com:9443/api/v1/upload";
+    private static final String TEST_DIARIZER_URL = "http://test.diarizer.com:8080/api/v1/upload";
     private static final int MEGA = 1024 * 1024;
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final String MULTIPART_BOUNDARY = "--ILoveMyDogCherieSheIsSoWarmAndCuddly";
@@ -298,15 +297,15 @@ public class RecordingActivity extends Activity {
         new Thread() {
             @Override
             public void run() {
-                // TODO: make async (currently sync)
-                HttpsURLConnection diarizer = null;
+                // TODO(brian): make async (currently sync)
+                HttpURLConnection diarizer = null;
                 CheckBox useTestServerCheckbox = (CheckBox) findViewById(R.id.use_test_server);
                 String diarizerUrl = DIARIZER_URL;
                 if (useTestServerCheckbox.isChecked()) {
                     diarizerUrl = TEST_DIARIZER_URL;
                 }
                 try {
-                    diarizer = (HttpsURLConnection) (new URL(diarizerUrl)).openConnection();
+                    diarizer = (HttpURLConnection) (new URL(diarizerUrl)).openConnection();
                 } catch (java.io.IOException e) {
                     e.printStackTrace();
                 }
@@ -374,7 +373,7 @@ public class RecordingActivity extends Activity {
                 .setText(Helper.timeToHMMSSMinuteMandatory(t.time()));
     }
 
-    private String upload(HttpsURLConnection diarizerConnection, FileInputStream soundFileStream) throws IOException {
+    private String upload(HttpURLConnection diarizerConnection, FileInputStream soundFileStream) throws IOException {
         // http://stackoverflow.com/questions/34222980/urlconnection-always-returns-400-bad-request-when-i-try-to-upload-a-wav-file
         // upload .wav to endpoint and return GUID
         // TODO: don't load the entire meeting into RAM
