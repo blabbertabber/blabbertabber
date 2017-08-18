@@ -28,5 +28,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:onClick="launchRecordingActivity"
-        android:text="@string/launch_recording_activity" />
+        android:text="@string/got_it" />
 </LinearLayout>
