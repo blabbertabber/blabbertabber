@@ -2,6 +2,7 @@ package com.blabbertabber.blabbertabber;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -65,6 +66,7 @@ public class RecordingActivity extends Activity {
     private BroadcastReceiver mReceiver;
     private Timer mTimer = new Timer();
     private Thread mTimerDisplayThread;
+    private ProgressDialog uploadProgressDialog;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -378,7 +380,7 @@ public class RecordingActivity extends Activity {
         // upload .wav to endpoint and return GUID
         // TODO: don't load the entire meeting into RAM
         // TODO: find a way to compress the sound data
-        String resultsURL;
+        String resultsURL = "";
         try {
             diarizerConnection.setRequestMethod("POST");
             CheckBox useIbmBackendCheckbox = (CheckBox) findViewById(R.id.use_ibm_backend);
@@ -419,7 +421,14 @@ public class RecordingActivity extends Activity {
             int length = in.read(buffer);
             resultsURL = new String(buffer).substring(0, length);
             Log.i(TAG, "return data: " + resultsURL);
-
+        } catch (IOException e) {
+            Log.w(TAG, "Caught IOException: " + e.getMessage());
+            Bundle connErrBundle = new Bundle();
+            connErrBundle.putString("message", getString(R.string.cant_reach_server) + "\n\nDetails: " + diarizerConnection.getURL() + ": " + e.getMessage());
+            DialogFragment uhOh = new UnreachableServerDialog();
+            uhOh.setArguments(connErrBundle);
+            uhOh.show(getFragmentManager(), "unreachableTag");
+            uploadProgressDialog.cancel();
         } finally {
             diarizerConnection.disconnect();
         }
@@ -446,7 +455,9 @@ public class RecordingActivity extends Activity {
 
     private void uploadProgress() {
         Log.i(TAG, "uploadProgress()");
-        final ProgressDialog uploadProgressDialog = new ProgressDialog(this);
+        if (uploadProgressDialog == null) {
+            uploadProgressDialog = new ProgressDialog(this);
+        }
         uploadProgressDialog.setMessage(getString(R.string.uploading_wav_file));
         uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         uploadProgressDialog.setIndeterminate(false);
