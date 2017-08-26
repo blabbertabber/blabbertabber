@@ -17,6 +17,15 @@
             android:background="#F0F0F0"
             android:title="@string/app_name" />
 
+        <ProgressBar
+            android:id="@+id/determinateBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="false"
+            android:progress="0"
+            android:visibility="invisible" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -116,6 +125,8 @@
                 android:text="@string/button_finish" />
 
         </LinearLayout>
+
+
     </LinearLayout>
     <!-- The navigation drawer -->
     <android.support.design.widget.NavigationView
