@@ -3,7 +3,6 @@ package com.blabbertabber.blabbertabber;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,6 +24,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +45,7 @@ public class RecordingActivity extends Activity {
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
     private static final String DIARIZER_URL = "https://diarizer.com:9443/api/v1/upload";
     private static final String TEST_DIARIZER_URL = "http://test.diarizer.com:8080/api/v1/upload";
-    private static final int MEGA = 1024 * 1024;
+    private static final int BLOCK_SIZE = 32 * 1024;
     private static final int REQUEST_RECORD_AUDIO = 51;
     private static final String MULTIPART_BOUNDARY = "--ILoveMyDogCherieSheIsSoWarmAndCuddly";
     private boolean mBound = false;
@@ -66,7 +66,7 @@ public class RecordingActivity extends Activity {
     private BroadcastReceiver mReceiver;
     private Timer mTimer = new Timer();
     private Thread mTimerDisplayThread;
-    private ProgressDialog uploadProgressDialog;
+    private ProgressBar uploadProgressBar;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -91,7 +91,7 @@ public class RecordingActivity extends Activity {
         } else {
             Log.i(TAG, "onCreate() mDrawerLayout is not null!");
         }
-
+        uploadProgressBar = findViewById(R.id.determinateBar);
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -186,6 +186,7 @@ public class RecordingActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
+        uploadProgressBar.setVisibility(View.INVISIBLE);
         mTimerDisplayThread.interrupt();
         // unregister
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
@@ -281,8 +282,6 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "summary()");
         mTimer.stop();
         pause(); // stop the recording
-        uploadProgress();
-        final Context context = this;
 
         // Transform the raw file into a .wav file
         try {
@@ -295,6 +294,7 @@ public class RecordingActivity extends Activity {
             Toast.makeText(getApplicationContext(), errorTxt, Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+        uploadProgressBar.setVisibility(View.VISIBLE);
 
         new Thread() {
             @Override
@@ -314,6 +314,7 @@ public class RecordingActivity extends Activity {
 
                 String soundFilePath = WavFile.convertFilenameFromRawToWav(AudioEventProcessor.getRawFilePathName());
                 File soundFile = new File(soundFilePath);
+                long length = soundFile.length();
                 FileInputStream soundFileStream = null;
                 try {
                     soundFileStream = new FileInputStream(soundFile);
@@ -324,7 +325,7 @@ public class RecordingActivity extends Activity {
 
                 String resultsURL = "";
                 try {
-                    resultsURL = upload(diarizer, soundFileStream);
+                    resultsURL = upload(diarizer, soundFileStream, length);
                 } catch (java.io.IOException e) {
                     e.printStackTrace();
                 }
@@ -375,7 +376,7 @@ public class RecordingActivity extends Activity {
                 .setText(Helper.timeToHMMSSMinuteMandatory(t.time()));
     }
 
-    private String upload(HttpURLConnection diarizerConnection, FileInputStream soundFileStream) throws IOException {
+    private String upload(HttpURLConnection diarizerConnection, FileInputStream soundFileStream, long soundFileLength) throws IOException {
         // http://stackoverflow.com/questions/34222980/urlconnection-always-returns-400-bad-request-when-i-try-to-upload-a-wav-file
         // upload .wav to endpoint and return GUID
         // TODO: don't load the entire meeting into RAM
@@ -393,7 +394,7 @@ public class RecordingActivity extends Activity {
             }
             diarizerConnection.setDoOutput(true);
             diarizerConnection.setDoInput(true);
-            diarizerConnection.setChunkedStreamingMode(MEGA); //disable while debugging
+            diarizerConnection.setChunkedStreamingMode(BLOCK_SIZE); //disable while debugging
 
             // http://stackoverflow.com/questions/941628/urlconnection-filenotfoundexception-for-non-standard-http-port-sources/2274535#2274535
             diarizerConnection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
@@ -407,9 +408,9 @@ public class RecordingActivity extends Activity {
             OutputStream out = diarizerConnection.getOutputStream();
             out.write("Q\r\n".getBytes());
 
-            addFilePart(soundFileStream, out, "soundFile", "meeting.wav");
+            addFilePart(soundFileStream, out, "soundFile", "meeting.wav", soundFileLength);
 
-            byte[] buffer = new byte[MEGA];
+            byte[] buffer = new byte[BLOCK_SIZE];
             int status = diarizerConnection.getResponseCode();
             Log.i(TAG, "return code: " + status);
             InputStream in;
@@ -428,64 +429,35 @@ public class RecordingActivity extends Activity {
             DialogFragment uhOh = new UnreachableServerDialog();
             uhOh.setArguments(connErrBundle);
             uhOh.show(getFragmentManager(), "unreachableTag");
-            uploadProgressDialog.cancel();
+            uploadProgressBar.setVisibility(View.INVISIBLE);
         } finally {
             diarizerConnection.disconnect();
         }
         return resultsURL;
     }
 
-    private void addFilePart(FileInputStream in, OutputStream out, String paramName, String fileName) throws IOException {
+    private void addFilePart(FileInputStream in, OutputStream out, String paramName, String fileName, long soundFileLength) throws IOException {
         Log.i(TAG, "addFilePart()");
         out.write(("--" + MULTIPART_BOUNDARY + "\r\n").getBytes());
         out.write(("Content-Disposition: form-data; name=\"" + paramName + "\"; filename=\"" + fileName + "\"\r\n").getBytes());
         out.write(("Content-Type: application/octet-stream\r\n").getBytes());
         out.write("\r\n".getBytes());
 
+        uploadProgressBar.setMax((int) soundFileLength/ BLOCK_SIZE);
+        Log.e(TAG, "addFilePart(): soundFileLength " + soundFileLength);
         //
-        byte[] buffer = new byte[MEGA];
+        int megabytesUploaded = 0;
+        byte[] buffer = new byte[BLOCK_SIZE];
         int bytesRead;
         while ((bytesRead = in.read(buffer)) != -1) {
             out.write(buffer, 0, bytesRead);
+            uploadProgressBar.setProgress(megabytesUploaded);
+            megabytesUploaded++;
+            Log.e(TAG, "addFilePart(): megabytesUploaded  " + megabytesUploaded);
         }
 
         out.write("\r\n".getBytes());
         out.write(("--" + MULTIPART_BOUNDARY + "--" + "\r\n").getBytes());
-    }
-
-    private void uploadProgress() {
-        Log.i(TAG, "uploadProgress()");
-        if (uploadProgressDialog == null) {
-            uploadProgressDialog = new ProgressDialog(this);
-        }
-        uploadProgressDialog.setMessage(getString(R.string.uploading_wav_file));
-        uploadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        uploadProgressDialog.setIndeterminate(false);
-        uploadProgressDialog.setProgress(0);
-        uploadProgressDialog.show();
-
-        File meetingFile = new File(getFilesDir() + "/" + AudioEventProcessor.RECORDER_RAW_FILENAME);
-        // FIXME: howLongWillDiarizationTake -> howLongWillUploadTake, and use completely different algo
-        double uploadDuration = Helper.howLongWillDiarizationTake(
-                Helper.howLongWasMeetingInSeconds(meetingFile.length()),
-                MainActivity.processorSpeed
-        );
-        // 1000 seconds/milliseconds, 100 ticks (each tick is 1% on the progressDialog)
-        final long sleepInterval = (long) (1000.0 * uploadDuration / 100.0);
-        new Thread() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100; i++) {
-                    try {
-                        sleep(sleepInterval);
-                        uploadProgressDialog.setProgress(i);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }.start();
     }
 
     /**
