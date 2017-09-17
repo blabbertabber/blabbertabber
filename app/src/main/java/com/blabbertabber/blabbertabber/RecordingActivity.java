@@ -429,7 +429,6 @@ public class RecordingActivity extends Activity {
             DialogFragment uhOh = new UnreachableServerDialog();
             uhOh.setArguments(connErrBundle);
             uhOh.show(getFragmentManager(), "unreachableTag");
-            uploadProgressBar.setVisibility(View.INVISIBLE);
         } finally {
             diarizerConnection.disconnect();
         }
