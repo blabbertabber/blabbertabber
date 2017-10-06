@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -75,22 +74,6 @@ public class MainActivity extends Activity {
     // requirement to pass in a View (which is never used)
     public void launchRecordingActivity(View view) {
         launchRecordingActivity();
-    }
-
-    // Easter Egg for new users
-    public void rushLimbaughIsWrong(View v) {
-        Log.i(TAG, "rushLimbaughIsWrong()");
-        rushLimbaughIsWrongCount += 1;
-        if (rushLimbaughIsWrongCount > 3) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://www.google.com/search?q=rush+limbaugh+wrong"));
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                Log.v(TAG, "rushLimbaughIsWrong(): resolved activity");
-                startActivity(intent);
-            } else {
-                Log.v(TAG, "rushLimbaughIsWrong(): couldn't resolve activity");
-            }
-        }
     }
 
     // needed for testing

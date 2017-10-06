@@ -442,7 +442,7 @@ public class RecordingActivity extends Activity {
         out.write(("Content-Type: application/octet-stream\r\n").getBytes());
         out.write("\r\n".getBytes());
 
-        uploadProgressBar.setMax((int) soundFileLength/ BLOCK_SIZE);
+        uploadProgressBar.setMax((int) soundFileLength / BLOCK_SIZE);
         Log.e(TAG, "addFilePart(): soundFileLength " + soundFileLength);
         //
         int megabytesUploaded = 0;
