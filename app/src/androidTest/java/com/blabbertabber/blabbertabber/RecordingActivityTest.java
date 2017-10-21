@@ -144,14 +144,18 @@ public class RecordingActivityTest {
     public void whenIRotateTheTimerContinuesRunning() throws InterruptedException {
         resetMeeting();
         onView(withId(R.id.button_record)).perform(click());
+        long start = System.currentTimeMillis();
 
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        Thread.sleep(1001); // sleep for just over 1 second
-        Thread.sleep(100); // sleep for the update interval
+        while (System.currentTimeMillis() < start + 1001 + 100) { // start + 1 second + update-interval
+            Thread.sleep(100); // sleep for 100ms before checking again
+        }
         onView(withId(R.id.meeting_timer)).check(matches(withText("0:01")));
 
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        Thread.sleep(1001); // sleep for just over 1 second
+        while (System.currentTimeMillis() < start + 2001 + 100) { // start + 2 seconds + update-interval
+            Thread.sleep(100); // sleep for 100ms before checking again
+        }
         onView(withId(R.id.meeting_timer)).check(matches(withText("0:02")));
     }
 
