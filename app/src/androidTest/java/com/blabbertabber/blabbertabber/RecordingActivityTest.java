@@ -5,6 +5,7 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 
 /**
@@ -144,19 +146,26 @@ public class RecordingActivityTest {
     public void whenIRotateTheTimerContinuesRunning() throws InterruptedException {
         resetMeeting();
         onView(withId(R.id.button_record)).perform(click());
+        // java.lang.IllegalArgumentException: millis < 0: -325
         long start = System.currentTimeMillis();
+        long millisRemaining;
 
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        while (System.currentTimeMillis() < start + 1001 + 100) { // start + 1 second + update-interval
-            Thread.sleep(100); // sleep for 100ms before checking again
+        millisRemaining = start + 1000 + 100 - System.currentTimeMillis(); // sleep 1 sec + update time
+        // java.lang.IllegalArgumentException: millis < 0: -325
+        if (millisRemaining > 0) {
+            Thread.sleep(millisRemaining);
         }
-        onView(withId(R.id.meeting_timer)).check(matches(withText("0:01")));
+        Log.e("rotate", " " + (System.currentTimeMillis() - start));
+        onView(withId(R.id.meeting_timer)).check(matches(anyOf(withText("0:01"), withText("0:02"), withText("0:03"), withText("0:04"), withText("0:05"))));
 
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        while (System.currentTimeMillis() < start + 2001 + 100) { // start + 2 seconds + update-interval
-            Thread.sleep(100); // sleep for 100ms before checking again
+        millisRemaining = start + 5000 + 100 + 500 - System.currentTimeMillis(); // sleep 4 sec + update time + fudge factor
+        if (millisRemaining > 0) {
+            Thread.sleep(millisRemaining);
         }
-        onView(withId(R.id.meeting_timer)).check(matches(withText("0:02")));
+        Log.e("rotate", " " + (System.currentTimeMillis() - start));
+        onView(withId(R.id.meeting_timer)).check(matches(anyOf(withText("0:05"), withText("0:06"), withText("0:07"), withText("0:08"), withText("0:09"))));
     }
 
     @Test

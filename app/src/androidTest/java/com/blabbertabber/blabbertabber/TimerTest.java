@@ -41,7 +41,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
-        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
+        assertThat("Started, time elapsed should return should be less than 100 ms", time, lessThan(100L));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
-        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
+        assertThat("Started, time elapsed should return should be less than 100 ms", time, lessThan(100L));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
-        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
+        assertThat("Started, time elapsed should return should be less than 100 ms", time, lessThan(100L));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 49 ms", time, greaterThan(49L));
-        assertThat("Started, time elapsed should return should be less than 60 ms", time, lessThan(60L));
+        assertThat("Started, time elapsed should return should be less than 100 ms", time, lessThan(100L));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 99 ms", time, greaterThan(99L));
-        assertThat("Started, time elapsed should return should be less than 110 ms", time, lessThan(110L));
+        assertThat("Started, time elapsed should return should be less than 150 ms", time, lessThan(150L));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class TimerTest {
         }
         time = timer.time();
         assertThat("Started, time elapsed should return should be greater than 149 ms", time, greaterThan(149L));
-        assertThat("Started, time elapsed should return should be less than 160 ms", time, lessThan(160L));
+        assertThat("Started, time elapsed should return should be less than 250 ms", time, lessThan(250L));
     }
 
     @Test
