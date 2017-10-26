@@ -14,19 +14,20 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +43,10 @@ import java.util.Objects;
  */
 public class RecordingActivity extends Activity {
     private static final String TAG = "RecordingActivity";
+    private static final String PREF_DIARIZER = "com.blabbertabber.blabbertabber.pref_diarizer";
     private static final String PREF_RECORDING = "com.blabbertabber.blabbertabber.pref_recording";
+    private static final String PREF_USE_TEST_SERVER = "com.blabbertabber.blabbertabber.pref_test_server";
+    private static final String PREF_TRANSCRIBER = "com.blabbertabber.blabbertabber.pref_transcriber";
     private static final String DIARIZER_URL = "https://diarizer.com:9443/api/v1/upload";
     private static final String TEST_DIARIZER_URL = "http://test.diarizer.com:8080/api/v1/upload";
     private static final int BLOCK_SIZE = 32 * 1024;
@@ -67,6 +71,10 @@ public class RecordingActivity extends Activity {
     private Timer mTimer = new Timer();
     private Thread mTimerDisplayThread;
     private ProgressBar uploadProgressBar;
+    private boolean mUseTestServer = false;
+
+    private String mDiarizer;
+    private String mTranscriber;
 
     /**
      * Construct a new BroadcastReceiver that listens for Intent RECORD_RESULT and
@@ -82,21 +90,20 @@ public class RecordingActivity extends Activity {
         Log.i(TAG, "onCreate()");
         // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
         setContentView(R.layout.activity_recording);
-        // Nav Drawer, http://stackoverflow.com/questions/26082467/android-on-drawer-closed-listener
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.left_drawer);
-        if (mDrawerLayout == null) {
-            Log.wtf(TAG, "onCreate() mDrawerLayout is NULL!");
-            return;
-        } else {
-            Log.i(TAG, "onCreate() mDrawerLayout is not null!");
-        }
+        // Toolbar, https://developer.android.com/training/appbar/setting-up.html
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setActionBar(mToolbar);
         uploadProgressBar = findViewById(R.id.determinateBar);
+        // http://developer.android.com/training/basics/data-storage/shared-preferences.html
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        mDiarizer = sharedPref.getString(PREF_DIARIZER, "Aalto");
+        mTranscriber = sharedPref.getString(PREF_TRANSCRIBER, "null");
+        mUseTestServer = sharedPref.getBoolean(PREF_USE_TEST_SERVER, false);
+
 
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-//                Log.v(TAG, "onReceive():  received Intent: " + intent);
                 if (intent.getAction().equals(AudioEventProcessor.RECORD_RESULT)) {
                     displayTimer(mTimer);
                 } else if (Objects.equals(intent.getAction(), AudioEventProcessor.RECORD_STATUS)) {
@@ -195,7 +202,10 @@ public class RecordingActivity extends Activity {
         }
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(PREF_DIARIZER, mDiarizer);
         editor.putBoolean(PREF_RECORDING, RecordingService.recording);
+        editor.putBoolean(PREF_USE_TEST_SERVER, mUseTestServer);
+        editor.putString(PREF_TRANSCRIBER, mTranscriber);
         editor.apply();
     }
 
@@ -209,6 +219,67 @@ public class RecordingActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy(); // yes, call super first, even with onDestroy()
         Log.i(TAG, "onDestroy()");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.e(TAG, "onCreateOptionsMenu");
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.drawer, menu);
+        menu.findItem(R.id.use_test_server).setChecked(mUseTestServer);
+        switch (mDiarizer) {
+            case "Aalto": menu.findItem(R.id.diarizer_aalto).setChecked(true); break;
+            case "IBM": menu.findItem(R.id.diarizer_ibm).setChecked(true); break;
+        }
+        switch (mTranscriber) {
+            case "null": menu.findItem(R.id.transcriber_null).setChecked(true); break;
+            case "CMU Sphinx4": menu.findItem(R.id.transcriber_cmu).setChecked(true); break;
+            case "IBM": menu.findItem(R.id.transcriber_ibm).setChecked(true); break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e(TAG, "onOptionsItemSelected");
+        switch (item.getItemId()) {
+            case R.id.use_test_server:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
+                mUseTestServer = item.isChecked();
+                Log.i(TAG, "Use test server: " + mUseTestServer);
+                return true;
+            case R.id.diarizer_aalto:
+                mDiarizer = "Aalto";
+                Log.i(TAG, "Diarizer " + mDiarizer);
+                item.setChecked(true);
+                return true;
+            case R.id.diarizer_ibm:
+                mDiarizer = "IBM";
+                Log.i(TAG, "Diarizer " + mDiarizer);
+                item.setChecked(true);
+                return true;
+            case R.id.transcriber_null:
+                mTranscriber = "null";
+                Log.i(TAG, "Transcriber " + mTranscriber);
+                item.setChecked(true);
+                return true;
+            case R.id.transcriber_ibm:
+                mTranscriber = "IBM";
+                Log.i(TAG, "Transcriber " + mTranscriber);
+                item.setChecked(true);
+                return true;
+            case R.id.transcriber_cmu:
+                mTranscriber = "CMU Sphinx4";
+                Log.i(TAG, "Transcriber " + mTranscriber);
+                item.setChecked(true);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void registerRecordingServiceReceiver() {
@@ -301,9 +372,8 @@ public class RecordingActivity extends Activity {
             public void run() {
                 // TODO(brian): make async (currently sync)
                 HttpURLConnection diarizer = null;
-                CheckBox useTestServerCheckbox = (CheckBox) findViewById(R.id.use_test_server);
                 String diarizerUrl = DIARIZER_URL;
-                if (useTestServerCheckbox.isChecked()) {
+                if (mUseTestServer) {
                     diarizerUrl = TEST_DIARIZER_URL;
                 }
                 try {
@@ -380,11 +450,10 @@ public class RecordingActivity extends Activity {
         // http://stackoverflow.com/questions/34222980/urlconnection-always-returns-400-bad-request-when-i-try-to-upload-a-wav-file
         // upload .wav to endpoint and return GUID
         // TODO: don't load the entire meeting into RAM
-        // TODO: find a way to compress the sound data
         String resultsURL = "";
         try {
             diarizerConnection.setRequestMethod("POST");
-            CheckBox useIbmBackendCheckbox = (CheckBox) findViewById(R.id.use_ibm_backend);
+            CheckBox useIbmBackendCheckbox = findViewById(R.id.diarizer_ibm);
             if (useIbmBackendCheckbox.isChecked()) {
                 diarizerConnection.setRequestProperty("Diarizer", "IBM");
                 diarizerConnection.setRequestProperty("Transcriber", "IBM");

@@ -37,6 +37,12 @@
     <string name="speaker_time_title">H:MM:SS</string>
     <string name="play_meeting_wav">Replay Meeting</string>
     <string name="use_test_server">Use Test Server</string>
+    <string name="diarizer_menu_label">Diarizers:</string>
+    <string name="diarizer_aalto">Aalto</string>
+    <string name="ibm">IBM</string>
+    <string name="transcriber_menu_label">Transcribers:</string>
+    <string name="transcriber_cmu">CMU Sphinx4</string>
+    <string name="transcriber_null">No transcription</string>
     <string name="use_ibm_backend">Use IBM Diarizer $$</string>
     <string name="launch_main_activity">Show Splash Screen</string>
     <string name="launch_speakerstats_activity">Speaker Statistics</string>

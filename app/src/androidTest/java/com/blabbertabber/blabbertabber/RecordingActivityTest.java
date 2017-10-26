@@ -13,10 +13,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openContextualActionModeOverflowMenu;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.close;
-import static android.support.test.espresso.contrib.DrawerActions.open;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -24,7 +24,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.not;
 
 /**
  * Test Recording Activity
@@ -172,26 +171,36 @@ public class RecordingActivityTest {
     public void openAndCloseDrawerTest() {
         /*
             We cannot match the clickable items in the navigation drawer by their Resource ID
-            (e.g. "R.id.show_splash") because NavigationDrawer loses them; instead we
+            (e.g. "R.id.show_splash") because Options loses them; instead we
             identify them by their strings
          */
 
         int[] drawerItems = {
+                R.string.launch_about_activity,
                 R.string.play_meeting_wav,
                 R.string.launch_main_activity,
-                R.string.launch_about_activity,
+                R.string.use_test_server,
+                R.string.diarizer_menu_label,
+                R.string.diarizer_aalto,
+                // android.support.test.espresso.AmbiguousViewMatcherException: 'with string from resource id: <2131558457>[ibm] value: IBM' matches multiple views in the hierarchy.
+                // R.string.ibm,
+                R.string.transcriber_menu_label,
+                R.string.transcriber_null,
+                R.string.transcriber_cmu,
+                // R.string.ibm,
         };
 
-        // slide open the NavigationDrawer to expose the menuItems
-        onView(withId(R.id.drawer_layout)).perform(open());
-        for (int i = 0; i < drawerItems.length; i++) {
-            onView(withText(drawerItems[i])).check(matches(isDisplayed()));
+        // Options Menu items should NOT be present
+        for (int i : drawerItems) {
+            onView(withText(i)).check(doesNotExist());
         }
 
-        // slide the drawer closed, items should NOT be displayed
-        onView(withId(R.id.drawer_layout)).perform(close());
-        for (int i = 0; i < drawerItems.length; i++) {
-            onView(withText(drawerItems[i])).check(matches(not(isDisplayed())));
+        // slide open the Options menu to expose the menuItems
+        // https://developer.android.com/reference/android/support/test/espresso/Espresso.html
+        openContextualActionModeOverflowMenu();
+
+        for (int i : drawerItems) {
+            onView(withText(i)).check(matches(isDisplayed()));
         }
     }
 }

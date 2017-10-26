@@ -1,140 +1,123 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recording_root_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/recording_root_view"
+    <android.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="#F0F0F0"
+        android:title="@string/app_name" />
 
-        <android.widget.Toolbar
-            android:id="@+id/toolbar"
+    <ProgressBar
+        android:id="@+id/determinateBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:progress="0"
+        android:visibility="invisible" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <ImageView
+            android:id="@+id/speaker_ball"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#F0F0F0"
-            android:title="@string/app_name" />
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/big_speaker_circle" />
 
-        <ProgressBar
-            android:id="@+id/determinateBar"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="false"
-            android:progress="0"
-            android:visibility="invisible" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="4">
-
-            <ImageView
-                android:id="@+id/speaker_ball"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/big_speaker_circle" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/red_circle" />
-
-            <TextView
-                android:id="@+id/button_pause_caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:paddingTop="280dp"
-                android:text="@string/button_pause"
-                android:textColor="#404040"
-                android:textSize="24sp"
-                android:visibility="invisible" />
-
-            <TextView
-                android:id="@+id/button_record_caption"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:paddingTop="280dp"
-                android:text="@string/button_record"
-                android:textColor="#404040"
-                android:textSize="24sp" />
-
-            <ImageView
-                android:id="@+id/button_pause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:onClick="clickPause"
-                android:src="@drawable/white_pause"
-                android:visibility="invisible" />
-
-            <ImageView
-                android:id="@+id/button_record"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:onClick="clickRecord"
-                android:src="@drawable/white_play" />
-
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/meeting_timer"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#4a4a4a"
-            android:textSize="48sp" />
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/red_circle" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/button_pause_caption"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:layout_centerHorizontal="true"
+            android:paddingTop="280dp"
+            android:text="@string/button_pause"
+            android:textColor="#404040"
+            android:textSize="24sp"
+            android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/button_reset"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/white_reset"
-                android:onClick="reset"
-                android:text="@string/button_reset" />
+        <TextView
+            android:id="@+id/button_record_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="280dp"
+            android:text="@string/button_record"
+            android:textColor="#404040"
+            android:textSize="24sp" />
 
-            <Button
-                android:id="@+id/button_finish"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/black_square"
-                android:onClick="summary"
-                android:text="@string/button_finish" />
+        <ImageView
+            android:id="@+id/button_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickPause"
+            android:src="@drawable/white_pause"
+            android:visibility="invisible" />
 
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/button_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:onClick="clickRecord"
+            android:src="@drawable/white_play" />
 
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/meeting_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#4a4a4a"
+        android:textSize="48sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <Button
+            android:id="@+id/button_reset"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/white_reset"
+            android:onClick="reset"
+            android:text="@string/button_reset" />
+
+        <Button
+            android:id="@+id/button_finish"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/black_square"
+            android:onClick="summary"
+            android:text="@string/button_finish" />
 
     </LinearLayout>
-    <!-- The navigation drawer -->
-    <android.support.design.widget.NavigationView
-        android:id="@+id/left_drawer"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/drawer" />
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>
