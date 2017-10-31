@@ -9,8 +9,8 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/BlabberTabberTheme">
 
         <!-- http://stackoverflow.com/questions/1898886/removing-an-activity-from-the-history-stack -->
@@ -42,8 +42,10 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        // https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html
-        <meta-data android:name="android.max_aspect" android:value="2.1" />
+        <!-- https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
     </application>
 
 </manifest>

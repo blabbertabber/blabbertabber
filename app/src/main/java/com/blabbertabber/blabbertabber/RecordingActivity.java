@@ -23,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -228,13 +227,27 @@ public class RecordingActivity extends Activity {
         inflater.inflate(R.menu.drawer, menu);
         menu.findItem(R.id.use_test_server).setChecked(mUseTestServer);
         switch (mDiarizer) {
-            case "Aalto": menu.findItem(R.id.diarizer_aalto).setChecked(true); break;
-            case "IBM": menu.findItem(R.id.diarizer_ibm).setChecked(true); break;
+            case "Aalto":
+                menu.findItem(R.id.diarizer_aalto).setChecked(true);
+                break;
+            case "IBM":
+                menu.findItem(R.id.diarizer_ibm).setChecked(true);
+                break;
+            default:
+                menu.findItem(R.id.diarizer_aalto).setChecked(true);
         }
         switch (mTranscriber) {
-            case "null": menu.findItem(R.id.transcriber_null).setChecked(true); break;
-            case "CMU Sphinx4": menu.findItem(R.id.transcriber_cmu).setChecked(true); break;
-            case "IBM": menu.findItem(R.id.transcriber_ibm).setChecked(true); break;
+            case "null":
+                menu.findItem(R.id.transcriber_null).setChecked(true);
+                break;
+            case "CMU Sphinx 4":
+                menu.findItem(R.id.transcriber_cmu).setChecked(true);
+                break;
+            case "IBM":
+                menu.findItem(R.id.transcriber_ibm).setChecked(true);
+                break;
+            default:
+                menu.findItem(R.id.transcriber_null).setChecked(true);
         }
         return true;
     }
@@ -273,11 +286,13 @@ public class RecordingActivity extends Activity {
                 item.setChecked(true);
                 return true;
             case R.id.transcriber_cmu:
-                mTranscriber = "CMU Sphinx4";
+                mTranscriber = "CMU Sphinx 4";
                 Log.i(TAG, "Transcriber " + mTranscriber);
                 item.setChecked(true);
                 return true;
             default:
+                mTranscriber = "null";
+                mDiarizer = "Aalto";
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -453,14 +468,8 @@ public class RecordingActivity extends Activity {
         String resultsURL = "";
         try {
             diarizerConnection.setRequestMethod("POST");
-            CheckBox useIbmBackendCheckbox = findViewById(R.id.diarizer_ibm);
-            if (useIbmBackendCheckbox.isChecked()) {
-                diarizerConnection.setRequestProperty("Diarizer", "IBM");
-                diarizerConnection.setRequestProperty("Transcriber", "IBM");
-            } else {
-                diarizerConnection.setRequestProperty("Diarizer", "Aalto");
-                diarizerConnection.setRequestProperty("Transcriber", "CMUSphinx4");
-            }
+            diarizerConnection.setRequestProperty("Diarizer", mDiarizer);
+            diarizerConnection.setRequestProperty("Transcriber", mTranscriber);
             diarizerConnection.setDoOutput(true);
             diarizerConnection.setDoInput(true);
             diarizerConnection.setChunkedStreamingMode(BLOCK_SIZE); //disable while debugging

@@ -41,7 +41,7 @@
     <string name="diarizer_aalto">Aalto</string>
     <string name="ibm">IBM</string>
     <string name="transcriber_menu_label">Transcribers:</string>
-    <string name="transcriber_cmu">CMU Sphinx4</string>
+    <string name="transcriber_cmu">CMU Sphinx 4</string>
     <string name="transcriber_null">No transcription</string>
     <string name="use_ibm_backend">Use IBM Diarizer $$</string>
     <string name="launch_main_activity">Show Splash Screen</string>
