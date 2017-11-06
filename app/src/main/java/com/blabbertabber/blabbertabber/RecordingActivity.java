@@ -470,6 +470,7 @@ public class RecordingActivity extends Activity {
             diarizerConnection.setRequestMethod("POST");
             diarizerConnection.setRequestProperty("Diarizer", mDiarizer);
             diarizerConnection.setRequestProperty("Transcriber", mTranscriber);
+            diarizerConnection.setRequestProperty("AndroidClientVersion", BuildConfig.VERSION_NAME);
             diarizerConnection.setDoOutput(true);
             diarizerConnection.setDoInput(true);
             diarizerConnection.setChunkedStreamingMode(BLOCK_SIZE); //disable while debugging
