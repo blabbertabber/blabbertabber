@@ -95,7 +95,7 @@ public class RecordingActivity extends Activity {
         uploadProgressBar = findViewById(R.id.determinateBar);
         // http://developer.android.com/training/basics/data-storage/shared-preferences.html
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        mDiarizer = sharedPref.getString(PREF_DIARIZER, "Aalto");
+        mDiarizer = sharedPref.getString(PREF_DIARIZER, "IBM");
         mTranscriber = sharedPref.getString(PREF_TRANSCRIBER, "null");
         mUseTestServer = sharedPref.getBoolean(PREF_USE_TEST_SERVER, false);
 
