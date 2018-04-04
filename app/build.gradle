@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.blabbertabber.blabbertabber"
@@ -35,24 +35,24 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
     // App's dependencies, including test
-    compile "com.android.support:appcompat-v7:27.0.0"
-    compile "com.android.support:support-annotations:27.0.0"
+    implementation "com.android.support:appcompat-v7:27.1.0"
+    implementation "com.android.support:support-annotations:27.1.0"
     // needed for NavigationView
-    compile 'com.android.support:design:27.0.0'
+    implementation 'com.android.support:design:27.1.0'
     // We need the next line, otherwise we'll get an error:
     // "Resolved versions for app * and test app * differ". http://g.co/androidstudio/app-test-app-conflict
-    androidTestCompile 'com.android.support:support-annotations:27.0.0'
+    androidTestImplementation 'com.android.support:support-annotations:27.1.0'
     // https://code.google.com/p/android-test-kit/wiki/EspressoIntentsSetupInstructions
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
-    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
     // Set this dependency to use JUnit 4 rules
-    androidTestCompile 'com.android.support.test:rules:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
     // needed for NavigationDrawer tests http://developer.android.com/reference/android/support/test/espresso/contrib/DrawerActions.html
     // http://stackoverflow.com/questions/33566501/incompatibleclasschangeerror-android-support-design-internal-navigationmenuview/34645356
-    androidTestCompile('com.android.support.test.espresso:espresso-contrib:3.0.1') {
+    androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.1') {
         exclude module: 'support-annotations'
         exclude module: 'support-v4'
         exclude module: 'recyclerview-v7'
@@ -61,9 +61,9 @@ dependencies {
     }
     // http://www.vogella.com/tutorials/Mockito/article.html#mockito_installation
     // required if you want to use Mockito for unit tests
-    testCompile 'org.mockito:mockito-core:2.7.22'
+    testImplementation 'org.mockito:mockito-core:2.7.22'
     // required if you want to use Mockito for Android tests
-    androidTestCompile 'org.mockito:mockito-android:2.7.22'
+    androidTestImplementation 'org.mockito:mockito-android:2.7.22'
 }
 
 // Concourse CI displays which tests failed
