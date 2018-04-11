@@ -38,13 +38,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
     // App's dependencies, including test
-    implementation "com.android.support:appcompat-v7:27.1.0"
-    implementation "com.android.support:support-annotations:27.1.0"
+    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:support-annotations:27.1.1"
     // needed for NavigationView
-    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:design:27.1.1'
     // We need the next line, otherwise we'll get an error:
     // "Resolved versions for app * and test app * differ". http://g.co/androidstudio/app-test-app-conflict
-    androidTestImplementation 'com.android.support:support-annotations:27.1.0'
+    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
     // https://code.google.com/p/android-test-kit/wiki/EspressoIntentsSetupInstructions
     androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.1'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
