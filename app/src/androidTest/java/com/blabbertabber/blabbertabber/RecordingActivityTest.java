@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
 import org.junit.Before;
@@ -42,7 +41,6 @@ public class RecordingActivityTest {
         mActivity = mActivityRule.getActivity();
     }
 
-    @SmallTest
     public void rootViewTest() {
         // fail: android:visibility="gone" in activity_recording.xml
         onView(withId(R.id.recording_root_view)).check(matches(isDisplayed()));

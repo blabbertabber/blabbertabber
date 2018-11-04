@@ -5,7 +5,6 @@ package com.blabbertabber.blabbertabber;
 import android.app.Activity;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 
 import org.junit.Before;
@@ -30,7 +29,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class MainActivityTest {
     private static final String TAG = "MainActivityTest";
     @Rule

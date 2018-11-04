@@ -26,17 +26,16 @@ public class BestMicrophone {
     //                    VOICE_DOWNLINK
 
     public static int getBestMicrophone() {
-        return getBestMicrophone(new BuildMODEL());
+        return getBestMicrophone(new BuildMODEL().model());
     }
 
     // Determines the best Media.AudioSource microphone for the specific Android model on which
     // BlabberTabber is running.
     // @param buildModel The model of the android on which BlabberTabber is running.
     // @return The best microphone/AudioSource (e.g. MediaRecord.AudioSource.DEFAULT)
-    public static int getBestMicrophone(BuildMODEL buildModel) {
-        String model = buildModel.model();
-        Log.v(TAG, "getBestMicrophone() Build.MODEL == " + model);
-        switch (model) {
+    public static int getBestMicrophone(String buildModelModel) {
+        Log.v(TAG, "getBestMicrophone() Build.MODEL == " + buildModelModel);
+        switch (buildModelModel) {
             case "Nexus 4":
             case "Nexus 5":
                 return (MediaRecorder.AudioSource.MIC);
@@ -44,7 +43,7 @@ public class BestMicrophone {
                 return (MediaRecorder.AudioSource.VOICE_RECOGNITION);
             case "Nexus 5X":
             default:
-                Log.v(TAG, "getBestMicrophone() FIXME new model: " + model);
+                Log.v(TAG, "getBestMicrophone() FIXME new model: " + buildModelModel);
                 return (MediaRecorder.AudioSource.DEFAULT);
         }
 
