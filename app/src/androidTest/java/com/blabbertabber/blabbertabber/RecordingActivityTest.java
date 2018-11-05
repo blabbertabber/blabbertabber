@@ -172,6 +172,7 @@ public class RecordingActivityTest {
             (e.g. "R.id.show_splash") because Options loses them; instead we
             identify them by their strings
          */
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         int[] drawerItems = {
                 R.string.launch_about_activity,
