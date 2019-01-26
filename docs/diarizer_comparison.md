@@ -5,14 +5,14 @@ years. The comparisons are not consistent nor comprehensive._
 
 ### Table of Contents
 
-      * [Comparison of Diarizers](#comparison-of-diarizers)
-         * [ICSI](#icsi)
-         * [Aalto-speech (Aalto University, Finland)](#aalto-speech-aalto-university-finland)
-         * [IBM Bluemix Watson Speech To Text (STT)](#ibm-bluemix-watson-speech-to-text-stt)
-            * [Testing:](#testing)
-         * [Google Cloud Speech-to-Text](#google-cloud-speech-to-text)
-         * [Lium](#lium)
-         * [DiarTK](#diartk)
+* [Comparison of Diarizers](#comparison-of-diarizers)
+   * [ICSI](#icsi)
+   * [Aalto-speech (Aalto University, Finland)](#aalto-speech-aalto-university-finland)
+   * [IBM Bluemix Watson Speech To Text (STT)](#ibm-bluemix-watson-speech-to-text-stt)
+      * [Testing:](#testing)
+   * [Google Cloud Speech-to-Text](#google-cloud-speech-to-text)
+   * [Lium](#lium)
+   * [DiarTK](#diartk)
 
 Problem: The diarization performance sucks, identifies 18 speakers when only
 Brendan and I are speaking. We should be getting ~20% errors, but instead we’re
