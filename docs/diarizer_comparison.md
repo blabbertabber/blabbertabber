@@ -521,7 +521,7 @@ Uh-oh: it blew up:
 
 It appears that IBM has changed the API, but now it's better, and `curl` might work for our purposes:
 
-```
+```bash
 export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
 curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
 
