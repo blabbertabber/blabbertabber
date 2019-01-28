@@ -1,17 +1,19 @@
 ## Comparison of Diarizers
 
 _This is a comparison of several diarizer back-ends over the course of a few
-years. The comparisons are not consistent nor comprehensive._
+years. The comparisons are neither consistent nor comprehensive._
 
 ### Table of Contents
 
 * [Comparison of Diarizers](#comparison-of-diarizers)
-   * [ICSI](#icsi)
-   * [Aalto-speech (Aalto University, Finland)](#aalto-speech-aalto-university-finland)
-   * [IBM Bluemix Watson Speech To Text (STT)](#ibm-bluemix-watson-speech-to-text-stt)
-      * [Testing:](#testing)
+   * [Corpus](#corpus)
    * [Google Cloud Speech-to-Text](#google-cloud-speech-to-text)
-   * [Lium](#lium)
+   * [Aalto-speech (Aalto University, Finland)](#aalto-speech-aalto-university-finland)
+   * [IBDiarization (Idiap Research Institute)](https://github.com/idiap/IBDiarization/tree/master/src/pydiarization)
+   * [IBM Bluemix Watson Speech To Text (STT)](#ibm-bluemix-watson-speech-to-text-stt)
+      * [Testing](#testing)
+   * [ICSI](#icsi)
+   * [LIUM](#lium)
    * [DiarTK](#diartk)
 
 Problem: The diarization performance sucks, identifies 18 speakers when only
@@ -19,6 +21,8 @@ Brendan and I are speaking. We should be getting ~20% errors, but instead we’r
 getting 90+% errors.
 
 Further Problem: We don’t know if we’re using the diarization software properly.
+
+### Corpus
 
 Solution: We need to run the software using the same invocation for our meeting
 against a known corpus. We choose the AMI Corpus
@@ -28,6 +32,19 @@ test file, ICSI-diarizer-sample-meeting.wav. We manually annotated the file,
 ICSI-diarizer-sample-meeting-cunnie.rttm.txt, which has one shortcoming: no
 non-speech (silences), which affects how we score our test (i.e. we ignore the
 “MISSED SPEAKER TIME” and “FALARM SPEAKER TIME” error rates)
+
+We also download the AMI Corpus
+[annotations](http://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip)
+
+Formats:
+
+- Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
+- the AMI corpus uses a different, NITE (XML-based) format. It seems
+  like one of the NITE files can be used to create an RTTM file:
+  `ami_public_auto_1.5/ASR/ASR_AS_CTM_v1.0_feb07/ES2008a.{A,B,C,D}.words.xml` files
+  which seem to have start and stop times for every word uttered by the four
+  speakers (where {A,B,C,D} [are the
+  speakers](https://github.com/idiap/IBDiarization/issues/10)).
 
 ### ICSI
 
@@ -288,7 +305,9 @@ unknown              504.02 /  86.1%      81.48 /  13.9%
 IBM came in at a very respectable **92.6% correct**. Plus it also offers much
 better transcription than CMU Sphinx.
 
-IBM’s pricing is $0.75/hr. https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the Google pricing.
+IBM’s pricing is $0.75/hr.
+https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the
+Google pricing.
 
 https://github.com/watson-developer-cloud/speech-to-text-websockets-python
 
@@ -384,9 +403,10 @@ jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <
 
 command line (run on 2017 Jul 14 at 08:16:38):
 
-```bash
+```shell
 /Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s /tmp/ibm.rttm
 ```
+
 ```
 Time-based metadata alignment
 
@@ -585,7 +605,7 @@ gcloud ml speech recognize-long-running \
      --language-code='en-US' --async
 ```
 
-### Lium
+### LIUM
 
 Current Diarization Invocation: (patterned after http://www-lium.univ-lemans.fr/diarization/doku.php/quick_start)
 
@@ -629,11 +649,6 @@ Various Output Formats: LIUM generates a .seg file:
 - Almost the same as RTTM v1.3 with some differences:
   - hundredths of seconds instead of seconds
   - no “confidence” field
-- Apparently the AMI corpus uses a different, NITE (XML-based) format. It seems
-  like one of the NITE files can be used to create an RTTM file:
-  `ami_public_auto_1.5/ASR/ASR_AS_CTM_v1.0_feb07/ES2008a.{A,B,C,D}.words.xml` files
-  which seem to have start and stop times for every word uttered by the four
-  speakers.
 
 Constraining the Number of Speakers: LIUM Documentation says that you can restrict the number of speakers to 2 by passing `–-cMinimumOfCluster=2` to the last command in this file: `~/Downloads/LIUM_SpkDiarization.script.v3.9/diarization.sh`
 
