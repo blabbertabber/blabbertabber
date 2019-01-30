@@ -39,6 +39,10 @@ We also download the AMI Corpus
 Formats:
 
 - Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
+  The only fields we care about are start time ("0"), end time ("36.4"), and speaker ("Brendan").
+```
+SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
+```
 - the AMI corpus uses a different, NITE (XML-based) format. It seems
   like one of the NITE files can be used to create an RTTM file:
   `ami_public_auto_1.5/ASR/ASR_AS_CTM_v1.0_feb07/ES2008a.{A,B,C,D}.words.xml` files
