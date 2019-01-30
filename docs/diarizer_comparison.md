@@ -16,30 +16,42 @@ years. The comparisons are neither consistent nor comprehensive._
    * [LIUM](#lium)
    * [DiarTK](#diartk)
 
-Problem: The diarization performance sucks, identifies 18 speakers when only
-Brendan and I are speaking. We should be getting ~20% errors, but instead we’re
-getting 90+% errors.
+### Test Methodology
 
-Further Problem: We don’t know if we’re using the diarization software properly.
-
-### Corpus
-
-Solution: We need to run the software using the same invocation for our meeting
-against a known corpus. We choose the AMI Corpus
+We test each diarizer the software using a known corpus. We use the AMI Corpus
 (http://groups.inf.ed.ac.uk/ami/download/), which is used by the NIST Rich
-Transcription Evaluation (http://nist.gov/itl/iad/mig/rt.cfm) We created our own
-test file, ICSI-diarizer-sample-meeting.wav. We manually annotated the file,
-ICSI-diarizer-sample-meeting-cunnie.rttm.txt, which has one shortcoming: no
-non-speech (silences), which affects how we score our test (i.e. we ignore the
-“MISSED SPEAKER TIME” and “FALARM SPEAKER TIME” error rates)
+Transcription Evaluation (http://nist.gov/itl/iad/mig/rt.cfm).
 
 We also download the AMI Corpus
 [annotations](http://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip)
+to score the diarizer performance, using
+[`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl)
+to do the actual scoring, and we use the metric, `OVERALL SPEAKER DIARIZATION
+ERROR`.
+
+_Originally we created our own test file, `ICSI-diarizer-sample-meeting.wav`,
+which we manually annotated (`ICSI-diarizer-sample-meeting-cunnie.rttm.txt`),
+but we've since moved away from that for two reasons:_
+
+1. _Our annotation was incomplete & did not take into account periods of
+non-speech (silence). Speech/non-speech detection is a difficult aspect of
+diarization, and we weren't measuring it. In fact, this forced us to use the
+sub-par metric `SPEAKER ERROR TIME` instead of the more desirable `OVERALL
+SPEAKER DIARIZATION ERROR`_
+
+1. _The participation of the three speakers was lopsided; two speakers did most
+of the speaking, and the third (me) was mostly quiet. Having a meeting with
+mostly two speakers obscured the shortcomings of diarizers which limited the
+number of identified speakers to 2. The IBM Watson Speech to Text diarizer, for
+example, posted an exceptionally low `SPEAKER ERROR TIME` of 7.3%, but when the
+AMI ES2008a four-speaker meeting was used, the performance cratered, turning in
+an `OVERALL SPEAKER DIARIZATION ERROR` of 56.05%_
+
 
 Formats:
 
 - Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
-  The only fields we care about are start time ("0"), end time ("36.4"), and speaker ("Brendan").
+  The only fields we care about are start time ("0"), duration ("36.4"), and speaker ("Brendan").
 ```
 SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
 ```
