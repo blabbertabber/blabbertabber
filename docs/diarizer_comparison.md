@@ -572,6 +572,18 @@ jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.
 1821 2
 ```
 
+Let's convert the ES2008a NITE transcript to RTTM using
+[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
+
+```bash
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 > /tmp/ES2008a.rttm
+jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
+    < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json \
+    > /tmp/ibm.rttm
+/Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /tmp/ES2008a.rttm -s /tmp/ibm.rttm
+```
+
 ### Google Cloud Speech-to-Text
 
 Google’s pricing is $2.88/hr for the video model ($1.44 for the “default” model). https://cloud.google.com/speech-to-text/pricing.
@@ -591,7 +603,7 @@ Here’s the JSON they suggest:
     "enableSpeakerDiarization": true,
     "encoding": "LINEAR16",
     "languageCode": "en-US",
-    "model": "video”
+    "model": "video"
   }
 }
 ```
