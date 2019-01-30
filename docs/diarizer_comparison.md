@@ -6,7 +6,7 @@ years. The comparisons are neither consistent nor comprehensive._
 ### Table of Contents
 
 * [Comparison of Diarizers](#comparison-of-diarizers)
-   * [Corpus](#corpus)
+   * [Test Methodology](#test-methodology)
    * [Google Cloud Speech-to-Text](#google-cloud-speech-to-text)
    * [Aalto-speech (Aalto University, Finland)](#aalto-speech-aalto-university-finland)
    * [IBDiarization (Idiap Research Institute)](https://github.com/idiap/IBDiarization/tree/master/src/pydiarization)
@@ -316,10 +316,13 @@ unknown              504.02 /  86.1%      81.48 /  13.9%
 ---------------------------------------------
 ```
 
-### IBM Bluemix Watson Speech To Text (STT)
+### IBM Watson Speech To Text (STT)
 
-IBM came in at a very respectable **92.6% correct**. Plus it also offers much
-better transcription than CMU Sphinx.
+IBM transcription came in at a disappointing **43.95% correct**, but it should
+be noted that IBM diarization is limited to two speakers (for which it performs
+quite well, typically 90+% correct), but causes poor performance for meetings
+with three or more participants, meetings such as our benchmark ES2008a, which
+has four participants.
 
 IBM’s pricing is $0.75/hr.
 https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the
@@ -410,7 +413,57 @@ want you to do and the times…`
 }
 ```
 
-#### Testing:
+#### Testing: Four-speaker Meeting
+
+We use `curl` to trigger the diarization, and then convert the resulting JSON
+into RTTM format before scoring.
+
+```bash
+export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
+curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
+
+curl \
+  -X POST \
+  -u "apikey:$APIKEY" \
+  --header "Content-Type: audio/wav" \
+  --data-binary @$HOME/Google\ Drive/BlabberTabber/ES2008a.wav \
+"https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
+  > $HOME/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json
+```
+
+Let's do a quick check to see if IBM has identified only two speakers or the
+correct four speakers (spoiler: it only identifies 2 speakers):
+
+```
+jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json | sort | uniq -c
+ 326 0
+1821 2
+```
+
+Let's convert the ES2008a NITE transcript to RTTM using
+[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
+
+```bash
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 > /tmp/ES2008a.rttm
+jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
+    < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json \
+    > /tmp/ibm.rttm
+/Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /tmp/ES2008a.rttm -s /tmp/ibm.rttm
+```
+
+And the results:
+```
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 56.05 percent of scored speaker time  `(c=1 f=meeting)
+---------------------------------------------
+```
+
+##### Archaic Two-Speaker Test
+
+We tested with two speakers, and IBM posted a very respectable **92.6%
+correct**. Also the transcription was much better transcription than CMU
+Sphinx's.
 
 ```bash
 jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' < ~/go/src/github.com/blabbertabber/speechbroker/assets/test/ibm.json > /tmp/ibm.rttm
@@ -567,34 +620,6 @@ Uh-oh: it blew up:
 ```
 
 It appears that IBM has changed the API, but now it's better, and `curl` might work for our purposes:
-
-```bash
-export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
-curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
-
-curl \
-  -X POST \
-  -u "apikey:$APIKEY" \
-  --header "Content-Type: audio/wav" \
-  --data-binary @$HOME/Google\ Drive/BlabberTabber/ES2008a.wav \
-"https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
-  > $HOME/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json
-jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json | sort | uniq -c
- 326 0
-1821 2
-```
-
-Let's convert the ES2008a NITE transcript to RTTM using
-[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
-
-```bash
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 > /tmp/ES2008a.rttm
-jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
-    < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json \
-    > /tmp/ibm.rttm
-/Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /tmp/ES2008a.rttm -s /tmp/ibm.rttm
-```
 
 ### Google Cloud Speech-to-Text
 
