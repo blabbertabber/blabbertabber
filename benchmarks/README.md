@@ -47,7 +47,6 @@ example, posted an exceptionally low `SPEAKER ERROR TIME` of 7.3%, but when the
 AMI ES2008a four-speaker meeting was used, the performance cratered, turning in
 an `OVERALL SPEAKER DIARIZATION ERROR` of 56.05%_
 
-
 Formats:
 
 - Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
@@ -61,6 +60,188 @@ SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
   which seem to have start and stop times for every word uttered by the four
   speakers (where {A,B,C,D} [are the
   speakers](https://github.com/idiap/IBDiarization/issues/10)).
+
+### Aalto-speech (Aalto University, Finland)
+
+~~Summary: the Aalto diarizer performed well, with a calculated **20.4% overall
+speaker diarization error**. On a 2-CPU system (Intel(R) Core(TM) i7-6770HQ CPU @
+2.60GHz), it diarizes a 600-second file in 88 seconds, **6.8×** faster than
+realtime.~~
+
+Summary: the Aalto diarizer had an overall speaker diarization error of 44.33%. It was
+correct slightly more than half the time.
+
+```bash
+docker pull blabbertabber/aalto-speech-diarizer
+cd ~/workspace/blabbertabber/
+docker run \
+  --volume=$PWD/benchmarks:/benchmarks \
+  --workdir /speaker-diarization \
+  blabbertabber/aalto-speech-diarizer \
+  /speaker-diarization/spk-diarization2.py \
+    /benchmarks/sources/ES2008a.wav \
+    -o /benchmarks/Aalto/ES2008a.out
+#
+perl -ne \
+  '@l = split; ($start = $l[2]) =~ s/start-time=//; ($end = $l[3]) =~ s/end-time=//; $dur = $end - $start; ($spkr = $l[4]) =~ s/speaker=//; print "SPEAKER meeting 1 $start $dur <NA> <NA> $spkr <NA>\n"' \
+  < benchmarks/Aalto/ES2008a.out \
+  > benchmarks/Aalto/ES2008a.rttm
+~/bin/md-eval-v21.pl \
+  -m \
+  -afc \
+  -c 0.25 \
+  -r benchmarks/sources/ES2008a.rttm \
+  -s benchmarks/Aalto/ES2008a.rttm \
+  > benchmarks/Aalto/ES2008a-eval.txt
+```
+
+### Google Cloud Speech-to-Text
+
+Google’s pricing is $2.88/hr for the video model ($1.44 for the “default” model). https://cloud.google.com/speech-to-text/pricing.
+
+https://cloud.google.com/speech-to-text/
+
+Here’s the JSON they suggest:
+
+```json
+{
+  "audio": {
+    "content": "/* Your audio */"
+  },
+  "config": {
+    "diarizationSpeakerCount": 3,
+    "enableAutomaticPunctuation": true,
+    "enableSpeakerDiarization": true,
+    "encoding": "LINEAR16",
+    "languageCode": "en-US",
+    "model": "video"
+  }
+}
+```
+
+I have changed the model from “default” to “video” because they suggest:
+
+> Best for audio that originated from video or includes multiple speakers. Ideally the audio is recorded at a 16khz or greater sampling rate. This is a premium model that costs more than the standard rate.
+
+```
+gcloud auth login
+bosh int --path=/gcp_credentials_json <(lpass show  deployments.yml) > /tmp/gcp.json
+export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp.json
+gcloud ml speech recognize-long-running \
+    '~/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.wav' \
+     --language-code='en-US' --async
+```
+
+### IBM Watson Speech To Text (STT)
+
+IBM transcription came in at a disappointing **43.95% correct**, but it should
+be noted that IBM diarization is limited to two speakers (for which it performs
+quite well, typically 90+% correct), but causes poor performance for meetings
+with three or more participants, meetings such as our benchmark ES2008a, which
+has four participants.
+
+IBM’s pricing is $0.75/hr.
+https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the
+Google pricing.
+
+The output consists of two files:
+
+1. `hypotheses.txt`, which is the transcription of the conversation, no labels,
+which looks something like this: `1: design %HESITATION %HESITATION swift
+transaction sure now she so you go through when you put all all the things you
+need to do and then %HESITATION putting %HESITATION OO these walkers line site
+is also be black then you put all the things you do is you put an estimated
+times to do each one these things so at the end you have the list of things they
+want you to do and the times…`
+
+1. `0.json.txt`, which contains the speaker information, though it’s buried in the JSON:
+
+```json
+{
+    "result_index": 3,
+    "results": [
+        {
+            "alternatives": [
+                {
+                    "timestamps": [
+                        [
+                            "now",
+                            12.87,
+                            13.32
+                        ]
+                    ],
+                    "transcript": "now "
+                }
+            ],
+            "final": false
+        }
+    ],
+    "speaker_labels": [
+        {
+            "confidence": 0.445,
+            "final": false,
+            "from": 9.24,
+            "speaker": 2,
+            "to": 9.55
+        },
+        {
+            "confidence": 0.456,
+            "final": false,
+            "from": 12.87,
+            "speaker": 0,
+            "to": 13.32
+        }
+    ]
+}
+```
+
+#### Testing: Four-speaker Meeting
+
+We use `curl` to trigger the diarization, and then convert the resulting JSON
+into RTTM format before scoring.
+
+```bash
+export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
+curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
+
+curl \
+  -X POST \
+  -u "apikey:$APIKEY" \
+  --header "Content-Type: audio/wav" \
+  --data-binary @$HOME/Google\ Drive/BlabberTabber/ES2008a.wav \
+"https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
+  > $HOME/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json
+```
+
+Let's do a quick check to see if IBM has identified only two speakers or the
+correct four speakers (spoiler: it only identifies 2 speakers):
+
+```
+jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json | sort | uniq -c
+ 326 0
+1821 2
+```
+
+Let's convert the ES2008a NITE transcript to RTTM using
+[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
+
+```bash
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2008a.rttm
+jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
+    < IBM/ES2008a/out.json \
+    > IBM/ES2008a/ES2008a.rttm
+md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s ibm/ES2008a/ES2008a.rttm
+```
+
+And the results:
+
+```
+OVERALL SPEAKER DIARIZATION ERROR = 56.05 percent of scored speaker time
+```
+
 
 ### ICSI
 
@@ -191,439 +372,6 @@ unknown                   3 / 100.0%          0 /   0.0%
 unknown              435.89 /  74.4%     149.61 /  25.6%
   FALSE ALARM          0.00 /   0.0%
 ---------------------------------------------
-```
-
-### Aalto-speech (Aalto University, Finland)
-
-Summary: the Aalto diarizer performed well, with a calculated **20.4% overall
-speaker diarization error**. On a 2-CPU system (Intel(R) Core(TM) i7-6770HQ CPU @
-2.60GHz), it diarizes a 600-second file in 88 seconds, **6.8×** faster than
-realtime.
-
-```
-mkdir ~/bin; cd ~/bin
-curl -OL https://raw.githubusercontent.com/jitendrab/btp/master/c_code/single_diag_gaussian_no_viterbi/md-eval-v21.pl; chmod +x md-eval-v21.pl
-cd ~/workspace/speaker-diarization/
-./spk-diarization2.py   ~/ICSI-diarizer-sample-meeting.wav
-perl -ne '@l = split; ($start = $l[2]) =~ s/start-time=//; ($end = $l[3]) =~ s/end-time=//; $dur = $end - $start; ($spkr = $l[4]) =~ s/speaker=//; print "SPEAKER meeting 1 $start $dur <NA> <NA> $spkr <NA>\n"' < stdout > aalto.rttm
-~/bin/md-eval-v21.pl -m -afc -c 0.25 -r ~/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s aalto.rttm
-
-[cunnie@fedora speaker-diarization]$ ~/bin/md-eval-v21.pl -m -afc -c 0.25 -r ~/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s aalto.rttm
-command line (run on 2017 Feb 26 at 06:27:03):  /home/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /home/cunnie/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s aalto.rttm
-
-Time-based metadata alignment
-
-Metadata evaluation parameters:
-    time-optimized metadata mapping
-        max gap between matching metadata events = 1 sec
-        max extent to match for SU's = 0.5 sec
-
-Speaker Diarization evaluation parameters:
-    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
-    The no-score collar at SPEAKER boundaries is 0.25 sec
-
-Exclusion zones for evaluation and scoring are:
-                             -----MetaData-----        -----SpkrData-----
-     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
-     token type/subtype      no-eval   no-score        no-eval   no-score
-             (UEM)              X                         X
-         LEXEME/un-lex                    X
-        NON-LEX/breath                                              X
-        NON-LEX/cough                                               X
-        NON-LEX/laugh                                               X
-        NON-LEX/lipsmack                                            X
-        NON-LEX/other                                               X
-        NON-LEX/sneeze                                              X
-        NOSCORE/<na>            X         X               X         X
- NO_RT_METADATA/<na>            X
-             SU/unannotated               X
-'brendan' => 'speaker_1'
-   346.44 secs matched to 'speaker_1'
-    22.26 secs matched to 'speaker_2'
-    27.01 secs matched to 'speaker_3'
-     3.44 secs matched to 'speaker_4'
-    39.37 secs matched to 'speaker_5'
-'brian' => 'speaker_5'
-     2.00 secs matched to 'speaker_1'
-    11.82 secs matched to 'speaker_5'
-'charlotte' => 'speaker_4'
-    30.99 secs matched to 'speaker_1'
-     0.58 secs matched to 'speaker_3'
-    31.51 secs matched to 'speaker_4'
-
-*** Performance analysis for Speaker Diarization for c=1 f=meeting ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =     81.48 secs ( 13.9 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
-SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
-MISSED SPEAKER TIME =     81.48 secs ( 13.9 percent of scored speaker time)
-FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
- SPEAKER ERROR TIME =    119.21 secs ( 20.4 percent of scored speaker time)
-SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 34.28 percent of scored speaker time  `(c=1 f=meeting)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   3 / 100.0%          0 /   0.0%
-  FALSE ALARM             2 /  66.7%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              504.02 /  86.1%      81.48 /  13.9%
-  FALSE ALARM          0.00 /   0.0%
----------------------------------------------
-
-*** Performance analysis for Speaker Diarization for ALL ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =     81.48 secs ( 13.9 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
-SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
-MISSED SPEAKER TIME =     81.48 secs ( 13.9 percent of scored speaker time)
-FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
- SPEAKER ERROR TIME =    119.21 secs ( 20.4 percent of scored speaker time)
-SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 34.28 percent of scored speaker time  `(ALL)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   3 / 100.0%          0 /   0.0%
-  FALSE ALARM             2 /  66.7%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              504.02 /  86.1%      81.48 /  13.9%
-  FALSE ALARM          0.00 /   0.0%
----------------------------------------------
-```
-
-### IBM Watson Speech To Text (STT)
-
-IBM transcription came in at a disappointing **43.95% correct**, but it should
-be noted that IBM diarization is limited to two speakers (for which it performs
-quite well, typically 90+% correct), but causes poor performance for meetings
-with three or more participants, meetings such as our benchmark ES2008a, which
-has four participants.
-
-IBM’s pricing is $0.75/hr.
-https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the
-Google pricing.
-
-The output consists of two files:
-
-1. `hypotheses.txt`, which is the transcription of the conversation, no labels,
-which looks something like this: `1: design %HESITATION %HESITATION swift
-transaction sure now she so you go through when you put all all the things you
-need to do and then %HESITATION putting %HESITATION OO these walkers line site
-is also be black then you put all the things you do is you put an estimated
-times to do each one these things so at the end you have the list of things they
-want you to do and the times…`
-
-1. `0.json.txt`, which contains the speaker information, though it’s buried in the JSON:
-
-```json
-{
-    "result_index": 3,
-    "results": [
-        {
-            "alternatives": [
-                {
-                    "timestamps": [
-                        [
-                            "now",
-                            12.87,
-                            13.32
-                        ]
-                    ],
-                    "transcript": "now "
-                }
-            ],
-            "final": false
-        }
-    ],
-    "speaker_labels": [
-        {
-            "confidence": 0.445,
-            "final": false,
-            "from": 9.24,
-            "speaker": 2,
-            "to": 9.55
-        },
-        {
-            "confidence": 0.456,
-            "final": false,
-            "from": 12.87,
-            "speaker": 0,
-            "to": 13.32
-        }
-    ]
-}
-```
-
-#### Testing: Four-speaker Meeting
-
-We use `curl` to trigger the diarization, and then convert the resulting JSON
-into RTTM format before scoring.
-
-```bash
-export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
-curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
-
-curl \
-  -X POST \
-  -u "apikey:$APIKEY" \
-  --header "Content-Type: audio/wav" \
-  --data-binary @$HOME/Google\ Drive/BlabberTabber/ES2008a.wav \
-"https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
-  > $HOME/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json
-```
-
-Let's do a quick check to see if IBM has identified only two speakers or the
-correct four speakers (spoiler: it only identifies 2 speakers):
-
-```
-jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json | sort | uniq -c
- 326 0
-1821 2
-```
-
-Let's convert the ES2008a NITE transcript to RTTM using
-[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
-
-```bash
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2008a.rttm
-jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
-    < IBM/ES2008a/out.json \
-    > IBM/ES2008a/ES2008a.rttm
-md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s ibm/ES2008a/ES2008a.rttm
-```
-
-And the results:
-```
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 56.05 percent of scored speaker time  `(c=1 f=meeting)
----------------------------------------------
-```
-
-##### Archaic Two-Speaker Test
-
-We tested with two speakers, and IBM posted a very respectable **92.6%
-correct**. Also the transcription was much better transcription than CMU
-Sphinx's.
-
-```bash
-jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' < ~/go/src/github.com/blabbertabber/speechbroker/assets/test/ibm.json > /tmp/ibm.rttm
-~/bin/md-eval-v21.pl -m -afc -c 0.25 -r ~/Google\ Drive/BlabberTabber/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s /tmp/ibm.rttm
-```
-
-command line (run on 2017 Jul 14 at 08:16:38):
-
-```shell
-/Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s /tmp/ibm.rttm
-```
-
-```
-Time-based metadata alignment
-
-Metadata evaluation parameters:
-    time-optimized metadata mapping
-        max gap between matching metadata events = 1 sec
-        max extent to match for SU's = 0.5 sec
-
-Speaker Diarization evaluation parameters:
-    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
-    The no-score collar at SPEAKER boundaries is 0.25 sec
-
-Exclusion zones for evaluation and scoring are:
-                             -----MetaData-----        -----SpkrData-----
-     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
-     token type/subtype      no-eval   no-score        no-eval   no-score
-             (UEM)              X                         X
-         LEXEME/un-lex                    X
-        NON-LEX/breath                                              X
-        NON-LEX/cough                                               X
-        NON-LEX/laugh                                               X
-        NON-LEX/lipsmack                                            X
-        NON-LEX/other                                               X
-        NON-LEX/sneeze                                              X
-        NOSCORE/<na>            X         X               X         X
- NO_RT_METADATA/<na>            X
-             SU/unannotated               X
-'brendan' => 'spkr_2'
-    30.94 secs matched to 'spkr_0'
-   255.81 secs matched to 'spkr_2'
-'brian' => <nil>
-    12.40 secs matched to 'spkr_0'
-'charlotte' => 'spkr_0'
-    44.89 secs matched to 'spkr_0'
-     1.34 secs matched to 'spkr_2'
-
-*** Performance analysis for Speaker Diarization for c=1 f=meeting ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =    245.17 secs ( 41.9 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
-SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
-MISSED SPEAKER TIME =    245.17 secs ( 41.9 percent of scored speaker time)
-FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
- SPEAKER ERROR TIME =     42.63 secs (  7.3 percent of scored speaker time)
-SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 49.15 percent of scored speaker time  `(c=1 f=meeting)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   2 /  66.7%          1 /  33.3%
-  FALSE ALARM             0 /   0.0%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              340.33 /  58.1%     245.17 /  41.9%
-  FALSE ALARM          0.00 /   0.0%
----------------------------------------------
-
-*** Performance analysis for Speaker Diarization for ALL ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =    245.17 secs ( 41.9 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
-SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
-MISSED SPEAKER TIME =    245.17 secs ( 41.9 percent of scored speaker time)
-FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
- SPEAKER ERROR TIME =     42.63 secs (  7.3 percent of scored speaker time)
-SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 49.15 percent of scored speaker time  `(ALL)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   2 /  66.7%          1 /  33.3%
-  FALSE ALARM             0 /   0.0%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              340.33 /  58.1%     245.17 /  41.9%
-  FALSE ALARM          0.00 /   0.0%
----------------------------------------------
-```
-
-I’m worried that IBM is optimized for 2-person speech — it only detected Charlotte and Brendan, not me, so what I’d like to do is use one of the NIST meetings with several speakers and see how many speakers it detects. If it only detects two, BlabberTabber goes back on the shelf for a while (maybe):
-
-```
-docker pull blabbertabber/ibm-watson-stt
-cd ~/Google\ Drive/BlabberTabber
-echo "/blabbertabber/ES2008a.wav" > ES2008a.txt
-CREDS=9f6c2cb4-d9d3-49db-96e4-58406a2fxxxx:8rgjxxxxxxxx
-docker run \
-  --volume="/Users/cunnie/Google Drive/BlabberTabber":/blabbertabber \
-  blabbertabber/ibm-watson-stt \
-  python \
-    /speech-to-text-websockets-python/sttClient.py \
-    -credentials $CREDS \
-    -model en-US_BroadbandModel \
-    -in /blabbertabber/ES2008a.txt \
-    -out /blabbertabber/IBM/ES2008a
-```
-
-Uh-oh: it blew up:
-
-```
-2019-01-21 18:01:02+0000 [-] Log opened.
-2019-01-21 18:01:02+0000 [-] /blabbertabber/ES2008a.wav
-2019-01-21 18:01:02+0000 [-] {'Authorization': 'Basic OWY2YzJjYjQtZDlkMy00OWRiLTk2ZTQtNTg0MDZhMmY0ZDNjOjhyZ2pFV25CVW9HOA=='}
-2019-01-21 18:01:02+0000 [-] Starting factory <__main__.WSInterfaceFactory object at 0x7fb319bc3990>
-2019-01-21 18:01:02+0000 [-] /blabbertabber/IBM/ES2008a
-2019-01-21 18:01:02+0000 [-] contentType: audio/wav queueSize: 0
-2019-01-21 18:01:03+0000 [-] onConnect, server connected: tcp4:169.48.227.198:443
-2019-01-21 18:01:03+0000 [-] onOpen
-2019-01-21 18:01:03+0000 [-] sendMessage(init)
-2019-01-21 18:01:03+0000 [-] /blabbertabber/ES2008a.wav
-2019-01-21 18:01:03+0000 [-] onOpen ends
-2019-01-21 18:01:03+0000 [-] Text message received: {
-2019-01-21 18:01:03+0000 [-]    "state": "listening"
-2019-01-21 18:01:03+0000 [-] }
-2019-01-21 18:05:10+0000 [-] onClose
-2019-01-21 18:05:10+0000 [-] ('WebSocket connection closed: connection was closed uncleanly (peer dropped the TCP connection without previous WebSocket closing handshake)', 'code: ', 1006, 'clean: ', False, 'reason: ', u'connection was closed uncleanly (peer dropped the TCP connection without previous WebSocket closing handshake)')
-2019-01-21 18:05:10+0000 [-] getUtterance: no more utterances to process, queue is empty!
-2019-01-21 18:05:10+0000 [-] Stopping factory <__main__.WSInterfaceFactory object at 0x7fb319bc3990>
-2019-01-21 18:05:10+0000 [-] about to stop the reactor!
-```
-
-It appears that IBM has changed the API, but now it's better, and `curl` might work for our purposes:
-
-### Google Cloud Speech-to-Text
-
-Google’s pricing is $2.88/hr for the video model ($1.44 for the “default” model). https://cloud.google.com/speech-to-text/pricing.
-
-https://cloud.google.com/speech-to-text/
-
-Here’s the JSON they suggest:
-
-```json
-{
-  "audio": {
-    "content": "/* Your audio */"
-  },
-  "config": {
-    "diarizationSpeakerCount": 3,
-    "enableAutomaticPunctuation": true,
-    "enableSpeakerDiarization": true,
-    "encoding": "LINEAR16",
-    "languageCode": "en-US",
-    "model": "video"
-  }
-}
-```
-
-I have changed the model from “default” to “video” because they suggest:
-
-> Best for audio that originated from video or includes multiple speakers. Ideally the audio is recorded at a 16khz or greater sampling rate. This is a premium model that costs more than the standard rate.
-
-```
-gcloud auth login
-bosh int --path=/gcp_credentials_json <(lpass show  deployments.yml) > /tmp/gcp.json
-export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp.json
-gcloud ml speech recognize-long-running \
-    '~/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.wav' \
-     --language-code='en-US' --async
 ```
 
 ### LIUM
