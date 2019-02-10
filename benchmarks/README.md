@@ -328,40 +328,6 @@ IBM’s pricing is $0.75/hr.
 https://www.ibm.com/cloud/watson-speech-to-text/pricing. Half-to-quarter of the
 Google pricing.
 
-https://github.com/watson-developer-cloud/speech-to-text-websockets-python
-
-```
-python ./sttClient.py \
-  -credentials 9f6c2cb4-d9d3-49db-96e4-58406a2fxxxx:8rgjxxxxxxxx \
-  -model en-US_NarrowBroadbandModel \
-  -in <(echo /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.wav) \
-  -out /tmp/junk
-less /tmp/junk/hypothesis.txt
-```
-
-It looks like diarization is not available for all languages yet.
-
-Audio formats: Transcribes Free Lossless Audio Codec (FLAC), Linear 16-bit
-Pulse-Code Modulation (PCM), Waveform Audio File Format (WAV), Ogg format with
-the opus codec, mu-law (or u-law) audio data, or basic audio.
-
-Modify sttClient.py line 170 as follows:
-
-```diff
-     def onOpen(self):
-         print "onOpen"
-         data = {"action": "start", "content-type": str(self.contentType),
--                "continuous": True, "interim_results": True,
-+                "continuous": False, "interim_results": False,
-                 "inactivity_timeout": 600}
--        data['word_confidence'] = True
-+        data['word_confidence'] = False
-         data['timestamps'] = True
--        data['max_alternatives'] = 3
-+        data['speaker_labels'] = True
-+        data['max_alternatives'] = 1
-```
-
 The output consists of two files:
 
 1. `hypotheses.txt`, which is the transcription of the conversation, no labels,
@@ -445,11 +411,13 @@ Let's convert the ES2008a NITE transcript to RTTM using
 
 ```bash
 nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 > /tmp/ES2008a.rttm
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2008a.rttm
 jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
-    < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json \
-    > /tmp/ibm.rttm
-/Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r /tmp/ES2008a.rttm -s /tmp/ibm.rttm
+    < IBM/ES2008a/out.json \
+    > IBM/ES2008a/ES2008a.rttm
+md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s ibm/ES2008a/ES2008a.rttm
 ```
 
 And the results:
