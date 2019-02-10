@@ -204,6 +204,24 @@ The output consists of a [what else?] JSON file with layout similar to the follo
   }
 }
 ```
+Let's create an RTTM file:
+```bash
+jq -j -r '.response.results[-1].alternatives[].words[] |
+        .startTime|=(rtrimstr("s")|tonumber) |
+        .endTime|=(rtrimstr("s")|tonumber) |
+        "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
+    < benchmarks/Google/ES2008a-out.json \
+    > benchmarks/Google/ES2008a.rttm
+```
+Now let's score it:
+```bash
+md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s Google/ES2008a.rttm
+```
+
+```
+OVERALL SPEAKER DIARIZATION ERROR = 44.96 percent of scored speaker time  `(c=1 f=meeting)
+```
+
 
 ```
 gcloud auth login
