@@ -109,7 +109,7 @@ Here’s the JSON they suggest:
     "content": "/* Your audio */"
   },
   "config": {
-    "diarizationSpeakerCount": 3,
+    "diarizationSpeakerCount": 4,
     "enableAutomaticPunctuation": true,
     "enableSpeakerDiarization": true,
     "encoding": "LINEAR16",
