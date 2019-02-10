@@ -101,12 +101,12 @@ Google’s pricing is $2.88/hr for the video model ($1.44 for the “default” 
 
 https://cloud.google.com/speech-to-text/
 
-Here’s the JSON they suggest:
+Here’s the JSON they suggest, placed in `benchmarks/Google/ES2008a-request.json`:
 
 ```json
 {
   "audio": {
-    "content": "/* Your audio */"
+    "uri": "gs://blabbertabber/ES2008a.wav"
   },
   "config": {
     "diarizationSpeakerCount": 4,
@@ -122,6 +122,88 @@ Here’s the JSON they suggest:
 I have changed the model from “default” to “video” because they suggest:
 
 > Best for audio that originated from video or includes multiple speakers. Ideally the audio is recorded at a 16khz or greater sampling rate. This is a premium model that costs more than the standard rate.
+
+```bash
+gcloud auth application-default login
+curl -s -H "Content-Type: application/json" \
+    -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+    https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
+    -d @benchmarks/Google/ES2008a-request.json \
+    > benchmarks/Google/ES2008a-out.json
+```
+uh-oh:
+```json
+{
+  "error": {
+    "code": 400,
+    "message": "Sync input too long. For audio longer than 1 min use LongRunningRecognize with a 'uri' parameter.",
+    "status": "INVALID_ARGUMENT"
+  }
+}
+```
+and now:
+```json
+{
+  "name": "6125554835674908336"
+}
+```
+```bash
+curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+     -H "Content-Type: application/json; charset=utf-8" \
+     "https://speech.googleapis.com/v1/operations/6125554835674908336" \
+    > benchmarks/Google/ES2008a-out.json
+```
+The output consists of a [what else?] JSON file with layout similar to the following:
+```json
+{
+  "name": "6125554835674908336",
+  "metadata": {
+    "@type": "type.googleapis.com/google.cloud.speech.v1p1beta1.LongRunningRecognizeMetadata",
+    "progressPercent": 100,
+    "startTime": "2019-02-10T21:05:54.228754Z",
+    "lastUpdateTime": "2019-02-10T21:11:03.862025Z"
+  },
+  "done": true,
+  "response": {
+    "@type": "type.googleapis.com/google.cloud.speech.v1p1beta1.LongRunningRecognizeResponse",
+    "results": [
+      {
+        "alternatives": [
+          {
+            "transcript": "Okay, good morning. Everybody. I'm glad you could all come. I'm really excited to start this team. I'm just going to have a little PowerPoint presentation for us for kickoff meeting. My name is Roseland Grand. I'll be the project manager. Our agenda today is we're going to do a little opening and then I'm going to talk a little bit about the project then we'll move into acquaintance that just getting to know each other a little bit including a tool training exercise on the will move into the project plan do a little discussion and close since we only have 25 minutes.",
+            "confidence": 0.89557,
+            "words": [
+              {
+                "startTime": "31.200s",
+                "endTime": "32.800s",
+                "word": "Okay,"
+              }
+            ]
+          }
+        ],
+       "languageCode": "en-us"
+      },
+      {
+        "alternatives": [
+          {
+            "transcript": " Let me see if I could do that right now.",
+            "confidence": 0.80341655,
+            "words": [
+              {
+                "startTime": "31.200s",
+                "endTime": "32.800s",
+                "word": "Okay,",
+                "speakerTag": 3
+              }
+            ]
+          }
+        ],
+       "languageCode": "en-us"
+      }
+    ]
+  }
+}
+```
 
 ```
 gcloud auth login
