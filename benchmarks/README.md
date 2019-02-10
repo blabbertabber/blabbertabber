@@ -215,21 +215,11 @@ jq -j -r '.response.results[-1].alternatives[].words[] |
 ```
 Now let's score it:
 ```bash
-md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s Google/ES2008a.rttm
+md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s Google/ES2008a.rttm > Google/ES2008a-eval.txt
 ```
 
 ```
 OVERALL SPEAKER DIARIZATION ERROR = 44.96 percent of scored speaker time  `(c=1 f=meeting)
-```
-
-
-```
-gcloud auth login
-bosh int --path=/gcp_credentials_json <(lpass show  deployments.yml) > /tmp/gcp.json
-export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp.json
-gcloud ml speech recognize-long-running \
-    '~/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.wav' \
-     --language-code='en-US' --async
 ```
 
 ### IBM Watson Speech To Text (STT)
@@ -332,8 +322,8 @@ nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xm
     > sources/ES2008a.rttm
 jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
     < IBM/ES2008a/out.json \
-    > IBM/ES2008a/ES2008a.rttm
-md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s ibm/ES2008a/ES2008a.rttm
+    > IBM/ES2008a.rttm
+md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s IBM/ES2008a.rttm > IBM/ES2008a-eval.txt
 ```
 
 And the results:
