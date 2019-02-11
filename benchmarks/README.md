@@ -61,6 +61,19 @@ SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
   speakers (where {A,B,C,D} [are the
   speakers](https://github.com/idiap/IBDiarization/issues/10)).
 
+Let's convert the ES2008a NITE transcript to RTTM using
+[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
+
+```bash
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2008a.rttm
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2016a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2016a.rttm
+```
 ### Aalto-speech (Aalto University, Finland)
 
 ~~Summary: the Aalto diarizer performed well, with a calculated **20.4% overall
@@ -74,25 +87,27 @@ correct slightly more than half the time.
 ```bash
 docker pull blabbertabber/aalto-speech-diarizer
 cd ~/workspace/blabbertabber/
-docker run \
-  --volume=$PWD/benchmarks:/benchmarks \
-  --workdir /speaker-diarization \
-  blabbertabber/aalto-speech-diarizer \
-  /speaker-diarization/spk-diarization2.py \
-    /benchmarks/sources/ES2008a.wav \
-    -o /benchmarks/Aalto/ES2008a.out
-#
-perl -ne \
-  '@l = split; ($start = $l[2]) =~ s/start-time=//; ($end = $l[3]) =~ s/end-time=//; $dur = $end - $start; ($spkr = $l[4]) =~ s/speaker=//; print "SPEAKER meeting 1 $start $dur <NA> <NA> $spkr <NA>\n"' \
-  < benchmarks/Aalto/ES2008a.out \
-  > benchmarks/Aalto/ES2008a.rttm
-~/bin/md-eval-v21.pl \
-  -m \
-  -afc \
-  -c 0.25 \
-  -r benchmarks/sources/ES2008a.rttm \
-  -s benchmarks/Aalto/ES2008a.rttm \
-  > benchmarks/Aalto/ES2008a-eval.txt
+for MEETING in ES2008a ES2016a; do
+  docker run \
+    --volume=$PWD/benchmarks:/benchmarks \
+    --workdir /speaker-diarization \
+    blabbertabber/aalto-speech-diarizer \
+    /speaker-diarization/spk-diarization2.py \
+      /benchmarks/sources/${MEETING}.wav \
+      -o /benchmarks/Aalto/${MEETING}.out
+  #
+  perl -ne \
+    '@l = split; ($start = $l[2]) =~ s/start-time=//; ($end = $l[3]) =~ s/end-time=//; $dur = $end - $start; ($spkr = $l[4]) =~ s/speaker=//; print "SPEAKER meeting 1 $start $dur <NA> <NA> $spkr <NA>\n"' \
+    < benchmarks/Aalto/${MEETING}.out \
+    > benchmarks/Aalto/${MEETING}.rttm
+  ~/bin/md-eval-v21.pl \
+    -m \
+    -afc \
+    -c 0.25 \
+    -r benchmarks/sources/${MEETING}.rttm \
+    -s benchmarks/Aalto/${MEETING}.rttm \
+    > benchmarks/Aalto/${MEETING}-eval.txt
+done
 ```
 
 ### Google Cloud Speech-to-Text
@@ -312,14 +327,7 @@ jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.
 1821 2
 ```
 
-Let's convert the ES2008a NITE transcript to RTTM using
-[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
-
 ```bash
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2008a.rttm
 jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
     < IBM/ES2008a/out.json \
     > IBM/ES2008a.rttm

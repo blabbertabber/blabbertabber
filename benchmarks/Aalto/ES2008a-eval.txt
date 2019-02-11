@@ -1,4 +1,4 @@
-command line (run on 2019 Feb 10 at 11:06:07):  /Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/ES2008a.rttm -s benchmarks/Aalto/ES2008a.rttm
+command line (run on 2019 Feb 10 at 16:38:55):  /Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/ES2008a.rttm -s benchmarks/Aalto/ES2008a.rttm
 
 Time-based metadata alignment
 
