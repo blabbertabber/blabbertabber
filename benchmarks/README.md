@@ -125,7 +125,6 @@ Here’s the JSON they suggest, placed in `benchmarks/Google/ES2008a-request.jso
   },
   "config": {
     "diarizationSpeakerCount": 4,
-    "enableAutomaticPunctuation": true,
     "enableSpeakerDiarization": true,
     "encoding": "LINEAR16",
     "languageCode": "en-US",
@@ -145,6 +144,11 @@ curl -s -H "Content-Type: application/json" \
     https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
     -d @benchmarks/Google/ES2008a-request.json \
     > benchmarks/Google/ES2008a-out.json
+curl -s -H "Content-Type: application/json" \
+    -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+    https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
+    -d @benchmarks/Google/ES2016a-request.json \
+    > benchmarks/Google/ES2016a-out.json
 ```
 uh-oh:
 ```json
@@ -167,6 +171,10 @@ curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-t
      -H "Content-Type: application/json; charset=utf-8" \
      "https://speech.googleapis.com/v1/operations/6125554835674908336" \
     > benchmarks/Google/ES2008a-out.json
+curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+     -H "Content-Type: application/json; charset=utf-8" \
+     "https://speech.googleapis.com/v1/operations/7786109410645577605" \
+    > benchmarks/Google/ES2016a-out.json
 ```
 The output consists of a [what else?] JSON file with layout similar to the following:
 ```json
@@ -221,16 +229,20 @@ The output consists of a [what else?] JSON file with layout similar to the follo
 ```
 Let's create an RTTM file:
 ```bash
-jq -j -r '.response.results[-1].alternatives[].words[] |
+for MEETING in ES2008a ES2016a; do
+  jq -j -r '.response.results[-1].alternatives[].words[] |
         .startTime|=(rtrimstr("s")|tonumber) |
         .endTime|=(rtrimstr("s")|tonumber) |
         "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
-    < benchmarks/Google/ES2008a-out.json \
-    > benchmarks/Google/ES2008a.rttm
+    < benchmarks/Google/${MEETING}-out.json \
+    > benchmarks/Google/${MEETING}.rttm
+done
 ```
 Now let's score it:
 ```bash
-md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s Google/ES2008a.rttm > Google/ES2008a-eval.txt
+for MEETING in ES2008a ES2016a; do
+    md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm -s benchmarks/Google/${MEETING}.rttm > benchmarks/Google/${MEETING}-eval.txt
+done
 ```
 
 ```
