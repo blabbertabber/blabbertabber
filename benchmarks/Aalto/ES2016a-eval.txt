@@ -1,0 +1,124 @@
+command line (run on 2019 Feb 10 at 18:07:11):  /Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/ES2016a.rttm -s benchmarks/Aalto/ES2016a.rttm
+
+Time-based metadata alignment
+
+Metadata evaluation parameters:
+    time-optimized metadata mapping
+        max gap between matching metadata events = 1 sec
+        max extent to match for SU's = 0.5 sec
+
+Speaker Diarization evaluation parameters:
+    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
+    The no-score collar at SPEAKER boundaries is 0.25 sec
+
+Exclusion zones for evaluation and scoring are:
+                             -----MetaData-----        -----SpkrData-----
+     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
+     token type/subtype      no-eval   no-score        no-eval   no-score
+             (UEM)              X                         X
+         LEXEME/un-lex                    X                          
+        NON-LEX/breath                                              X
+        NON-LEX/cough                                               X
+        NON-LEX/laugh                                               X
+        NON-LEX/lipsmack                                            X
+        NON-LEX/other                                               X
+        NON-LEX/sneeze                                              X
+        NOSCORE/<na>            X         X               X         X
+ NO_RT_METADATA/<na>            X                                    
+             SU/unannotated               X                          
+'speaker_0' => 'speaker_2'
+    12.67 secs matched to 'speaker_1'
+   404.09 secs matched to 'speaker_2'
+     0.28 secs matched to 'speaker_3'
+     0.76 secs matched to 'speaker_4'
+    10.72 secs matched to 'speaker_5'
+     9.65 secs matched to 'speaker_6'
+     4.86 secs matched to 'speaker_8'
+     0.48 secs matched to 'speaker_9'
+'speaker_1' => 'speaker_8'
+     4.12 secs matched to 'speaker_1'
+    52.24 secs matched to 'speaker_2'
+    72.31 secs matched to 'speaker_3'
+     2.59 secs matched to 'speaker_5'
+     0.04 secs matched to 'speaker_6'
+    28.41 secs matched to 'speaker_7'
+    92.51 secs matched to 'speaker_8'
+'speaker_2' => 'speaker_5'
+    45.53 secs matched to 'speaker_2'
+     0.68 secs matched to 'speaker_3'
+     0.81 secs matched to 'speaker_4'
+   163.79 secs matched to 'speaker_5'
+     0.33 secs matched to 'speaker_6'
+     7.57 secs matched to 'speaker_7'
+     0.25 secs matched to 'speaker_8'
+'speaker_3' => 'speaker_4'
+     4.40 secs matched to 'speaker_1'
+    26.61 secs matched to 'speaker_2'
+     0.31 secs matched to 'speaker_3'
+    74.04 secs matched to 'speaker_4'
+    11.96 secs matched to 'speaker_5'
+     1.38 secs matched to 'speaker_8'
+
+*** Performance analysis for Speaker Diarization for c=1 f=meeting ***
+
+    EVAL TIME =   1370.77 secs
+  EVAL SPEECH =   1022.60 secs ( 74.6 percent of evaluated time)
+  SCORED TIME =   1165.12 secs ( 85.0 percent of evaluated time)
+SCORED SPEECH =    881.26 secs ( 75.6 percent of scored time)
+   EVAL WORDS =      0        
+ SCORED WORDS =      0         (100.0 percent of evaluated words)
+---------------------------------------------
+MISSED SPEECH =     47.87 secs (  4.1 percent of scored time)
+FALARM SPEECH =     74.01 secs (  6.4 percent of scored time)
+ MISSED WORDS =      0         (100.0 percent of scored words)
+---------------------------------------------
+SCORED SPEAKER TIME =    922.74 secs (104.7 percent of scored speech)
+MISSED SPEAKER TIME =     89.35 secs (  9.7 percent of scored speaker time)
+FALARM SPEAKER TIME =     74.01 secs (  8.0 percent of scored speaker time)
+ SPEAKER ERROR TIME =    183.07 secs ( 19.8 percent of scored speaker time)
+SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 37.54 percent of scored speaker time  `(c=1 f=meeting)
+---------------------------------------------
+ Speaker type confusion matrix -- speaker weighted
+  REF\SYS (count)      unknown               MISS              
+unknown                   4 / 100.0%          0 /   0.0%
+  FALSE ALARM             6 / 150.0%
+---------------------------------------------
+ Speaker type confusion matrix -- time weighted
+  REF\SYS (seconds)    unknown               MISS              
+unknown              833.39 /  90.3%      89.35 /   9.7%
+  FALSE ALARM         74.01 /   8.0%
+---------------------------------------------
+
+*** Performance analysis for Speaker Diarization for ALL ***
+
+    EVAL TIME =   1370.77 secs
+  EVAL SPEECH =   1022.60 secs ( 74.6 percent of evaluated time)
+  SCORED TIME =   1165.12 secs ( 85.0 percent of evaluated time)
+SCORED SPEECH =    881.26 secs ( 75.6 percent of scored time)
+   EVAL WORDS =      0        
+ SCORED WORDS =      0         (100.0 percent of evaluated words)
+---------------------------------------------
+MISSED SPEECH =     47.87 secs (  4.1 percent of scored time)
+FALARM SPEECH =     74.01 secs (  6.4 percent of scored time)
+ MISSED WORDS =      0         (100.0 percent of scored words)
+---------------------------------------------
+SCORED SPEAKER TIME =    922.74 secs (104.7 percent of scored speech)
+MISSED SPEAKER TIME =     89.35 secs (  9.7 percent of scored speaker time)
+FALARM SPEAKER TIME =     74.01 secs (  8.0 percent of scored speaker time)
+ SPEAKER ERROR TIME =    183.07 secs ( 19.8 percent of scored speaker time)
+SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 37.54 percent of scored speaker time  `(ALL)
+---------------------------------------------
+ Speaker type confusion matrix -- speaker weighted
+  REF\SYS (count)      unknown               MISS              
+unknown                   4 / 100.0%          0 /   0.0%
+  FALSE ALARM             6 / 150.0%
+---------------------------------------------
+ Speaker type confusion matrix -- time weighted
+  REF\SYS (seconds)    unknown               MISS              
+unknown              833.39 /  90.3%      89.35 /   9.7%
+  FALSE ALARM         74.01 /   8.0%
+---------------------------------------------
