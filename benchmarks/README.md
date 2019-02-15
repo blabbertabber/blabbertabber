@@ -319,31 +319,40 @@ into RTTM format before scoring.
 
 ```bash
 export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
-curl -X POST -u "apikey:$APIKEY" --header "Content-Type: audio/flac" --data-binary @audio-file.flac "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1"
 
-curl \
-  -X POST \
-  -u "apikey:$APIKEY" \
-  --header "Content-Type: audio/wav" \
-  --data-binary @$HOME/Google\ Drive/BlabberTabber/ES2008a.wav \
-"https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
-  > $HOME/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json
+for MEETING in ES2016a; do
+    curl \
+      -X POST \
+      -u "apikey:$APIKEY" \
+      --header "Content-Type: audio/wav" \
+      --data-binary @benchmarks/sources/${MEETING}.wav \
+      "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
+      > benchmarks/IBM/${MEETING}/out.json
+done
 ```
 
 Let's do a quick check to see if IBM has identified only two speakers or the
 correct four speakers (spoiler: it only identifies 2 speakers):
 
 ```
-jq -r .speaker_labels[].speaker < ~/Google\ Drive/BlabberTabber/IBM/ES2008a/out.json | sort | uniq -c
+for MEETING in ES2008a ES2016a; do
+    jq -r .speaker_labels[].speaker < benchmarks/IBM/${MEETING}/out.json | sort | uniq -c
+done
  326 0
 1821 2
+1071 0
+   2 1
+1477 2
 ```
 
 ```bash
-jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
-    < IBM/ES2008a/out.json \
-    > IBM/ES2008a.rttm
-md-eval-v21.pl -m -afc -c 0.25 -r sources/ES2008a.rttm -s IBM/ES2008a.rttm > IBM/ES2008a-eval.txt
+cd benchmarks/
+for MEETING in ES2008a ES2016a; do
+    jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
+        < IBM/${MEETING}/out.json \
+        > IBM/${MEETING}.rttm
+    md-eval-v21.pl -m -afc -c 0.25 -r sources/${MEETING}.rttm -s IBM/${MEETING}.rttm > IBM/${MEETING}-eval.txt
+done
 ```
 
 And the results:
