@@ -18,34 +18,17 @@ years. The comparisons are neither consistent nor comprehensive._
 
 ### Test Methodology
 
-We test each diarizer the software using a known corpus. We use the AMI Corpus
-(http://groups.inf.ed.ac.uk/ami/download/), which is used by the NIST Rich
-Transcription Evaluation (http://nist.gov/itl/iad/mig/rt.cfm).
+We test each diarizer the software using a known corpus. We use the [AMI
+Corpus](http://groups.inf.ed.ac.uk/ami/download/)
+<sup><a href="#ami">[AMI]</a></sup>
+, which is used by the [NIST Rich Transcription
+Evaluation](http://nist.gov/itl/iad/mig/rt.cfm).
 
-We also download the AMI Corpus
+We download the AMI Corpus
 [annotations](http://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip)
 to score the diarizer performance, using
-[`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl)
-to do the actual scoring, and we use the metric, `OVERALL SPEAKER DIARIZATION
-ERROR`.
-
-_Originally we created our own test file, `ICSI-diarizer-sample-meeting.wav`,
-which we manually annotated (`ICSI-diarizer-sample-meeting-cunnie.rttm.txt`),
-but we've since moved away from that for two reasons:_
-
-1. _Our annotation was incomplete & did not take into account periods of
-non-speech (silence). Speech/non-speech detection is a difficult aspect of
-diarization, and we weren't measuring it. In fact, this forced us to use the
-sub-par metric `SPEAKER ERROR TIME` instead of the more desirable `OVERALL
-SPEAKER DIARIZATION ERROR`_
-
-1. _The participation of the three speakers was lopsided; two speakers did most
-of the speaking, and the third (me) was mostly quiet. Having a meeting with
-mostly two speakers obscured the shortcomings of diarizers which limited the
-number of identified speakers to 2. The IBM Watson Speech to Text diarizer, for
-example, posted an exceptionally low `SPEAKER ERROR TIME` of 7.3%, but when the
-AMI ES2008a four-speaker meeting was used, the performance cratered, turning in
-an `OVERALL SPEAKER DIARIZATION ERROR` of 56.05%_
+[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics)
+<sup><a href="#scoring">[scoring]</a></sup>.
 
 Formats:
 
@@ -589,3 +572,40 @@ awk '{print $8}' /tmp/blabtab.seg | grep ^S | sort | uniq | wc -l
 We dismiss this one because it's not a complete solution — it assumes that a
 feature file is already present, and skips the speech/non-speech detection phase
 (one of the more difficult aspects of diarization).
+
+## Footnotes
+
+<a id="ami"><sup>[AMI]</sup></a>
+Originally we created our own test file, `ICSI-diarizer-sample-meeting.wav`,
+which we manually annotated (`ICSI-diarizer-sample-meeting-cunnie.rttm.txt`),
+but we've since moved away from that for two reasons:_
+
+1. Our annotation was incomplete & did not take into account periods of
+non-speech (silence). Speech/non-speech detection is a difficult aspect of
+diarization, and we weren't measuring it. In fact, this forced us to use the
+sub-par metric `SPEAKER ERROR TIME` instead of the more desirable `OVERALL
+SPEAKER DIARIZATION ERROR`
+
+1. The participation of the three speakers was lopsided; two speakers did most
+of the speaking, and the third (me) was mostly quiet. Having a meeting with
+mostly two speakers obscured the shortcomings of diarizers which limited the
+number of identified speakers to 2. The IBM Watson Speech to Text diarizer, for
+example, posted an exceptionally low `SPEAKER ERROR TIME` of 7.3%, but when the
+AMI ES2008a four-speaker meeting was used, the performance cratered, turning in
+an `OVERALL SPEAKER DIARIZATION ERROR` of 56.05%
+
+Another factor that played into our decision to use the AMI Meeting Corpus is
+that it's free, whereas the [CALLHOME American English
+Speech](https://catalog.ldc.upenn.edu/LDC97S42) requires a membership which
+costs [$24k](https://www.ldc.upenn.edu/members/join-ldc), which was well outside
+our price range.
+
+<a id="scoring"><sup>[scoring]</sup></a> Originally we used
+[`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl)
+to do the actual scoring, using the metric `SPEAKER ERROR TIME`. Later, when we
+switched to the AMI Corpus, we were able to use the more accurate `OVERALL
+SPEAKER DIARIZATION ERROR ` metric. Then, at the suggestion of [Quan
+Wang](https://arxiv.org/pdf/1810.04719.pdf), who, in his
+[video](https://www.youtube.com/watch?v=pjxGPZQeeO4), highly recommends using
+[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics) for scoring,
+we discarded `md-eval-v21.pl`.
