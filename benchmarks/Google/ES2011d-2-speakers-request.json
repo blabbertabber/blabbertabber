@@ -1,0 +1,11 @@
+{
+  "audio": {
+    "uri": "gs://blabbertabber/ES2011d.wav"
+  },
+  "config": {
+    "enableSpeakerDiarization": true,
+    "encoding": "LINEAR16",
+    "languageCode": "en-US",
+    "model": "video"
+  }
+}

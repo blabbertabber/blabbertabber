@@ -30,6 +30,15 @@ to score the diarizer performance, using
 [`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics)
 <sup><a href="#scoring">[scoring]</a></sup>.
 
+#### Setup
+
+```
+pip3 install pyannote.metrics
+pip3 install pyannote.db.odessa.ami
+```
+
+_Other corpus databases can be found here: <https://pypi.org/search/?q=pyannote.db>._
+
 Formats:
 
 - Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
@@ -104,7 +113,7 @@ Here’s the JSON they suggest, placed in `benchmarks/Google/ES2008a-request.jso
 ```json
 {
   "audio": {
-    "uri": "gs://blabbertabber/ES2008a.wav"
+    "uri": "gs://blabbertabber/ES2011d.wav"
   },
   "config": {
     "diarizationSpeakerCount": 4,
@@ -120,6 +129,10 @@ I have changed the model from “default” to “video” because they suggest:
 
 > Best for audio that originated from video or includes multiple speakers. Ideally the audio is recorded at a 16khz or greater sampling rate. This is a premium model that costs more than the standard rate.
 
+Note: Google seems to have an affinity for identifying only 2 speakers; we
+tested the 4 speaker meeting ES2011d, and, when we didn't specifically
+configure 4 speakers, Google found only two.
+
 ```bash
 gcloud auth application-default login
 curl -s -H "Content-Type: application/json" \
@@ -127,6 +140,11 @@ curl -s -H "Content-Type: application/json" \
     https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
     -d @benchmarks/Google/ES2008a-request.json \
     > benchmarks/Google/ES2008a-out.json
+curl -s -H "Content-Type: application/json" \
+    -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+    https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
+    -d @benchmarks/Google/ES2011d-request.json \
+    > benchmarks/Google/ES2011d-out.json
 curl -s -H "Content-Type: application/json" \
     -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
     https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
@@ -154,6 +172,10 @@ curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-t
      -H "Content-Type: application/json; charset=utf-8" \
      "https://speech.googleapis.com/v1/operations/6125554835674908336" \
     > benchmarks/Google/ES2008a-out.json
+curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+     -H "Content-Type: application/json; charset=utf-8" \
+     "https://speech.googleapis.com/v1/operations/5054793013139618594" \
+    > benchmarks/Google/ES2011d-out.json
 curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
      -H "Content-Type: application/json; charset=utf-8" \
      "https://speech.googleapis.com/v1/operations/7786109410645577605" \
