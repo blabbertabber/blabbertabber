@@ -27,10 +27,12 @@ Evaluation](http://nist.gov/itl/iad/mig/rt.cfm).
 We download the AMI Corpus
 [annotations](http://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip)
 to score the diarizer performance, using
-[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics)
-<sup><a href="#scoring">[scoring]</a></sup>.
+[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics).
+<sup><a href="#scoring">[scoring]</a></sup>
 
-The MDTM (Meta Data Time-Mark) format is described in the [code](https://github.com/pyannote/pyannote-parser/blob/fa2a68a6e2cf7ba6dcd3417bc171a6aa118003d1/pyannote/parser/annotation/mdtm.py#L49-L56):
+We use the MDTM (Meta Data Time-Mark)
+<sup><a href="#mdtm">[MDTM]</a></sup>
+format. is described in the [code](https://github.com/pyannote/pyannote-parser/blob/fa2a68a6e2cf7ba6dcd3417bc171a6aa118003d1/pyannote/parser/annotation/mdtm.py#L49-L56):
 
 - PYANNOTE_URI (e.g. `ES2011d`)
 - channel (usually `1`)
@@ -50,8 +52,16 @@ Our decision to use `pyannote.metrics` is one that we're not sure is correct;
 the tool seems geared more towards an audio researcher than to someone (like us)
 who wants merely to score results.
 
-For example, to score solely the `ES2011d` meeting, we needed to perform
-surgery on the `pyannote` installation:
+#### Setup
+
+```
+pip3 install pyannote.metrics
+pip3 install pyannote.db.odessa.ami
+```
+
+We redact the databases to remove data of all meetings except the one in which
+we're interested, `ES2011d`:
+<sup><a href="#es2011d">[ES2011d]</a></sup>
 
 ```
 mv /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm{,-orig}
@@ -64,42 +74,9 @@ grep ES2011d \
   > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem
 ```
 
-#### Setup
-
-```
-pip3 install pyannote.metrics
-pip3 install pyannote.db.odessa.ami
-```
 
 _Other corpus databases can be found here: <https://pypi.org/search/?q=pyannote.db>._
 
-Formats:
-
-- Our scoring script expects [RTTM v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf)
-  The only fields we care about are start time ("0"), duration ("36.4"), and speaker ("Brendan").
-```
-SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
-```
-- the AMI corpus uses a different, NITE (XML-based) format. It seems
-  like one of the NITE files can be used to create an RTTM file:
-  `ami_public_auto_1.5/ASR/ASR_AS_CTM_v1.0_feb07/ES2008a.{A,B,C,D}.words.xml` files
-  which seem to have start and stop times for every word uttered by the four
-  speakers (where {A,B,C,D} [are the
-  speakers](https://github.com/idiap/IBDiarization/issues/10)).
-
-Let's convert the ES2008a NITE transcript to RTTM using
-[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
-
-```bash
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2008a.rttm
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2016a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2016a.rttm
-```
 ### Aalto-speech (Aalto University, Finland)
 
 ~~Summary: the Aalto diarizer performed well, with a calculated **20.4% overall
@@ -673,3 +650,52 @@ Wang](https://arxiv.org/pdf/1810.04719.pdf), who, in his
 [video](https://www.youtube.com/watch?v=pjxGPZQeeO4), highly recommends using
 [`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics) for scoring,
 we discarded `md-eval-v21.pl`.
+
+<a id="mdtm"><sup>[MDTM]</sup></a> Originally we used a different format,  [RTTM
+v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf), to
+score our results (this is the format expected by `md-eval-v21.pl`), which has a
+format similar to MDTM:
+
+```
+SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
+```
+
+The fields of interest are start time ("0"), duration ("36.4"), and
+speaker ("Brendan").
+
+One of the advantages of using the `pyannote` solution is that the package
+`pyannote.db.odessa.ami` has converted the AMI corpus data into the MDTM format.
+
+The AMI corpus's native format is NITE (XML-based). It seems that some of the
+NITE files can be used to create an RTTM file:
+`ami_public_auto_1.5/ASR/ASR_AS_CTM_v1.0_feb07/ES2008a.{A,B,C,D}.words.xml`
+files which seem to have start and stop times for every word uttered by the four
+speakers (where {A,B,C,D} [are the
+speakers](https://github.com/idiap/IBDiarization/issues/10)).
+
+We previously converted the ES2008a NITE transcript to RTTM using a custom tool,
+[nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
+
+```bash
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2008a.rttm
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2016a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2016a.rttm
+```
+
+<a id="es2011d"><sup>[ES2011d]</sup></a> The choice of meeting `ES2011d` was
+arbitrary; we discovered that the `pyannote` database was incomplete, did not
+include either of our original meetings, `ES2008a` and `ES2016a`. Also, to
+function properly, `pyannote` expected us to diarize _every_ meeting included in
+its database, and that was not what we planned.
+
+This is the error it gave, and the error we fixed by removing all but the
+`ES2011d` entries from the `pyannote` database:
+
+```
+ValueError: Could not find hypothesis for file "ES2003a.Mix-Headset".
+```
