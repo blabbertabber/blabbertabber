@@ -30,6 +30,40 @@ to score the diarizer performance, using
 [`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics)
 <sup><a href="#scoring">[scoring]</a></sup>.
 
+The MDTM (Meta Data Time-Mark) format is described in the [code](https://github.com/pyannote/pyannote-parser/blob/fa2a68a6e2cf7ba6dcd3417bc171a6aa118003d1/pyannote/parser/annotation/mdtm.py#L49-L56):
+
+- PYANNOTE_URI (e.g. `ES2011d`)
+- channel (usually `1`)
+- start (e.g. `67.258`)
+- duration (e.g. `1.0469`)
+- PYANNOTE_MODALITY (e.g. `speaker`)
+- confidence (e.g. `NA`)
+- gender (e.g. `unknown`)
+- PYANNOTE_LABEL (which speaker e.g. `FEE041`)
+
+Typical line:
+```
+ES2011d 1 67.258 1.0469 speaker NA unknown FEE041
+```
+
+Our decision to use `pyannote.metrics` is one that we're not sure is correct;
+the tool seems geared more towards an audio researcher than to someone (like us)
+who wants merely to score results.
+
+For example, to score solely the `ES2011d` meeting, we needed to perform
+surgery on the `pyannote` installation:
+
+```
+mv /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm{,-orig}
+mv /usr/local/lib/python3.7/site-packages//AMI/data/speaker_diarization/dev.uem{,-orig}
+grep ES2011d \
+  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm-orig
+  > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm
+grep ES2011d \
+  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem-orig
+  > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem
+```
+
 #### Setup
 
 ```
@@ -232,15 +266,22 @@ The output consists of a [what else?] JSON file with layout similar to the follo
   }
 }
 ```
-Let's create an RTTM file:
+Let's create an MDTM & RTTM file:
 ```bash
-for MEETING in ES2008a ES2016a; do
+for MEETING in ES2008a ES2011d ES2016a; do
   jq -j -r '.response.results[-1].alternatives[].words[] |
         .startTime|=(rtrimstr("s")|tonumber) |
         .endTime|=(rtrimstr("s")|tonumber) |
         "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
     < benchmarks/Google/${MEETING}-out.json \
     > benchmarks/Google/${MEETING}.rttm
+  # FIXME put $MEETING, not "MEETING" in first column below
+  jq -j -r '.response.results[-1].alternatives[].words[] |
+        .startTime|=(rtrimstr("s")|tonumber) |
+        .endTime|=(rtrimstr("s")|tonumber) |
+        "MEETING 1 ", .startTime, " ", (.endTime-.startTime), " speaker NA unknown ", ("spkr_"+(.speakerTag|tostring)), "\n"' \
+     < benchmarks/Google/${MEETING}-out.json \
+     > benchmarks/Google/${MEETING}.mdtm
 done
 ```
 Now let's score it:
@@ -248,6 +289,7 @@ Now let's score it:
 for MEETING in ES2008a ES2016a; do
     md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm -s benchmarks/Google/${MEETING}.rttm > benchmarks/Google/${MEETING}-eval.txt
 done
+pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset benchmarks/Google/ES2011d.mdtm
 ```
 
 ```
