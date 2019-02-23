@@ -67,10 +67,10 @@ we're interested, `ES2011d`:
 mv /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm{,-orig}
 mv /usr/local/lib/python3.7/site-packages//AMI/data/speaker_diarization/dev.uem{,-orig}
 grep ES2011d \
-  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm-orig
+  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm-orig \
   > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm
 grep ES2011d \
-  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem-orig
+  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem-orig \
   > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem
 ```
 
@@ -243,22 +243,36 @@ The output consists of a [what else?] JSON file with layout similar to the follo
   }
 }
 ```
-Let's create an MDTM & RTTM file:
+
+Let's create an MDTM & RTTM file.
+Google has a bug — zero-length utterances: https://issuetracker.google.com/issues/124723573.
+This generates `pyannote-metrics.py` error `ValueError: Segments must not be empty.`.
+We have an extra step to strip out the 145 zero-length utterances. `awk '$4 != "0" { print }'`
+:
 ```bash
 for MEETING in ES2008a ES2011d ES2016a; do
-  jq -j -r '.response.results[-1].alternatives[].words[] |
+  jq \
+    -j \
+    -r \
+    --arg MEETING $MEETING \
+    '.response.results[-1].alternatives[].words[] |
         .startTime|=(rtrimstr("s")|tonumber) |
         .endTime|=(rtrimstr("s")|tonumber) |
-        "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
+        "SPEAKER ", $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
     < benchmarks/Google/${MEETING}-out.json \
     > benchmarks/Google/${MEETING}.rttm
   # FIXME put $MEETING, not "MEETING" in first column below
-  jq -j -r '.response.results[-1].alternatives[].words[] |
-        .startTime|=(rtrimstr("s")|tonumber) |
-        .endTime|=(rtrimstr("s")|tonumber) |
-        "MEETING 1 ", .startTime, " ", (.endTime-.startTime), " speaker NA unknown ", ("spkr_"+(.speakerTag|tostring)), "\n"' \
-     < benchmarks/Google/${MEETING}-out.json \
-     > benchmarks/Google/${MEETING}.mdtm
+  jq \
+    -j \
+    -r \
+    --arg MEETING $MEETING \
+    '.response.results[-1].alternatives[].words[] |
+      .startTime|=(rtrimstr("s")|tonumber) |
+      .endTime|=(rtrimstr("s")|tonumber) |
+      $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " speaker NA unknown ", ("spkr_"+(.speakerTag|tostring)), "\n"' \
+    < benchmarks/Google/${MEETING}-out.json |
+    awk '$4 != "0" { print }' \
+    > benchmarks/Google/${MEETING}.mdtm
 done
 ```
 Now let's score it:
