@@ -261,7 +261,6 @@ for MEETING in ES2008a ES2011d ES2016a; do
         "SPEAKER ", $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
     < benchmarks/Google/${MEETING}-out.json \
     > benchmarks/Google/${MEETING}.rttm
-  # FIXME put $MEETING, not "MEETING" in first column below
   jq \
     -j \
     -r \
@@ -277,14 +276,20 @@ done
 ```
 Now let's score it:
 ```bash
-for MEETING in ES2008a ES2016a; do
+for MEETING in ES2008a ES2011d ES2016a; do
     md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm -s benchmarks/Google/${MEETING}.rttm > benchmarks/Google/${MEETING}-eval.txt
 done
 pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset benchmarks/Google/ES2011d.mdtm
 ```
 
+And the results for ES2011d (`pyannote-metrics.py` first, `md-eval-v21.pl` second):
+
 ```
-OVERALL SPEAKER DIARIZATION ERROR = 44.96 percent of scored speaker time  `(c=1 f=meeting)
+Diarization (collar = 0 ms)      diarization error rate    purity    coverage    total    correct      %    false alarm     %    missed detection      %    confusion      %
+-----------------------------  ------------------------  --------  ----------  -------  ---------  -----  -------------  ----  ------------------  -----  -----------  -----
+ES2011d.Mix-Headset                               61.43     54.02       63.77  1981.14     839.36  42.37          75.22  3.80              639.16  32.26       502.62  25.37
+
+OVERALL SPEAKER DIARIZATION ERROR = 100.00 percent of scored speaker time  `(c=1 f=meeting)
 ```
 
 ### IBM Watson Speech To Text (STT)
@@ -393,7 +398,7 @@ for MEETING in ES2008a ES2016a; do
 done
 ```
 
-And the results:
+And the results for ES2011d (`pyannote-metrics.py` first, `md-eval-v21.pl` second):
 
 ```
 OVERALL SPEAKER DIARIZATION ERROR = 56.05 percent of scored speaker time
@@ -695,6 +700,10 @@ nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xm
     sort -n -k 4 |
     squash_rttm.py \
     > sources/ES2008a.rttm
+nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
+    sort -n -k 4 |
+    squash_rttm.py \
+    > sources/ES2011d.rttm
 nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2016a.*.words.xml |
     sort -n -k 4 |
     squash_rttm.py \
