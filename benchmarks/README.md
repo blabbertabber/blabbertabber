@@ -254,11 +254,10 @@ for MEETING in ES2008a ES2011d ES2016a; do
   jq \
     -j \
     -r \
-    --arg MEETING $MEETING \
     '.response.results[-1].alternatives[].words[] |
         .startTime|=(rtrimstr("s")|tonumber) |
         .endTime|=(rtrimstr("s")|tonumber) |
-        "SPEAKER ", $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
+        "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
     < benchmarks/Google/${MEETING}-out.json \
     > benchmarks/Google/${MEETING}.rttm
   jq \
@@ -289,7 +288,7 @@ Diarization (collar = 0 ms)      diarization error rate    purity    coverage   
 -----------------------------  ------------------------  --------  ----------  -------  ---------  -----  -------------  ----  ------------------  -----  -----------  -----
 ES2011d.Mix-Headset                               61.43     54.02       63.77  1981.14     839.36  42.37          75.22  3.80              639.16  32.26       502.62  25.37
 
-OVERALL SPEAKER DIARIZATION ERROR = 100.00 percent of scored speaker time  `(c=1 f=meeting)
+OVERALL SPEAKER DIARIZATION ERROR = 92.32 percent of scored speaker time  `(c=1 f=meeting)
 ```
 
 ### IBM Watson Speech To Text (STT)
