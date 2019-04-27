@@ -19,9 +19,8 @@ years. The comparisons are neither consistent nor comprehensive._
 ### Test Methodology
 
 We test each diarizer the software using a known corpus. We use the [AMI
-Corpus](http://groups.inf.ed.ac.uk/ami/download/)
-<sup><a href="#ami">[AMI]</a></sup>
-, which is used by the [NIST Rich Transcription
+Corpus](http://groups.inf.ed.ac.uk/ami/download/) <sup><a
+href="#ami">[AMI]</a></sup> , which is used by the [NIST Rich Transcription
 Evaluation](http://nist.gov/itl/iad/mig/rt.cfm).
 
 We download the AMI Corpus
@@ -654,10 +653,16 @@ AMI ES2008a four-speaker meeting was used, the performance cratered, turning in
 an `OVERALL SPEAKER DIARIZATION ERROR` of 56.05%
 
 Another factor that played into our decision to use the AMI Meeting Corpus is
-that it's free, whereas the [CALLHOME American English
-Speech](https://catalog.ldc.upenn.edu/LDC97S42) requires a membership which
-costs [$24k](https://www.ldc.upenn.edu/members/join-ldc), which was well outside
-our price range.
+that it's free, whereas the corpuses ("corpi"?) that Quan Wang, Google
+Researcher, mentions in his [YouTube
+video](https://www.youtube.com/watch?v=pGkqwRPzx9U&t=1178s) require membership
+which costs [$24k](https://www.ldc.upenn.edu/members/join-ldc), which was well
+outside our price range. The non-profit membership, a steal at $2.4k, is still
+outside our budget.
+
+- NIST SRE 2000 Disk-8, _a.k.a._ CALLHOME
+- NIST SRE 2000 Disk-6, _a.k.a._ Switchboard
+- ICSI meeting corpus
 
 <a id="scoring"><sup>[scoring]</sup></a> Originally we used
 [`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl)
@@ -721,3 +726,9 @@ This is the error it gave, and the error we fixed by removing all but the
 ```
 ValueError: Could not find hypothesis for file "ES2003a.Mix-Headset".
 ```
+
+## Further Reading
+
+_[Accurate Online Speaker Diarization with Supervised
+Learning](https://ai.googleblog.com/2018/11/accurate-online-speaker-diarization.html)_,
+Chong Wang, Research Scientist, Google AI
