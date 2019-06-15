@@ -68,22 +68,6 @@ pip3 install pyannote.metrics
 pip3 install pyannote.db.odessa.ami
 ```
 
-We redact the databases to remove data of all meetings except the one in which
-we're interested, `ES2011d`:
-<sup><a href="#es2011d">[ES2011d]</a></sup>
-
-```
-mv /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm{,-orig}
-mv /usr/local/lib/python3.7/site-packages//AMI/data/speaker_diarization/dev.uem{,-orig}
-grep ES2011d \
-  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm-orig \
-  > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.mdtm
-grep ES2011d \
-  < /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem-orig \
-  > /usr/local/lib/python3.7/site-packages/AMI/data/speaker_diarization/dev.uem
-```
-
-
 _Other corpus databases can be found here: <https://pypi.org/search/?q=pyannote.db>._
 
 ### Aalto-speech (Aalto University, Finland)
