@@ -29,23 +29,33 @@ to score the diarizer performance, using
 [`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics).
 <sup><a href="#scoring">[scoring]</a></sup>
 
-We use the MDTM (Meta Data Time-Mark)
-<sup><a href="#mdtm">[MDTM]</a></sup>
-format. is described in the [code](https://github.com/pyannote/pyannote-parser/blob/fa2a68a6e2cf7ba6dcd3417bc171a6aa118003d1/pyannote/parser/annotation/mdtm.py#L49-L56):
+We make sure to convert the output of our diarizers into the [RTTM
+v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf) format
+to score our results (this is the format expected by our scoring software,
+`pyannote-metrics.py` and by our earlier scoring software, `md-eval-v21.pl`).
+Here is a typical line:
 
-- PYANNOTE_URI (e.g. `ES2011d`)
-- channel (usually `1`)
-- start (e.g. `67.258`)
-- duration (e.g. `1.0469`)
-- PYANNOTE_MODALITY (e.g. `speaker`)
-- confidence (e.g. `NA`)
-- gender (e.g. `unknown`)
-- PYANNOTE_LABEL (which speaker e.g. `FEE041`)
+```
+SPEAKER ES2008a 1       0       36.4    <NA> <NA>       Speaker_0 <NA>
+```
+Here are the field definitions:
 
-Typical line:
-```
-ES2011d 1 67.258 1.0469 speaker NA unknown FEE041
-```
+- **type** is always `SPEAKER`
+- **file** is the waveform file base name (i.e., without path names or extensions).
+  for scoring, `pyannote` expects this to be the AMI meeting, e.g. `ES2008a`.
+- **chnl** is the waveform channel (e.g., “1” or “2”). Always "1"
+- **tbeg** is the beginning time of the object, in seconds, measured from the
+  start time of the file.4If there is no beginning time, use tbeg = “<NA>”.
+- **tdur** is the duration of the object, in seconds. If there is no duration,
+  use tdur = “<NA>”.
+- **stype** is the subtype of the object.  If there is no subtype, use stype = “<NA>”.
+- **ortho** is the orthographic rendering (spelling) of the object for STT object
+  types.  If there is no orthographic representation, use ortho = “<NA>”.
+- **name** is the name of the speaker.  name must uniquely specify the speaker
+within the scope of the file.  If name is not applicable or if no claim is being
+made as to the identity of the speaker, use name = “<NA>”.
+- **conf**  is  the  confidence  (probability)  that  the  object  information
+is  correct.    If conf  is  not available, use conf = “<NA>”.
 
 Our decision to use `pyannote.metrics` is one that we're not sure is correct;
 the tool seems geared more towards an audio researcher than to someone (like us)
@@ -88,14 +98,14 @@ correct slightly more than half the time.
 
 ```bash
 docker pull blabbertabber/aalto-speech-diarizer
-cd ~/workspace/blabbertabber/
+cd ~/go/src/github.com/blabbertabber/blabbertabber
 for MEETING in ES2008a ES2016a; do
   docker run \
     --volume=$PWD/benchmarks:/benchmarks \
     --workdir /speaker-diarization \
     blabbertabber/aalto-speech-diarizer \
     /speaker-diarization/spk-diarization2.py \
-      /benchmarks/sources/${MEETING}.wav \
+      /benchmarks/sources/amicorpus/${MEETING}/audio/${MEETING}.Mix-Headset.wav \
       -o /benchmarks/Aalto/${MEETING}.out
   #
   perl -ne \
@@ -687,7 +697,8 @@ The fields of interest are start time ("0"), duration ("36.4"), and
 speaker ("Brendan").
 
 One of the advantages of using the `pyannote` solution is that the package
-`pyannote.db.odessa.ami` has converted the AMI corpus data into the MDTM format.
+`pyannote.db.odessa.ami` has converted the AMI corpus data into the ~~MDTM~~
+RTTM format.
 
 The AMI corpus's native format is NITE (XML-based). It seems that some of the
 NITE files can be used to create an RTTM file:
