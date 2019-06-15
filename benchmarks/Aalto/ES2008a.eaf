@@ -1,6 +1,6 @@
-<ANNOTATION_DOCUMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" AUTHOR="" DATE="2019-02-11T00:38:54.617997+0:00" FORMAT="2.7" VERSION="2.7" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.7.xsd">
+<ANNOTATION_DOCUMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" AUTHOR="" DATE="2019-06-15T20:38:10.244125+0:00" FORMAT="2.7" VERSION="2.7" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.7.xsd">
   <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
-    <MEDIA_DESCRIPTOR MEDIA_URL="file:///benchmarks/sources/ES2008a.wav" MIME_TYPE="audio/x-wav" RELATIVE_MEDIA_URL=""/>
+    <MEDIA_DESCRIPTOR MEDIA_URL="file:///benchmarks/sources/amicorpus/ES2008a/audio/ES2008a.Mix-Headset.wav" MIME_TYPE="audio/x-wav" RELATIVE_MEDIA_URL=""/>
     <PROPERTY NAME="lastUsedAnnotationId">154</PROPERTY>
   </HEADER>
   <TIME_ORDER>
