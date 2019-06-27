@@ -26,40 +26,14 @@ Evaluation](http://nist.gov/itl/iad/mig/rt.cfm).
 We download the AMI Corpus
 [annotations](http://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip)
 to score the diarizer performance, using
-[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics).
+[`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics)
 <sup><a href="#scoring">[scoring]</a></sup>
+.
 
-We make sure to convert the output of our diarizers into the [RTTM
-v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf) format
-to score our results (this is the format expected by our scoring software,
-`pyannote-metrics.py` and by our earlier scoring software, `md-eval-v21.pl`).
-Here is a typical line:
-
-```
-SPEAKER ES2008a 1       0       36.4    <NA> <NA>       Speaker_0 <NA>
-```
-Here are the field definitions:
-
-- **type** is always `SPEAKER`
-- **file** is the waveform file base name (i.e., without path names or extensions).
-  for scoring, `pyannote` expects this to be the AMI meeting, e.g. `ES2008a`.
-- **chnl** is the waveform channel (e.g., “1” or “2”). Always "1"
-- **tbeg** is the beginning time of the object, in seconds, measured from the
-  start time of the file.4If there is no beginning time, use tbeg = “<NA>”.
-- **tdur** is the duration of the object, in seconds. If there is no duration,
-  use tdur = “<NA>”.
-- **stype** is the subtype of the object.  If there is no subtype, use stype = “<NA>”.
-- **ortho** is the orthographic rendering (spelling) of the object for STT object
-  types.  If there is no orthographic representation, use ortho = “<NA>”.
-- **name** is the name of the speaker.  name must uniquely specify the speaker
-within the scope of the file.  If name is not applicable or if no claim is being
-made as to the identity of the speaker, use name = “<NA>”.
-- **conf**  is  the  confidence  (probability)  that  the  object  information
-is  correct.    If conf  is  not available, use conf = “<NA>”.
-
-Our decision to use `pyannote.metrics` is one that we're not sure is correct;
-the tool seems geared more towards an audio researcher than to someone (like us)
-who wants merely to score results.
+We make sure to convert the output of our diarizers into the RTTM
+<sup><a href="#rttm">[RTTM]</a></sup>
+format
+to score our results
 
 #### Setup
 
@@ -658,27 +632,55 @@ outside our budget.
 - NIST SRE 2000 Disk-6, _a.k.a._ Switchboard
 - ICSI meeting corpus
 
-<a id="scoring"><sup>[scoring]</sup></a> Originally we used
-[`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl)
-to do the actual scoring, using the metric `SPEAKER ERROR TIME`. Later, when we
-switched to the AMI Corpus, we were able to use the more accurate `OVERALL
-SPEAKER DIARIZATION ERROR ` metric. Then, at the suggestion of [Quan
+<a id="scoring"><sup>[scoring]</sup></a> Our original scoring tool was
+[`md-eval-v21.pl`](https://github.com/cunnie/bin/blob/26eecbc292fc9066be0554447fe69afcafd2295c/md-eval-v21.pl),
+using the metric `SPEAKER ERROR TIME`. Later, when we switched to the AMI
+Corpus, we were able to use the more accurate `OVERALL SPEAKER DIARIZATION ERROR`
+metric. We discarded `md-eval-v21.pl` at the suggestion of [Quan
 Wang](https://arxiv.org/pdf/1810.04719.pdf), who, in his
 [video](https://www.youtube.com/watch?v=pjxGPZQeeO4), highly recommends using
 [`pyannote.metrics`](https://github.com/pyannote/pyannote-metrics) for scoring,
-we discarded `md-eval-v21.pl`.
+.
 
-<a id="mdtm"><sup>[MDTM]</sup></a> Originally we used a different format,  [RTTM
-v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf), to
-score our results (this is the format expected by `md-eval-v21.pl`), which has a
-format similar to MDTM:
+Our decision to use `pyannote.metrics` is one that we're not sure is correct;
+the tool seems geared more towards an audio researcher than to someone who
+merely wants to score results.
+
+<a id="rttm"><sup>[RTTM]</sup></a> [RTTM
+v1.3](https://catalog.ldc.upenn.edu/docs/LDC2004T12/RTTM-format-v13.pdf) is a
+format for diarization output used by most diarization-scoring tools, e.g.
+`pyannote-metrics.py` and `md-eval-v21.pl`.
+
+Here is a typical line:
 
 ```
-SPEAKER meeting 1       0       36.4    <NA> <NA>       Brendan <NA>
+SPEAKER ES2008a 1       0       36.4    <NA> <NA>       Speaker_0 <NA>
 ```
 
-The fields of interest are start time ("0"), duration ("36.4"), and
-speaker ("Brendan").
+The fields of interest are file/meeting ("ES2008a"), start time ("0"), duration
+("36.4"), and speaker ("Speaker_0").
+
+RTTM has the following field definitions:
+
+- **type** is always `SPEAKER`
+- **file** is the waveform file base name (i.e., without path names or extensions).
+  for scoring, `pyannote` expects this to be the AMI meeting, e.g. `ES2008a`.
+- **chnl** is the waveform channel (e.g., “1” or “2”). Always "1"
+- **tbeg** is the beginning time of the object, in seconds, measured from the
+  start time of the file.4If there is no beginning time, use tbeg = “<NA>”.
+- **tdur** is the duration of the object, in seconds. If there is no duration,
+  use tdur = “<NA>”.
+- **stype** is the subtype of the object.  If there is no subtype, use stype = “<NA>”.
+- **ortho** is the orthographic rendering (spelling) of the object for STT object
+  types.  If there is no orthographic representation, use ortho = “<NA>”.
+- **name** is the name of the speaker.  name must uniquely specify the speaker
+within the scope of the file.  If name is not applicable or if no claim is being
+made as to the identity of the speaker, use name = “<NA>”.
+- **conf**  is  the  confidence  (probability)  that  the  object  information
+is  correct.    If conf  is  not available, use conf = “<NA>”.
+
+We took an ill-fated excursion using an alternative format, MDTM. It was a
+mistake.
 
 One of the advantages of using the `pyannote` solution is that the package
 `pyannote.db.odessa.ami` has converted the AMI corpus data into the ~~MDTM~~
@@ -714,6 +716,32 @@ arbitrary; we discovered that the `pyannote` database was incomplete, did not
 include either of our original meetings, `ES2008a` and `ES2016a`. Also, to
 function properly, `pyannote` expected us to diarize _every_ meeting included in
 its database, and that was not what we planned.
+
+This is the list of AMI meetings that have been added to `pyannote`'s database:
+
+```
+ES2003a
+ES2003b
+ES2003c
+ES2003d
+ES2011a
+ES2011b
+ES2011c
+ES2011d
+IB4001
+IS1008a
+IS1008b
+IS1008c
+IS1008d
+TS3004a
+TS3004b
+TS3004c
+TS3004d
+TS3006a
+TS3006b
+TS3006c
+TS3006d
+```
 
 This is the error it gave, and the error we fixed by removing all but the
 `ES2011d` entries from the `pyannote` database:
