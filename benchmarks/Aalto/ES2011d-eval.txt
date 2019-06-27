@@ -1,0 +1,122 @@
+command line (run on 2019 Jun 15 at 22:51:13):  /Users/cunnie/bin/md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/ES2011d.rttm -s benchmarks/Aalto/ES2011d.rttm
+
+Time-based metadata alignment
+
+Metadata evaluation parameters:
+    time-optimized metadata mapping
+        max gap between matching metadata events = 1 sec
+        max extent to match for SU's = 0.5 sec
+
+Speaker Diarization evaluation parameters:
+    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
+    The no-score collar at SPEAKER boundaries is 0.25 sec
+
+Exclusion zones for evaluation and scoring are:
+                             -----MetaData-----        -----SpkrData-----
+     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
+     token type/subtype      no-eval   no-score        no-eval   no-score
+             (UEM)              X                         X
+         LEXEME/un-lex                    X                          
+        NON-LEX/breath                                              X
+        NON-LEX/cough                                               X
+        NON-LEX/laugh                                               X
+        NON-LEX/lipsmack                                            X
+        NON-LEX/other                                               X
+        NON-LEX/sneeze                                              X
+        NOSCORE/<na>            X         X               X         X
+ NO_RT_METADATA/<na>            X                                    
+             SU/unannotated               X                          
+'speaker_0' => 'speaker_1'
+   128.63 secs matched to 'speaker_1'
+    17.92 secs matched to 'speaker_2'
+    30.16 secs matched to 'speaker_3'
+    30.30 secs matched to 'speaker_4'
+     2.28 secs matched to 'speaker_5'
+     4.69 secs matched to 'speaker_6'
+     1.11 secs matched to 'speaker_7'
+    53.59 secs matched to 'speaker_8'
+'speaker_1' => 'speaker_5'
+    60.50 secs matched to 'speaker_1'
+     2.26 secs matched to 'speaker_2'
+    15.70 secs matched to 'speaker_3'
+     4.57 secs matched to 'speaker_4'
+    29.96 secs matched to 'speaker_5'
+    19.10 secs matched to 'speaker_6'
+     2.59 secs matched to 'speaker_7'
+'speaker_2' => 'speaker_6'
+    86.02 secs matched to 'speaker_1'
+     0.20 secs matched to 'speaker_2'
+     9.07 secs matched to 'speaker_3'
+    11.78 secs matched to 'speaker_4'
+    12.38 secs matched to 'speaker_6'
+'speaker_3' => 'speaker_3'
+    77.78 secs matched to 'speaker_1'
+     8.48 secs matched to 'speaker_2'
+     8.69 secs matched to 'speaker_3'
+     2.36 secs matched to 'speaker_4'
+     0.21 secs matched to 'speaker_5'
+     0.39 secs matched to 'speaker_7'
+
+*** Performance analysis for Speaker Diarization for c=1 f=meeting ***
+
+    EVAL TIME =   1009.45 secs
+  EVAL SPEECH =    775.95 secs ( 76.9 percent of evaluated time)
+  SCORED TIME =    865.30 secs ( 85.7 percent of evaluated time)
+SCORED SPEECH =    681.53 secs ( 78.8 percent of scored time)
+   EVAL WORDS =      0        
+ SCORED WORDS =      0         (100.0 percent of evaluated words)
+---------------------------------------------
+MISSED SPEECH =    151.87 secs ( 17.6 percent of scored time)
+FALARM SPEECH =    153.45 secs ( 17.7 percent of scored time)
+ MISSED WORDS =      0         (100.0 percent of scored words)
+---------------------------------------------
+SCORED SPEAKER TIME =    690.60 secs (101.3 percent of scored speech)
+MISSED SPEAKER TIME =    160.94 secs ( 23.3 percent of scored speaker time)
+FALARM SPEAKER TIME =    153.45 secs ( 22.2 percent of scored speaker time)
+ SPEAKER ERROR TIME =    378.06 secs ( 54.7 percent of scored speaker time)
+SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 100.27 percent of scored speaker time  `(c=1 f=meeting)
+---------------------------------------------
+ Speaker type confusion matrix -- speaker weighted
+  REF\SYS (count)      unknown               MISS              
+unknown                   4 / 100.0%          0 /   0.0%
+  FALSE ALARM             4 / 100.0%
+---------------------------------------------
+ Speaker type confusion matrix -- time weighted
+  REF\SYS (seconds)    unknown               MISS              
+unknown              529.66 /  76.7%     160.94 /  23.3%
+  FALSE ALARM        153.45 /  22.2%
+---------------------------------------------
+
+*** Performance analysis for Speaker Diarization for ALL ***
+
+    EVAL TIME =   1009.45 secs
+  EVAL SPEECH =    775.95 secs ( 76.9 percent of evaluated time)
+  SCORED TIME =    865.30 secs ( 85.7 percent of evaluated time)
+SCORED SPEECH =    681.53 secs ( 78.8 percent of scored time)
+   EVAL WORDS =      0        
+ SCORED WORDS =      0         (100.0 percent of evaluated words)
+---------------------------------------------
+MISSED SPEECH =    151.87 secs ( 17.6 percent of scored time)
+FALARM SPEECH =    153.45 secs ( 17.7 percent of scored time)
+ MISSED WORDS =      0         (100.0 percent of scored words)
+---------------------------------------------
+SCORED SPEAKER TIME =    690.60 secs (101.3 percent of scored speech)
+MISSED SPEAKER TIME =    160.94 secs ( 23.3 percent of scored speaker time)
+FALARM SPEAKER TIME =    153.45 secs ( 22.2 percent of scored speaker time)
+ SPEAKER ERROR TIME =    378.06 secs ( 54.7 percent of scored speaker time)
+SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 100.27 percent of scored speaker time  `(ALL)
+---------------------------------------------
+ Speaker type confusion matrix -- speaker weighted
+  REF\SYS (count)      unknown               MISS              
+unknown                   4 / 100.0%          0 /   0.0%
+  FALSE ALARM             4 / 100.0%
+---------------------------------------------
+ Speaker type confusion matrix -- time weighted
+  REF\SYS (seconds)    unknown               MISS              
+unknown              529.66 /  76.7%     160.94 /  23.3%
+  FALSE ALARM        153.45 /  22.2%
+---------------------------------------------
