@@ -57,8 +57,8 @@ correct slightly more than half the time.
 ```bash
 docker pull blabbertabber/aalto-speech-diarizer
 cd ~/go/src/github.com/blabbertabber/blabbertabber
-for MEETING in ES2008a ES2016a; do
-  docker run \
+for MEETING in ES2011{a,b,c,d}; do
+  time docker run \
     --volume=$PWD/benchmarks:/benchmarks \
     --workdir /speaker-diarization \
     blabbertabber/aalto-speech-diarizer \
@@ -67,7 +67,11 @@ for MEETING in ES2008a ES2016a; do
       -o /benchmarks/Aalto/${MEETING}.out
   #
   perl -ne \
-    '@l = split; ($start = $l[2]) =~ s/start-time=//; ($end = $l[3]) =~ s/end-time=//; $dur = $end - $start; ($spkr = $l[4]) =~ s/speaker=//; print "SPEAKER meeting 1 $start $dur <NA> <NA> $spkr <NA>\n"' \
+      "@l = split; (\$start = \$l[2]) =~ s/start-time=//;
+      (\$end = \$l[3]) =~ s/end-time=//;
+      \$dur = \$end - \$start;
+      (\$spkr = \$l[4]) =~ s/speaker=//;
+      print \"SPEAKER $MEETING 1 \$start \$dur <NA> <NA> \$spkr <NA>\n\"" \
     < benchmarks/Aalto/${MEETING}.out \
     > benchmarks/Aalto/${MEETING}.rttm
   ~/bin/md-eval-v21.pl \
