@@ -162,7 +162,7 @@ public class AudioEventProcessor implements Runnable {
                 oldRecordingServiceRecording = RecordingService.recording;
             }
             if (RecordingService.recording) {
-                short buffer[] = new short[NUM_FRAMES];
+                short[] buffer = new short[NUM_FRAMES];
                 int readSize = audioRecordWrapper.read(buffer, 0, NUM_FRAMES);
                 if (readSize > 0) {
                     Log.v(TAG, "run() readSize: " + readSize);

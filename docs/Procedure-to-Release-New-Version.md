@@ -8,7 +8,7 @@ Do **not** click the checkboxes on this page.  This is the template you will be 
 
 ## Procedure to Release New Version of BlabberTabber
 1. Make sure code is formatted and bug-free
-  * [ ] reformat tests, src and res/
+  * [ ] reformat src/
   * [ ] run tests
 1. Update screenshots
   * [ ] take screenshots from an emulated Pixel XL 25

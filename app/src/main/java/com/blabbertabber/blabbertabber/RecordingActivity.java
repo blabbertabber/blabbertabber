@@ -90,7 +90,7 @@ public class RecordingActivity extends Activity {
         // If you don't setContentView, you'll get either IllegalArgumentException or NullPointerException
         setContentView(R.layout.activity_recording);
         // Toolbar, https://developer.android.com/training/appbar/setting-up.html
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = findViewById(R.id.toolbar);
         setActionBar(mToolbar);
         uploadProgressBar = findViewById(R.id.determinateBar);
         // http://developer.android.com/training/basics/data-storage/shared-preferences.html
