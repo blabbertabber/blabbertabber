@@ -10,7 +10,7 @@
 BlabberTabber is an Android Application (available in the
 [Google Play Store](https://play.google.com/store/apps/details?id=com.blabbertabber.blabbertabber))
 that performs [speaker diarization](https://en.wikipedia.org/wiki/Speaker_diarisation).
-(i.e. "who spoke when?") and transcription (speech recogniton.)
+(i.e. "who spoke when?") and transcription (speech recognition.)
 
 ### Screenshots
 

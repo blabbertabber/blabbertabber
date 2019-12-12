@@ -36,4 +36,10 @@ Do **not** click the checkboxes on this page.  This is the template you will be 
   * [ ] update description (based on commit messages)
   * [ ] click **Publish now to Production**
   * [ ] update screenshots if necessary: **Store presence &rarr; Store listing**
+1. Publish to GitHub
+  * [ ] browse to [Draft a new GitHub releases](https://github.com/blabbertabber/blabbertabber/releases/new)
+  * [ ] select the latest tag version
+  * [ ] set the **Release title** the same as the Tag version
+  * [ ] set the **Describe this release** the same as was done in Google Play
+  * [ ] drag-and-drop the APK into the **Attach binaries** section
 1. Close this Issue
