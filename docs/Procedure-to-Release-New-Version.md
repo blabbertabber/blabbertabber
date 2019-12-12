@@ -23,19 +23,21 @@ Do **not** click the checkboxes on this page.  This is the template you will be 
   * [ ] tag with the new versionName: `git tag` 1.0.x
   * [ ] `git push --tags`
 1. Build Signed APK
-  * [ ] **Build** &rarr; **Generate Signed APK**
-  * [ ] click **Reveal in Finder**
-  * [ ] cut new releasel on GitHub <https://github.com/blabbertabber/blabbertabber/releases> and upload APK
+  * [ ] **Build** → **Generate Signed Bundle or APK** → **APK**
+        - select **release** build variant
+        - check both [V1 and V2](https://stackoverflow.com/questions/42648499/difference-between-signature-versions-v1jar-signature-and-v2full-apk-signat) signature versions
+  * [ ] click **locate**
 1. Publish to Google Play
   * [ ] browse to [Google Play Developer Console](https://play.google.com/apps/publish/)
   * [ ] click **BlabberTabber**
-  * [ ] click **Release management &rarr; App releases &rarr; Manage production &rarr; Create Release**
+  * [ ] click **Release management → App releases → Production track → Manage → Create Release**
   * [ ] click **APK**
   * [ ] click **Upload new APK to Production**
   * [ ] drag-and-drop `app-release.apk` from Finder
   * [ ] update description (based on commit messages)
+        - if no new features: **No new functionality, but bump the Android-related dependencies.**
   * [ ] click **Publish now to Production**
-  * [ ] update screenshots if necessary: **Store presence &rarr; Store listing**
+  * [ ] update screenshots if necessary: **Store presence → Store listing**
 1. Publish to GitHub
   * [ ] browse to [Draft a new GitHub releases](https://github.com/blabbertabber/blabbertabber/releases/new)
   * [ ] select the latest tag version
