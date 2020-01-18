@@ -333,7 +333,7 @@ into RTTM format before scoring.
 ```bash
 export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
 
-for MEETING in ES2008a; do
+for MEETING in ES2011d; do # this took 17 minutes to diarize
     curl \
       -X POST \
       -u "apikey:$APIKEY" \
@@ -348,23 +348,26 @@ Let's do a quick check to see if IBM has identified only two speakers or the
 correct four speakers (spoiler: it only identifies 2 speakers):
 
 ```
-for MEETING in ES2008a ES2016a; do
+for MEETING in ES2011d; do
     jq -r ".speaker_labels[].speaker" < benchmarks/IBM/${MEETING}/out.json | sort | uniq -c
 done
- 326 0
-1821 2
-1071 0
-   2 1
-1477 2
+2538 0
+1198 2
 ```
 
 ```bash
 cd benchmarks/
-for MEETING in ES2008a ES2016a; do
-    jq -r -j '.speaker_labels[] | "SPEAKER meeting 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
+for MEETING in ES2011d; do
+    jq -r -j  \
+        --arg MEETING $MEETING \
+        '.speaker_labels[] | "SPEAKER ", $MEETING, " 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
         < IBM/${MEETING}/out.json \
         > IBM/${MEETING}.rttm
-    md-eval-v21.pl -m -afc -c 0.25 -r sources/${MEETING}.rttm -s IBM/${MEETING}.rttm > IBM/${MEETING}-eval.txt
+    md-eval-v21.pl -m -afc -c 0.25 -r sources/${MEETING}.rttm \
+      -s <(sed "s/ $MEETING / meeting /" IBM/${MEETING}.rttm) \
+      > IBM/${MEETING}/md-eval.txt # 6.10% correct
+    pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat IBM/*.rttm) \
+      > IBM/pyannote.txt # 30.83% correct
 done
 ```
 
