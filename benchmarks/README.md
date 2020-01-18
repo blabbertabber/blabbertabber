@@ -671,7 +671,8 @@ RTTM has the following field definitions:
 
 - **type** is always `SPEAKER`
 - **file** is the waveform file base name (i.e., without path names or extensions).
-  for scoring, `pyannote` expects this to be the AMI meeting, e.g. `ES2008a`.
+  for scoring, `pyannote` expects this to be the AMI meeting, e.g. `ES2008a`, and
+  `md-eval-v21.pl` expects this to be "meeting".
 - **chnl** is the waveform channel (e.g., “1” or “2”). Always "1"
 - **tbeg** is the beginning time of the object, in seconds, measured from the
   start time of the file.4If there is no beginning time, use tbeg = “<NA>”.
