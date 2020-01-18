@@ -333,12 +333,12 @@ into RTTM format before scoring.
 ```bash
 export APIKEY=3VN5ZagcWDdOYmJBz5eTCNUIAGEQCyXXXXXXXXXXXXX
 
-for MEETING in ES2016a; do
+for MEETING in ES2008a; do
     curl \
       -X POST \
       -u "apikey:$APIKEY" \
       --header "Content-Type: audio/wav" \
-      --data-binary @benchmarks/sources/${MEETING}.wav \
+      --data-binary @benchmarks/sources/amicorpus/${MEETING}/audio/${MEETING}.Mix-Headset.wav \
       "https://stream.watsonplatform.net/speech-to-text/api/v1/recognize?speaker_labels=true&max_alternatives=1" \
       > benchmarks/IBM/${MEETING}/out.json
 done
@@ -349,7 +349,7 @@ correct four speakers (spoiler: it only identifies 2 speakers):
 
 ```
 for MEETING in ES2008a ES2016a; do
-    jq -r .speaker_labels[].speaker < benchmarks/IBM/${MEETING}/out.json | sort | uniq -c
+    jq -r ".speaker_labels[].speaker" < benchmarks/IBM/${MEETING}/out.json | sort | uniq -c
 done
  326 0
 1821 2
