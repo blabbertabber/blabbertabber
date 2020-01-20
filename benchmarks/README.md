@@ -264,10 +264,10 @@ OVERALL SPEAKER DIARIZATION ERROR = 92.32 percent of scored speaker time  `(c=1 
 
 ### IBM Watson Speech To Text (STT)
 
-IBM transcription came in at a disappointing **43.95% correct**, but it should
+IBM transcription came in at a disappointing **30.83% correct**, but it should
 be noted that IBM diarization is limited to two speakers (for which it performs
 quite well, typically 90+% correct), but causes poor performance for meetings
-with three or more participants, meetings such as our benchmark ES2008a, which
+with three or more participants, meetings such as our benchmark ES2011d, which
 has four participants.
 
 IBM’s pricing is $0.75/hr.
@@ -325,7 +325,7 @@ want you to do and the times…`
 }
 ```
 
-#### Testing: Four-speaker Meeting
+#### Testing
 
 We use `curl` to trigger the diarization, and then convert the resulting JSON
 into RTTM format before scoring.
@@ -356,27 +356,19 @@ done
 ```
 
 ```bash
-cd benchmarks/
 for MEETING in ES2011d; do
     jq -r -j  \
         --arg MEETING $MEETING \
         '.speaker_labels[] | "SPEAKER ", $MEETING, " 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
-        < IBM/${MEETING}/out.json \
-        > IBM/${MEETING}.rttm
-    md-eval-v21.pl -m -afc -c 0.25 -r sources/${MEETING}.rttm \
-      -s <(sed "s/ $MEETING / meeting /" IBM/${MEETING}.rttm) \
-      > IBM/${MEETING}/md-eval.txt # 6.10% correct
-    pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat IBM/*.rttm) \
-      > IBM/pyannote.txt # 30.83% correct
+        < benchmarks/IBM/${MEETING}/out.json \
+        > benchmarks/IBM/${MEETING}.rttm
+    md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm \
+      -s <(sed "s/ $MEETING / meeting /" benchmarks/IBM/${MEETING}.rttm) \
+      > benchmarks/IBM/${MEETING}/md-eval.txt # 60.13% correct
+    pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat benchmarks/IBM/*.rttm) \
+      > benchmarks/IBM/pyannote.txt # 30.83% correct
 done
 ```
-
-And the results for ES2011d (`pyannote-metrics.py` first, `md-eval-v21.pl` second):
-
-```
-OVERALL SPEAKER DIARIZATION ERROR = 56.05 percent of scored speaker time
-```
-
 
 ### ICSI
 
@@ -705,18 +697,12 @@ We previously converted the ES2008a NITE transcript to RTTM using a custom tool,
 [nite_xml_to_rttm.py](https://github.com/cunnie/bin/blob/95edd6db4d446659b50978cebdf34f90b19d87a4/nite_xml_to_rttm.py).
 
 ```bash
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2008a.rttm
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2008a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2011d.rttm
-nite_xml_to_rttm.py ~/Downloads/ami_public_manual_1.6.2/words/ES2016a.*.words.xml |
-    sort -n -k 4 |
-    squash_rttm.py \
-    > sources/ES2016a.rttm
+for MEETING in ES2008a ES2011d ES2016a; do
+    nite_xml_to_rttm.py benchmarks/sources/amicorpus/ami_public_manual_1.6.2/words/${MEETING}.*.words.xml |
+        sort -n -k 4 |
+        squash_rttm.py \
+        > benchmarks/sources/${MEETING}.rttm
+done
 ```
 
 <a id="es2011d"><sup>[ES2011d]</sup></a> The choice of meeting `ES2011d` was
