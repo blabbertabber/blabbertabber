@@ -215,34 +215,29 @@ The output consists of a [what else?] JSON file with layout similar to the follo
 }
 ```
 
-Let's create an MDTM & RTTM file.
+Let's create an RTTM file.
 Google has a bug — zero-length utterances: https://issuetracker.google.com/issues/124723573.
 This generates `pyannote-metrics.py` error `ValueError: Segments must not be empty.`.
 We have an extra step to strip out the 145 zero-length utterances. `awk '$4 != "0" { print }'`
 :
 ```bash
-for MEETING in ES2008a ES2011d ES2016a; do
-  jq \
-    -j \
-    -r \
-    '.response.results[-1].alternatives[].words[] |
-        .startTime|=(rtrimstr("s")|tonumber) |
-        .endTime|=(rtrimstr("s")|tonumber) |
-        "SPEAKER meeting 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
-    < benchmarks/Google/${MEETING}-out.json \
-    > benchmarks/Google/${MEETING}.rttm
+for MEETING in ES2011d; do
   jq \
     -j \
     -r \
     --arg MEETING $MEETING \
     '.response.results[-1].alternatives[].words[] |
-      .startTime|=(rtrimstr("s")|tonumber) |
-      .endTime|=(rtrimstr("s")|tonumber) |
-      $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " speaker NA unknown ", ("spkr_"+(.speakerTag|tostring)), "\n"' \
-    < benchmarks/Google/${MEETING}-out.json |
-    awk '$4 != "0" { print }' \
-    > benchmarks/Google/${MEETING}.mdtm
+        .startTime|=(rtrimstr("s")|tonumber) |
+        .endTime|=(rtrimstr("s")|tonumber) |
+        "SPEAKER ", $MEETING, " 1 ", .startTime, " ", (.endTime-.startTime), " <NA> <NA> ", ("spkr_"+(.speakerTag|tostring)), " <NA>\n"' \
+    < benchmarks/Google/${MEETING}/${MEETING}-out.json \
+    > benchmarks/Google/${MEETING}/${MEETING}.rttm
+  md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm \
+    -s <(sed "s/ $MEETING / meeting /" benchmarks/Google/${MEETING}/${MEETING}.rttm) \
+    > benchmarks/Google/${MEETING}/md-eval.txt # 55.27% correct
 done
+pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat benchmarks/Google/*/*.rttm) \
+  > benchmarks/Google/pyannote.txt # 42.37% correct
 ```
 Now let's score it:
 ```bash
@@ -259,7 +254,7 @@ Diarization (collar = 0 ms)      diarization error rate    purity    coverage   
 -----------------------------  ------------------------  --------  ----------  -------  ---------  -----  -------------  ----  ------------------  -----  -----------  -----
 ES2011d.Mix-Headset                               61.43     54.02       63.77  1981.14     839.36  42.37          75.22  3.80              639.16  32.26       502.62  25.37
 
-OVERALL SPEAKER DIARIZATION ERROR = 92.32 percent of scored speaker time  `(c=1 f=meeting)
+OVERALL SPEAKER DIARIZATION ERROR = 44.73 percent of scored speaker time  `(c=1 f=meeting)```
 ```
 
 ### IBM Watson Speech To Text (STT)
@@ -361,13 +356,13 @@ for MEETING in ES2011d; do
         --arg MEETING $MEETING \
         '.speaker_labels[] | "SPEAKER ", $MEETING, " 1 ", .from, " ", (.to-.from), " <NA> <NA> ", ("spkr_"+(.speaker|tostring)), " <NA>\n"' \
         < benchmarks/IBM/${MEETING}/out.json \
-        > benchmarks/IBM/${MEETING}.rttm
+        > benchmarks/IBM/${MEETING}/${MEETING}.rttm
     md-eval-v21.pl -m -afc -c 0.25 -r benchmarks/sources/${MEETING}.rttm \
-      -s <(sed "s/ $MEETING / meeting /" benchmarks/IBM/${MEETING}.rttm) \
+      -s <(sed "s/ $MEETING / meeting /" benchmarks/IBM/${MEETING}/${MEETING}.rttm) \
       > benchmarks/IBM/${MEETING}/md-eval.txt # 60.13% correct
-    pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat benchmarks/IBM/*.rttm) \
-      > benchmarks/IBM/pyannote.txt # 30.83% correct
 done
+pyannote-metrics.py diarization --subset=development AMI.SpeakerDiarization.MixHeadset <(cat benchmarks/IBM/*/*.rttm) \
+  > benchmarks/IBM/pyannote.txt # 30.83% correct
 ```
 
 ### ICSI
@@ -392,63 +387,9 @@ Invocation:
 
 ```
 /Users/cunnie/workspace/ib_diarization_toolkit/md-eval-v21.pl -m -afc -c 0.25 -r /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.rttm.txt
+```
 
-command line (run on 2016 Jun 4 at 10:16:56):  /Users/cunnie/workspace/ib_diarization_toolkit/md-eval-v21.pl -m -afc -c 0.25 -r /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting-cunnie.rttm.txt -s /Users/cunnie/Google Drive/BlabberTabber/ICSI-diarizer-sample-meeting.rttm.txt
-
-Time-based metadata alignment
-
-Metadata evaluation parameters:
-    time-optimized metadata mapping
-        max gap between matching metadata events = 1 sec
-        max extent to match for SU's = 0.5 sec
-
-Speaker Diarization evaluation parameters:
-    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
-    The no-score collar at SPEAKER boundaries is 0.25 sec
-
-Exclusion zones for evaluation and scoring are:
-                             -----MetaData-----        -----SpkrData-----
-     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
-     token type/subtype      no-eval   no-score        no-eval   no-score
-             (UEM)              X                         X
-         LEXEME/un-lex                    X
-        NON-LEX/breath                                              X
-        NON-LEX/cough                                               X
-        NON-LEX/laugh                                               X
-        NON-LEX/lipsmack                                            X
-        NON-LEX/other                                               X
-        NON-LEX/sneeze                                              X
-        NOSCORE/<na>            X         X               X         X
- NO_RT_METADATA/<na>            X
-             SU/unannotated               X
-'brendan' => 'clus_0'
-   346.26 secs matched to 'clus_0'
-    11.33 secs matched to 'clus_1'
-     2.50 secs matched to 'clus_14'
-    17.96 secs matched to 'clus_2'
-'brian' => 'clus_12'
-     0.21 secs matched to 'clus_0'
-     4.47 secs matched to 'clus_1'
-     8.28 secs matched to 'clus_12'
-'charlotte' => 'clus_1'
-     3.90 secs matched to 'clus_0'
-    45.70 secs matched to 'clus_1'
-     2.66 secs matched to 'clus_14'
-     0.21 secs matched to 'clus_2'
-
-*** Performance analysis for Speaker Diarization for c=1 f=meeting ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =    149.61 secs ( 25.6 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
+```
 SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
 MISSED SPEAKER TIME =    149.61 secs ( 25.6 percent of scored speaker time)
 FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
@@ -456,48 +397,6 @@ FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
 SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
 ---------------------------------------------
  OVERALL SPEAKER DIARIZATION ERROR = 32.27 percent of scored speaker time  `(c=1 f=meeting)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   3 / 100.0%          0 /   0.0%
-  FALSE ALARM             2 /  66.7%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              435.89 /  74.4%     149.61 /  25.6%
-  FALSE ALARM          0.00 /   0.0%
----------------------------------------------
-
-*** Performance analysis for Speaker Diarization for ALL ***
-
-    EVAL TIME =    600.00 secs
-  EVAL SPEECH =    600.00 secs (100.0 percent of evaluated time)
-  SCORED TIME =    585.50 secs ( 97.6 percent of evaluated time)
-SCORED SPEECH =    585.50 secs (100.0 percent of scored time)
-   EVAL WORDS =      0
- SCORED WORDS =      0         (100.0 percent of evaluated words)
----------------------------------------------
-MISSED SPEECH =    149.61 secs ( 25.6 percent of scored time)
-FALARM SPEECH =      0.00 secs (  0.0 percent of scored time)
- MISSED WORDS =      0         (100.0 percent of scored words)
----------------------------------------------
-SCORED SPEAKER TIME =    585.50 secs (100.0 percent of scored speech)
-MISSED SPEAKER TIME =    149.61 secs ( 25.6 percent of scored speaker time)
-FALARM SPEAKER TIME =      0.00 secs (  0.0 percent of scored speaker time)
- SPEAKER ERROR TIME =     39.33 secs (  6.7 percent of scored speaker time)
-SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
----------------------------------------------
- OVERALL SPEAKER DIARIZATION ERROR = 32.27 percent of scored speaker time  `(ALL)
----------------------------------------------
- Speaker type confusion matrix -- speaker weighted
-  REF\SYS (count)      unknown               MISS
-unknown                   3 / 100.0%          0 /   0.0%
-  FALSE ALARM             2 /  66.7%
----------------------------------------------
- Speaker type confusion matrix -- time weighted
-  REF\SYS (seconds)    unknown               MISS
-unknown              435.89 /  74.4%     149.61 /  25.6%
-  FALSE ALARM          0.00 /   0.0%
 ---------------------------------------------
 ```
 

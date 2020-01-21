@@ -1,0 +1,47 @@
+FutureWarning: read_table is deprecated, use read_csv instead, passing sep='\t'.
+FutureWarning: read_table is deprecated, use read_csv instead, passing sep='\t'.
+FutureWarning: read_table is deprecated, use read_csv instead, passing sep='\t'.
+UserWarning: Could not find hypothesis for file "ES2003a.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2003b.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2003c.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2003d.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2011a.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2011b.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "ES2011c.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "IB4001.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "IS1008a.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "IS1008b.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "IS1008c.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "IS1008d.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3004a.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3004b.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3004c.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3004d.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3006a.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3006b.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3006c.Mix-Headset"; assuming empty file.
+UserWarning: Could not find hypothesis for file "TS3006d.Mix-Headset"; assuming empty file.
+Diarization (collar = 0 ms)      diarization error rate    purity    coverage     total    correct      %    false alarm     %    missed detection       %    confusion      %
+-----------------------------  ------------------------  --------  ----------  --------  ---------  -----  -------------  ----  ------------------  ------  -----------  -----
+ES2003a.Mix-Headset                              100.00    100.00      100.00    751.53       0.00   0.00           0.00  0.00              751.53  100.00         0.00   0.00
+ES2003b.Mix-Headset                              100.00    100.00      100.00   2066.81       0.00   0.00           0.00  0.00             2066.81  100.00         0.00   0.00
+ES2003c.Mix-Headset                              100.00    100.00      100.00   2242.33       0.00   0.00           0.00  0.00             2242.33  100.00         0.00   0.00
+ES2003d.Mix-Headset                              100.00    100.00      100.00   2350.32       0.00   0.00           0.00  0.00             2350.32  100.00         0.00   0.00
+ES2011a.Mix-Headset                              100.00    100.00      100.00   1091.71       0.00   0.00           0.00  0.00             1091.71  100.00         0.00   0.00
+ES2011b.Mix-Headset                              100.00    100.00      100.00   1588.02       0.00   0.00           0.00  0.00             1588.02  100.00         0.00   0.00
+ES2011c.Mix-Headset                              100.00    100.00      100.00   1820.08       0.00   0.00           0.00  0.00             1820.08  100.00         0.00   0.00
+ES2011d.Mix-Headset                               61.43     54.02       63.77   1981.14     839.36  42.37          75.22  3.80              639.16   32.26       502.62  25.37
+IB4001.Mix-Headset                               100.00    100.00      100.00   1742.28       0.00   0.00           0.00  0.00             1742.28  100.00         0.00   0.00
+IS1008a.Mix-Headset                              100.00    100.00      100.00    854.91       0.00   0.00           0.00  0.00              854.91  100.00         0.00   0.00
+IS1008b.Mix-Headset                              100.00    100.00      100.00   1612.21       0.00   0.00           0.00  0.00             1612.21  100.00         0.00   0.00
+IS1008c.Mix-Headset                              100.00    100.00      100.00   1562.48       0.00   0.00           0.00  0.00             1562.48  100.00         0.00   0.00
+IS1008d.Mix-Headset                              100.00    100.00      100.00   1498.84       0.00   0.00           0.00  0.00             1498.84  100.00         0.00   0.00
+TS3004a.Mix-Headset                              100.00    100.00      100.00   1185.68       0.00   0.00           0.00  0.00             1185.68  100.00         0.00   0.00
+TS3004b.Mix-Headset                              100.00    100.00      100.00   2371.46       0.00   0.00           0.00  0.00             2371.46  100.00         0.00   0.00
+TS3004c.Mix-Headset                              100.00    100.00      100.00   2488.26       0.00   0.00           0.00  0.00             2488.26  100.00         0.00   0.00
+TS3004d.Mix-Headset                              100.00    100.00      100.00   2428.27       0.00   0.00           0.00  0.00             2428.27  100.00         0.00   0.00
+TS3006a.Mix-Headset                              100.00    100.00      100.00   1310.54       0.00   0.00           0.00  0.00             1310.54  100.00         0.00   0.00
+TS3006b.Mix-Headset                              100.00    100.00      100.00   2944.59       0.00   0.00           0.00  0.00             2944.59  100.00         0.00   0.00
+TS3006c.Mix-Headset                              100.00    100.00      100.00   3158.50       0.00   0.00           0.00  0.00             3158.50  100.00         0.00   0.00
+TS3006d.Mix-Headset                              100.00    100.00      100.00   3731.29       0.00   0.00           0.00  0.00             3731.29  100.00         0.00   0.00
+TOTAL                                             98.13     54.02       63.77  40781.24     839.36   2.06          75.22  0.18            39439.26   96.71       502.62   1.23
