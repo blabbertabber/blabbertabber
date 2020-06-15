@@ -1,13 +1,13 @@
 package com.blabbertabber.blabbertabber;
 
 import android.app.Activity;
-import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import android.support.test.runner.lifecycle.Stage;
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import androidx.test.runner.lifecycle.Stage;
 import android.util.Log;
 
 import java.util.Collection;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 /**
  * Created by cunnie on 11/18/15.

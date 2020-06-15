@@ -1,7 +1,7 @@
 package com.blabbertabber.blabbertabber;
 
 import android.media.MediaRecorder;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import android.util.Log;
 
 import org.junit.Test;
