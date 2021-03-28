@@ -1,6 +1,15 @@
-***Warning: This app does not work very well. Yet.
+## Deprecated
 
-# BlabberTabber
+BlabberTabber is defunct. It's no longer maintained. It's no longer listed in
+the App Store, the back-end servers have been turned off.
+
+I'd like to thank everyone who worked on BlabberTabber, esp. Brendan and
+Charlotte.
+
+Backstory: it never worked very well (I couldn't find a good-enough diarizer),
+and over time my interest waned.
+
+### BlabberTabber
 
 <!--
 * develop: [![Build Status](https://travis-ci.org/blabbertabber/blabbertabber.png?branch=develop)](https://travis-ci.org/blabbertabber/blabbertabber)
